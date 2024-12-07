@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:evolvu/common/Common_dropDownFiled.dart';
 import 'package:evolvu/common/common_textFiled.dart';
 import 'package:evolvu/Parent/parentDashBoard_Page.dart';
+import 'package:evolvu/common/textFiledStu.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -12,7 +13,12 @@ import 'package:http/http.dart';
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../common/StuEditTextField.dart';
 import '../main.dart';
+TextEditingController _dobController = TextEditingController();
+ bool _isClickable = true; // This variable controls if the radio is clickable or not
+
+
 
 class ParentDet {
   String? parentId;
@@ -37,6 +43,7 @@ class ParentDet {
   String? isDelete;
   String? fatherImageName;
   String? motherImageName;
+  
 
   ParentDet(
       {this.parentId,
@@ -205,6 +212,8 @@ class _ParentProfilePage extends State<ParentProfilePage> {
 
   @override
   Widget build(BuildContext context) {
+   
+   
     return SizedBox(
       child: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -227,197 +236,659 @@ class _ParentProfilePage extends State<ParentProfilePage> {
                     SizedBox(
                       height: 10.h,
                     ),
-                    CustomTextField(
+
+                    StuTextField(
                       label: 'Father Name',
-                      name: 'Father_Name',
+                      name: 'Father Name',
                       readOnly: true,
-                      initialValue: ParentDetmod?.fatherName ?? '',
+                      // isRequired: true,
+                      // isRequired: true,
+                        initialValue: ParentDetmod?.fatherName ?? '',
+                    ),
+                     StuEditTextField(
+                      labelText: 'Occupation',
+                      initialValue: ParentDetmod?.fatherOccupation ?? '',
+                      keyboardType: TextInputType.name,
+                      onChanged: (value) {
+                        setState(() {
+                          ParentDetmod?.fatherOccupation = value;
+                        });
+                      },
+                    
+                    ),
+                    StuEditTextField(
+                      labelText: 'Office Address',
+                      initialValue: ParentDetmod?.fOfficeAdd ?? '',
+                      keyboardType: TextInputType.name,
+                      onChanged: (value) {
+                        setState(() {
+                          ParentDetmod?.fOfficeAdd = value;
+                        });
+                      },
+                    
+                    ),
+                     StuEditTextField(
+                      labelText: 'Father Adhar Card no.',
+                      initialValue: ParentDetmod?.parentAdharNo ?? '',
+                      keyboardType: TextInputType.number,
+                      onChanged: (value) {
+                        setState(() {
+                          ParentDetmod?.parentAdharNo = value;
+                        });
+                      },
+                    
                     ),
                     
-                    TextFormField(
-                      // controller: fatherOccupationController,
-                      initialValue: ParentDetmod?.fatherOccupation ?? '',
+                     
+                    LabeledDropdown(
+                  label:
+                  "Blood Group ", // Keep the label static
+                  options: ['O', 'A', 'B'],
 
-                      decoration: const InputDecoration(
-                        border: UnderlineInputBorder(),
-                        labelText: 'Occupation',
-                      ),
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          if (newValue != null) {
-                            ParentDetmod?.fatherOccupation = newValue;
-                          }
-                        });
-                      },
-                    ),
-                    TextFormField(
-                        initialValue: ParentDetmod?.fOfficeAdd ?? '',
-                      decoration:  InputDecoration(
-                        border: UnderlineInputBorder(),
-                        labelText: 'Office Address',
-                      ),
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          if (newValue != null) {
-                            ParentDetmod?.fOfficeAdd = newValue;
-                          }
-                        });
-                      },
-                    ),
-                    TextFormField(
+                 // selectedValue:setGender(ParentDetmod!.parentAdharNo),
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      if (newValue != null) {
+                        ParentDetmod?.parentAdharNo = newValue;
+                      }
+                    });
+                  },
+                ),
+                    
+                    StuEditTextField(
+                      labelText: 'Telephone',
                       initialValue: ParentDetmod?.fOfficeTel ?? '',
-                      decoration:  InputDecoration(
-                        border: UnderlineInputBorder(),
-                        labelText: 'Telephone',
-                      ),
-                      onChanged: (String? newValue) {
+                      keyboardType: TextInputType.number,
+                      onChanged: (value) {
                         setState(() {
-                          if (newValue != null) {
-                            ParentDetmod?.fOfficeTel = newValue;
-                          }
+                          ParentDetmod?.fOfficeTel = value;
                         });
                       },
+                    
                     ),
-                    TextFormField(
+                     StuEditTextField(
+                      labelText: 'Mobile Number',
                       initialValue: ParentDetmod?.fMobile ?? '',
-                      decoration:  InputDecoration(
-                        border: UnderlineInputBorder(),
-                        labelText: 'Mobile Number',
-                      ),
-                      onChanged: (String? newValue) {
+                      keyboardType: TextInputType.number,
+                      onChanged: (value) {
                         setState(() {
-                          if (newValue != null) {
-                            ParentDetmod?.fMobile = newValue;
-                          }
+                          ParentDetmod?.fMobile = value;
                         });
                       },
+                    
                     ),
-                    TextFormField(
+                   
+                   Column(
+  children: [
+    ListTile(
+      //contentPadding: EdgeInsets.symmetric(horizontal: 18.0),
+      //leading: true, // Set this to null for better custom control
+      title: Row(
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(left: 88,),
+            child: Radio(
+              value: 'Set to receive SMS at this no.',
+              groupValue: _selectedOption,
+              onChanged: (String? value) {
+                setState(() {
+                  if (_selectedOption == value) {
+                    _selectedOption = null; // Deselect if already selected
+                  } else {
+                    _selectedOption = value;
+                  }
+                });
+              },
+            ),
+          ),
+              
+          Text(
+            'Set to receive SMS at this no.',
+            style: TextStyle(fontSize: 12),
+          ),
+        ],
+      ),
+      onTap: () {
+        // Allow tapping the ListTile to select/deselect the radio button
+        setState(() {
+          if (_selectedOption == 'Set to receive SMS at this no.') {
+            _selectedOption = null;
+          } else {
+            _selectedOption = 'Set to receive SMS at this no.';
+          }
+        });
+      },
+    ),
+    
+  ],
+),
+StuEditTextField(
+      labelText: 'Email id',
+      initialValue: ParentDetmod?.fEmail ?? '',
+      keyboardType: TextInputType.name,
+      onChanged: (value) {
+        setState(() {
+          ParentDetmod?.fEmail = value;
+        });
+      },
+    ),
+
+                   
+                   
+                   
+                     StuEditTextField(
+                      labelText: 'Date of Birth',
                       initialValue: ParentDetmod?.fEmail ?? '',
-                      decoration:  InputDecoration(
-                        border: UnderlineInputBorder(),
-                        labelText: 'Email id',
-                      ),
-                      onChanged: (String? newValue) {
+                      keyboardType: TextInputType.datetime,
+                      onChanged: (value) {
                         setState(() {
-                          if (newValue != null) {
-                            ParentDetmod?.fEmail = newValue;
-                          }
+                          ParentDetmod?.fEmail = value;
                         });
                       },
+                    
                     ),
-                    TextFormField(
-                      initialValue: ParentDetmod?.parentAdharNo ?? '',
-                      decoration: const InputDecoration(
-                        border: UnderlineInputBorder(),
-                        labelText: 'Adhar Card no.',
-                      ),
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          if (newValue != null) {
-                            ParentDetmod?.parentAdharNo = newValue;
-                          }
-                        });
-                      },
-                    ),
-                    CustomTextField(
+                    StuTextField(
                       label: 'Mother Name',
-                      name: 'Mother_Name',
+                      name: 'Mother Name',
                       readOnly: true,
-                      initialValue: ParentDetmod?.motherName ?? '',
+                      // isRequired: true,
+                      // isRequired: true,
+                        initialValue: ParentDetmod?.motherName ?? '',
                     ),
-
-
-                    TextFormField(
+                     StuEditTextField(
+                      labelText: 'Occupation',
                       initialValue: ParentDetmod?.motherOccupation ?? '',
-                      decoration: const InputDecoration(
-                        border: UnderlineInputBorder(),
-                        labelText: 'Occupation',
-                      ),
-                      onChanged: (String? newValue) {
+                      keyboardType: TextInputType.name,
+                      onChanged: (value) {
                         setState(() {
-                          if (newValue != null) {
-                            ParentDetmod?.motherOccupation = newValue;
-                          }
+                          ParentDetmod?.motherOccupation = value;
                         });
                       },
+                    
                     ),
-                    TextFormField(
+                    StuEditTextField(
+                      labelText: 'Office Address',
                       initialValue: ParentDetmod?.mOfficeAdd ?? '',
-                      decoration: const InputDecoration(
-                        border: UnderlineInputBorder(),
-                        labelText: 'Office Address',
-                      ),
-                      onChanged: (String? newValue) {
+                      keyboardType: TextInputType.name,
+                      onChanged: (value) {
                         setState(() {
-                          if (newValue != null) {
-                            ParentDetmod?.mOfficeAdd = newValue;
-                          }
+                          ParentDetmod?.mOfficeAdd = value;
                         });
                       },
+                    
                     ),
-                    TextFormField(
+                     StuEditTextField(
+                      labelText: 'Mother Adhar Card no.',
+                      initialValue: ParentDetmod?.parentAdharNo ?? '',
+                      keyboardType: TextInputType.number,
+                      onChanged: (value) {
+                        setState(() {
+                          ParentDetmod?.parentAdharNo = value;
+                        });
+                      },
+                    
+                    ),
+                    
+                     
+                    LabeledDropdown(
+                  label:
+                  "Blood Group ", // Keep the label static
+                  options: ['O', 'A', 'B'],
+
+                 // selectedValue:setGender(ParentDetmod!.parentAdharNo),
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      if (newValue != null) {
+                        ParentDetmod?.parentAdharNo = newValue;
+                      }
+                    });
+                  },
+                ),
+                    
+                    StuEditTextField(
+                      labelText: 'Telephone',
                       initialValue: ParentDetmod?.mOfficeTel ?? '',
-                      decoration: const InputDecoration(
-                        border: UnderlineInputBorder(),
-                        labelText: 'Telephone',
-                      ),
-                      onChanged: (String? newValue) {
+                      keyboardType: TextInputType.number,
+                      onChanged: (value) {
                         setState(() {
-                          if (newValue != null) {
-                            ParentDetmod?.mOfficeTel = newValue;
-                          }
+                          ParentDetmod?.mOfficeTel = value;
                         });
                       },
+                    
                     ),
-                    TextFormField(
+                     StuEditTextField(
+                      labelText: 'Mobile Number',
                       initialValue: ParentDetmod?.mMobile ?? '',
-                      decoration: const InputDecoration(
-                        border: UnderlineInputBorder(),
-                        labelText: 'Mobile Number',
-                      ),
-                      onChanged: (String? newValue) {
+                      keyboardType: TextInputType.number,
+                      onChanged: (value) {
                         setState(() {
-                          if (newValue != null) {
-                            ParentDetmod?.mMobile = newValue;
-                          }
+                          ParentDetmod?.mMobile = value;
                         });
                       },
+                    
                     ),
+                   
+                   Column(
+  children: [
+    ListTile(
+      //contentPadding: EdgeInsets.symmetric(horizontal: 18.0),
+      //leading: true, // Set this to null for better custom control
+      title: Row(
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(left: 88,),
+            child: Radio(
+              value: 'Set to receive SMS at this no.',
+              groupValue: _selectedOption,
+              onChanged: (String? value) {
+                setState(() {
+                  if (_selectedOption == value) {
+                    _selectedOption = null; // Deselect if already selected
+                  } else {
+                    _selectedOption = value;
+                  }
+                });
+              },
+            ),
+          ),
+               //SizedBox(width: 38), // Adjust this value to control the space
+          Text(
+            'Set to receive SMS at this no.',
+            style: TextStyle(fontSize: 12),
+          ),
+        ],
+      ),
+      onTap: () {
+        // Allow tapping the ListTile to select/deselect the radio button
+        setState(() {
+          if (_selectedOption == 'Set to receive SMS at this no.') {
+            _selectedOption = null;
+          } else {
+            _selectedOption = 'Set to receive SMS at this no.';
+          }
+        });
+      },
+    ),
+    
+  ],
+),
+StuEditTextField(
+      labelText: 'Email id',
+      initialValue: ParentDetmod?.fEmail ?? '',
+      keyboardType: TextInputType.name,
+      onChanged: (value) {
+        setState(() {
+          ParentDetmod?.fEmail = value;
+        });
+      },
+    ),
 
-                    Padding(
-                      padding: const EdgeInsets.only(left: 0.0),
-                      child: RadioListTile<String>(
-                        title: Text('Set to receive sms at this no',style: TextStyle(
-                          fontSize: 14,
-                        ),
-                        ),
-                        value: 'Set to receive sms at this no',
-                        groupValue: _selectedOption,
-                        onChanged: _radioEnabled
-                            ? (String? value) {
-                          setState(() {
-                            _selectedOption = value!;
-                          });
-                        }
-                            : null,
-                      ),
-                    ),
-
-                    TextFormField(
-                      initialValue: ParentDetmod?.mEmailid ?? '',
-                      decoration: const InputDecoration(
-                        border: UnderlineInputBorder(),
-                        labelText: 'Email id',
-                      ),
-                      onChanged: (String? newValue) {
+                   
+                   
+                   
+                     StuEditTextField(
+                      labelText: 'Date of Birth',
+                      initialValue: ParentDetmod?.fEmail ?? '',
+                      keyboardType: TextInputType.datetime,
+                      onChanged: (value) {
                         setState(() {
-                          if (newValue != null) {
-                            ParentDetmod?.mEmailid = newValue;
-                          }
+                          ParentDetmod?.fEmail = value;
                         });
                       },
+                    
                     ),
+                    // CustomTextField(
+                    //   label: 'Father Name',
+                    //   name: 'Father_Name',
+                    //   readOnly: true,
+                    //   initialValue: ParentDetmod?.fatherName ?? '',
+                    // ),
+                    
+//                     TextFormField(
+//                       // controller: fatherOccupationController,
+//                       initialValue: ParentDetmod?.fatherOccupation ?? '',
+
+//                       decoration: const InputDecoration(
+//                         border: UnderlineInputBorder(),
+//                         labelText: 'Occupation',
+//                       ),
+//                       onChanged: (String? newValue) {
+//                         setState(() {
+//                           if (newValue != null) {
+//                             ParentDetmod?.fatherOccupation = newValue;
+//                           }
+//                         });
+//                       },
+//                     ),
+//                     TextFormField(
+//                         initialValue: ParentDetmod?.fOfficeAdd ?? '',
+//                       decoration:  InputDecoration(
+//                         border: UnderlineInputBorder(),
+//                         labelText: 'Office Address',
+//                       ),
+//                       onChanged: (String? newValue) {
+//                         setState(() {
+//                           if (newValue != null) {
+//                             ParentDetmod?.fOfficeAdd = newValue;
+//                           }
+//                         });
+//                       },
+//                     ),
+//                     TextFormField(
+//                       initialValue: ParentDetmod?.parentAdharNo ?? '',
+//                       decoration: const InputDecoration(
+//                         border: UnderlineInputBorder(),
+//                         labelText: ' Father Adhar Card no.',
+//                       ),
+//                       keyboardType: TextInputType.number,
+//                       onChanged: (String? newValue) {
+//                         setState(() {
+//                           if (newValue != null) {
+//                             ParentDetmod?.parentAdharNo = newValue;
+//                           }
+//                         });
+//                       },
+//                     ),
+//                     // Blood Group 
+//                     DropdownButtonFormField(
+//   decoration: InputDecoration(
+//     border: UnderlineInputBorder(),
+//     labelText: 'Blood Group',
+//     labelStyle: TextStyle(color: Colors.black), // Ensures the label is black
+//   ),
+//   items: ['O', 'A', 'B']
+//       .map((String value) {
+//     return DropdownMenuItem(
+//       value: value,
+//       child: Text(
+//         value,
+//         style: TextStyle(color: Colors.black), // Ensures dropdown item text is black
+//       ),
+//     );
+//   }).toList(),
+//   onChanged: (String? newValue) {
+//     // Handle the selected value here
+//   },
+// ),
+                    
+
+//                     TextFormField(
+//                       initialValue: ParentDetmod?.fOfficeTel ?? '',
+//                       decoration:  InputDecoration(
+//                         border: UnderlineInputBorder(),
+//                         labelText: 'Telephone',
+//                       ),
+//                       keyboardType: TextInputType.number,
+//                       onChanged: (String? newValue) {
+//                         setState(() {
+//                           if (newValue != null) {
+//                             ParentDetmod?.fOfficeTel = newValue;
+//                           }
+//                         });
+//                       },
+//                     ),
+//                     TextFormField(
+//                       initialValue: ParentDetmod?.fMobile ?? '',
+//                       decoration:  InputDecoration(
+//                         border: UnderlineInputBorder(),
+                        
+//                         labelText: 'Mobile Number',
+//                       ),
+//                       keyboardType: TextInputType.number,
+//                       onChanged: (String? newValue) {
+//                         setState(() {
+//                           if (newValue != null) {
+//                             ParentDetmod?.fMobile = newValue;
+//                           }
+//                         });
+//                       },
+//                     ),
+                   
+// Row(
+//   crossAxisAlignment: CrossAxisAlignment.center, // Align vertically to the center
+//   children: [
+//     Text(
+//       'Set to receive SMS at this no:',
+//       style: TextStyle(fontSize: 14),
+//     ),
+//     SizedBox(width: 5), // Reduced spacing between the label and radio
+//     GestureDetector(
+//       onTap: () {
+//         if (_isClickable) {
+//           setState(() {
+//             if (_selectedOption == 'Set to receive sms at this no') {
+//               _selectedOption = null; // Uncheck if it's already selected
+//             } else {
+//               _selectedOption = 'Set to receive sms at this no'; // Check the radio button
+//             }
+//           });
+//         }
+//       },
+//       child: Radio<String>(
+//         value: 'Set to receive sms at this no',
+//         groupValue: _selectedOption,
+//         onChanged: _isClickable
+//             ? (String? value) {
+//                 setState(() {
+//                   _selectedOption = value;
+//                 });
+//               }
+//             : null, // Disable onChanged if not clickable
+//       ),
+//     ),
+//   ],
+// ),
+
+
+//                     TextFormField(
+//                       initialValue: ParentDetmod?.fEmail ?? '',
+//                       decoration:  InputDecoration(
+//                         border: UnderlineInputBorder(),
+//                         labelText: 'Email id',
+//                       ),
+//                       onChanged: (String? newValue) {
+//                         setState(() {
+//                           if (newValue != null) {
+//                             ParentDetmod?.fEmail = newValue;
+//                           }
+//                         });
+//                       },
+//                     ),
+                     
+//                     TextFormField(
+//   controller: _dobController, // Add a TextEditingController
+//   decoration: const InputDecoration(
+//     border: UnderlineInputBorder(),
+//     labelText: 'Date of Birth',
+//   ),
+//   onTap: () async {
+//     // Hide the keyboard when the field is tapped
+//     FocusScope.of(context).requestFocus(FocusNode());
+    
+//     // Show the date picker
+//     DateTime? pickedDate = await showDatePicker(
+//       context: context,
+//       initialDate: DateTime.now(),
+//       firstDate: DateTime(1900),
+//       lastDate: DateTime.now(),
+//     );
+
+//     if (pickedDate != null) {
+//       // Format the date and update the controller text
+//       String formattedDate = "${pickedDate.toLocal()}".split(' ')[0]; // Date in YYYY-MM-DD format
+//       setState(() {
+//         _dobController.text = formattedDate; // Update the TextFormField with the selected date
+//       });
+
+//       // Optionally update the ParentDetmod model as well
+//       //ParentDetmod?.fDob = formattedDate;
+//     }
+//   },
+// ),
+
+                    
+//                     CustomTextField(
+//                       label: 'Mother Name',
+//                       name: 'Mother_Name',
+//                       readOnly: true,
+//                       initialValue: ParentDetmod?.motherName ?? '',
+//                     ),
+
+
+//                     TextFormField(
+//                       initialValue: ParentDetmod?.motherOccupation ?? '',
+//                       decoration: const InputDecoration(
+//                         border: UnderlineInputBorder(),
+//                         labelText: 'Occupation',
+//                       ),
+//                       onChanged: (String? newValue) {
+//                         setState(() {
+//                           if (newValue != null) {
+//                             ParentDetmod?.motherOccupation = newValue;
+//                           }
+//                         });
+//                       },
+//                     ),
+//                     TextFormField(
+//                       initialValue: ParentDetmod?.mOfficeAdd ?? '',
+//                       decoration: const InputDecoration(
+//                         border: UnderlineInputBorder(),
+//                         labelText: 'Office Address',
+//                       ),
+//                       onChanged: (String? newValue) {
+//                         setState(() {
+//                           if (newValue != null) {
+//                             ParentDetmod?.mOfficeAdd = newValue;
+//                           }
+//                         });
+//                       },
+//                     ),
+//                     TextFormField(
+//                       initialValue: ParentDetmod?.parentAdharNo ?? '',
+//                       decoration: const InputDecoration(
+//                         border: UnderlineInputBorder(),
+//                         labelText: 'Mother Adhar Card no.',
+//                       ),
+//                       keyboardType: TextInputType.number,
+//                       onChanged: (String? newValue) {
+//                         setState(() {
+//                           if (newValue != null) {
+//                             ParentDetmod?.parentAdharNo = newValue;
+//                           }
+//                         });
+//                       },
+//                     ),
+//                     // Blood Group 
+//                     DropdownButtonFormField(
+//   decoration: InputDecoration(
+//     border: UnderlineInputBorder(),
+//     labelText: 'Blood Group',
+//     labelStyle: TextStyle(color: Colors.black), // Ensures the label is black
+//   ),
+//   items: ['O', 'A', 'B']
+//       .map((String value) {
+//     return DropdownMenuItem(
+//       value: value,
+//       child: Text(
+//         value,
+//         style: TextStyle(color: Colors.black), // Ensures dropdown item text is black
+//       ),
+//     );
+//   }).toList(),
+//   onChanged: (String? newValue) {
+//     // Handle the selected value here
+//   },
+// ),
+//                     TextFormField(
+//                       initialValue: ParentDetmod?.mOfficeTel ?? '',
+//                       decoration: const InputDecoration(
+//                         border: UnderlineInputBorder(),
+//                         labelText: 'Telephone',
+//                       ),
+//                       keyboardType: TextInputType.number,
+//                       onChanged: (String? newValue) {
+//                         setState(() {
+//                           if (newValue != null) {
+//                             ParentDetmod?.mOfficeTel = newValue;
+//                           }
+//                         });
+//                       },
+//                     ),
+//                     TextFormField(
+//                       initialValue: ParentDetmod?.mMobile ?? '',
+//                       decoration: const InputDecoration(
+//                         border: UnderlineInputBorder(),
+//                         labelText: 'Mobile Number',
+//                       ),
+//                       keyboardType: TextInputType.number,
+//                       onChanged: (String? newValue) {
+//                         setState(() {
+//                           if (newValue != null) {
+//                             ParentDetmod?.mMobile = newValue;
+//                           }
+//                         });
+//                       },
+//                     ),
+
+//                    Row(
+//   crossAxisAlignment: CrossAxisAlignment.center, // Align vertically to the center
+//   children: [
+//     Text(
+//       'Set to receive SMS at this no:',
+//       style: TextStyle(fontSize: 14),
+//     ),
+//     SizedBox(width: 5), // Reduced spacing between the label and radio
+//     Radio<String>(
+//       value: 'Set to receive sms at this no',
+//       groupValue: _selectedOption,
+//       onChanged: (String? value) {
+//         setState(() {
+//           if (_selectedOption == value) {
+//             // If the same option is selected, uncheck it
+//             _selectedOption = null;
+//           } else {
+//             // Otherwise, check the radio button
+//             _selectedOption = value;
+//           }
+//         });
+//       },
+//     ),
+//   ],
+// ),
+
+// TextFormField(
+//   initialValue: ParentDetmod?.mEmailid ?? '',
+//   decoration: InputDecoration(
+//     border: UnderlineInputBorder(),
+//     labelText: 'Email id',
+//     // Optional: Adjust contentPadding if needed
+//     contentPadding: EdgeInsets.symmetric(vertical: 0),
+//   ),
+//   onChanged: (String? newValue) {
+//     setState(() {
+//       if (newValue != null) {
+//         ParentDetmod?.mEmailid = newValue;
+//       }
+//     });
+//   },
+// ),
+//  TextFormField(
+//                       //initialValue: ParentDetmod?.motherOccupation ?? '',
+//                       decoration: const InputDecoration(
+//                         border: UnderlineInputBorder(),
+//                         labelText: 'Date of Birth',
+//                       ),
+//                        //keyboardType: TextInputType.number,
+//                       onChanged: (String? newValue) {
+//                         setState(() {
+//                           if (newValue != null) {
+//                             ParentDetmod?.motherOccupation = newValue;
+//                           }
+//                         }
+//                         );
+//                       },
+//                     ),
+
                     SizedBox(
                       height: 10.h,
                     ),
@@ -495,6 +966,8 @@ class _ParentProfilePage extends State<ParentProfilePage> {
         ),
       ),
     );
+  
+  
   }
 }
 

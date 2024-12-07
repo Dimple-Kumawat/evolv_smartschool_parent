@@ -54,7 +54,11 @@ class LabeledDropdown extends StatelessWidget {
                       value: value,
                       child: Text(
                         value,
-                        style: const TextStyle(fontSize: 16.0),
+                        style: const TextStyle(
+          fontSize: 16.0,
+          fontWeight: FontWeight.normal, // Ensure text is not bold
+          color: Colors.black, // Set color explicitly if needed
+        ),
                       ),
                     );
                   }).toList(),

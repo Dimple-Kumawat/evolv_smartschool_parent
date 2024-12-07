@@ -78,6 +78,7 @@ dependencies:
   in_app_update: ^4.2.3
   text_3d: ^0.0.4
   marquee: ^2.2.3
+  flutter_datetime_picker: ^1.5.1
   
   
  
