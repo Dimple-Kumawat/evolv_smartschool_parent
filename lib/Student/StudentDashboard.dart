@@ -794,7 +794,7 @@ class _StudentActivityPageState extends State<StudentActivityPage> {
                   ),
                 ),
                 Positioned(
-                  top: 80,
+                  top: 110,
                   left: 0,
                   right: 0,
                   bottom: 0,

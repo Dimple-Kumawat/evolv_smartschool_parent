@@ -235,7 +235,7 @@ class _ResultChartState extends State<ResultChart> {
       backgroundColor: Colors.transparent,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        toolbarHeight: 80.h,
+        toolbarHeight: 50.h,
         title: Text(
           "Result Chart",
           style: TextStyle(fontSize: 20.sp, color: Colors.white),

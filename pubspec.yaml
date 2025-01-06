@@ -31,22 +31,22 @@ dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.8
-  http: ^1.2.1
+  #http: ^1.2.1
   form_field_validator: ^1.1.0
 
-  toast: ^0.3.0
+  #toast: ^0.3.0
   shared_preferences: ^2.2.3
   intl: ^0.19.0
   fluttertoast: ^8.2.5
-  flutter_riverpod: ^2.5.1
+  #flutter_riverpod: ^2.5.1
   riverpod_annotation: ^2.3.5
   provider: ^6.1.2
   device_info: ^2.0.3
 
-  firebase_core: ^3.8.0
-  firebase_auth: ^5.3.3
-  cloud_firestore: ^5.5.0
-  firebase_messaging: ^15.1.5
+  #firebase_core: ^3.8.0
+  #firebase_auth: ^5.3.3
+  #cloud_firestore: ^5.5.0
+  #firebase_messaging: ^15.1.5
   
   flutter_screenutil: ^5.9.0
   flutter_form_builder: ^9.2.1
@@ -67,16 +67,16 @@ dependencies:
   webview_flutter: ^4.8.0
 
   cached_network_image: ^3.2.2
-  downloads_path_provider_28: ^0.1.2
-  crypto: ^3.0.0
+  #downloads_path_provider_28: ^0.1.2
+  #crypto: ^3.0.0
 
   flutter_local_notifications: ^18.0.0
   share_plus: ^10.1.2
   fl_chart: ^0.69.0
   package_info_plus: ^8.1.1
 
-  in_app_update: ^4.2.3
-  text_3d: ^0.0.4
+  #in_app_update: ^4.2.3
+  #text_3d: ^0.0.4
   marquee: ^2.2.3
   flutter_datetime_picker: ^1.5.1
   
@@ -126,3 +126,4 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+ 

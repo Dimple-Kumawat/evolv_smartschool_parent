@@ -132,7 +132,7 @@ class _HomeWorkNotePage extends State<HomeWorkNotePage> {
           ),
           child: Column(
             children: [
-              SizedBox(height: 80.h),
+              SizedBox(height: 100.h),
               Text(
                 "Student HomeWork",
                 style: TextStyle(

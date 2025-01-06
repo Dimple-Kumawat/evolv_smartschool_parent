@@ -192,7 +192,7 @@ class _TimeTablePageState extends State<TimeTablePage> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              SizedBox(height: 100.h),
+              SizedBox(height: 125.h),
               Card(
                 margin: EdgeInsets.symmetric(vertical: 5.0, horizontal: 12.0),
                 shape: RoundedRectangleBorder(

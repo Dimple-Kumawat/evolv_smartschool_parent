@@ -23,7 +23,7 @@ class PaymentWebview extends StatefulWidget {
   final String academicYr;
   final int receipt_button;
 
-  const PaymentWebview({super.key, 
+  PaymentWebview({
     required this.regId,
     required this.paymentUrlShare,
     required this.receiptUrl,
@@ -102,7 +102,7 @@ class _PaymentWebviewState extends State<PaymentWebview> {
       backgroundColor: Colors.transparent,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        toolbarHeight: 80.h,
+        toolbarHeight: 40.h,
         title: Text(
           'Fees Payment',
           style: TextStyle(fontSize: 20.sp, color: Colors.white),
@@ -151,7 +151,7 @@ class _PaymentWebviewState extends State<PaymentWebview> {
               // Navigator.pop(context);
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => ReceiptWebViewScreen(receiptUrl: '${widget.receiptUrl}?reg_id=${widget.regId}&academic_yr=${widget.academicYr}&short_name=${widget.shortName}',)),
+                MaterialPageRoute(builder: (_) => ReceiptWebViewScreen(receiptUrl: widget.receiptUrl +'?reg_id=${widget.regId}&academic_yr=${widget.academicYr}&short_name=${widget.shortName}',)),
               );
             },
             child: Padding(

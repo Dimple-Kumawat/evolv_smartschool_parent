@@ -1,6 +1,6 @@
 import 'package:evolvu/login.dart';
 import 'package:evolvu/username_page.dart';
-import 'package:firebase_core/firebase_core.dart';
+//import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -14,18 +14,18 @@ final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterL
 void main() async {
 
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    // paste the code copied
-    // from Firebase SDK below.
-      options: const FirebaseOptions(
-          apiKey: "AIzaSyC3BF5vWaxhD8YZBLNzkve5HWqNW5ZtQjg",
-          authDomain: "flutterparentapp.firebaseapp.com",
-          projectId: "flutterparentapp",
-          storageBucket: "flutterparentapp.appspot.com",
-          messagingSenderId: "997012539911",
-          appId: "1:997012539911:web:24d67a0087ff2034cef8a2",
-          measurementId: "G-3GX4YEY542")
-  );
+  // await Firebase.initializeApp(
+  //   // paste the code copied
+  //   // from Firebase SDK below.
+  //     options: const FirebaseOptions(
+  //         apiKey: "AIzaSyC3BF5vWaxhD8YZBLNzkve5HWqNW5ZtQjg",
+  //         authDomain: "flutterparentapp.firebaseapp.com",
+  //         projectId: "flutterparentapp",
+  //         storageBucket: "flutterparentapp.appspot.com",
+  //         messagingSenderId: "997012539911",
+  //         appId: "1:997012539911:web:24d67a0087ff2034cef8a2",
+  //         measurementId: "G-3GX4YEY542")
+  // );
 
   runApp(MyApp());
 
@@ -55,22 +55,18 @@ class MyApp extends StatelessWidget {
       minTextAdapt: true,
       splitScreenMode: true,
       builder: (context, child) {
-        return MediaQuery(
-          data: MediaQuery.of(context)
-              .copyWith(textScaler: TextScaler.linear(1.0)),
-          child: MaterialApp(
-            debugShowCheckedModeBanner: false,
-            onGenerateRoute: RouterConfigs.onGenerateRoutes,
-            home: Container(
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Colors.pink, Colors.blue],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                ),
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          onGenerateRoute: RouterConfigs.onGenerateRoutes,
+          home: Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Colors.pink, Colors.blue],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
               ),
-              child: UserNamePage(),
             ),
+            child: UserNamePage(),
           ),
         );
       },

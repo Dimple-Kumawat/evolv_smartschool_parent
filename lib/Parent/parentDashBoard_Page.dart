@@ -5,6 +5,7 @@ import 'package:evolvu/calender_Page.dart';
 import 'package:evolvu/common/drawerAppBar.dart';
 import 'package:evolvu/Parent/parentProfile_Page.dart';
 import 'package:evolvu/Student/student_card.dart';
+import 'package:evolvu/drawer.dart';
 import 'package:evolvu/username_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -363,7 +364,7 @@ class _ParentDashBoardPageState extends State<ParentDashBoardPage> {
           _buildNavItem(icon: Icons.dashboard, label: 'Dashboard', index: 0),
           _buildNavItem(icon: Icons.calendar_month, label: 'Events', index: 1),
           _buildCenterNavItem(icon: Icons.currency_rupee_sharp, index: 2), // Center icon
-          _buildNavItem(icon: Icons.person, label: 'Profile', index: 3),
+         _buildNavItem(icon: Icons.person, label: 'Profile', index: 3),
           _buildNavItem(icon: Icons.qr_code, label: 'QR', index: 4),
         ],
       ),
@@ -508,7 +509,7 @@ class CustomPopup extends StatelessWidget {
         onTap: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (_) => ParentProfilePage()),
+            MaterialPageRoute(builder: (_) => DrawerParentProfilePage()),
           );
         },
       ),
