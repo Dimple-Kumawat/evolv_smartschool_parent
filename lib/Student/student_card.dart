@@ -482,6 +482,7 @@ class _StudentCardState extends State<StudentCard> {
                       _buildImportantLinksWidget(),
 
                       SizedBox(height: 4),
+                      if (EvolvUData.isNotEmpty)
                       _buildEvolvuUpdatesWidget(),
                     ],
                   ),
@@ -1884,6 +1885,7 @@ class _StudentCardItemState extends State<StudentCardItem> {
                               ),
                       ),
                       SizedBox(height: 4.h),
+                      if(attendance.isNotEmpty)
                       Text(
                         '$attendance%',
                         style: TextStyle(
@@ -1924,8 +1926,12 @@ class _StudentCardItemState extends State<StudentCardItem> {
 
   String trimTeacherName(String name) {
     List<String> parts = name.split(' ');
+    List<String> len = name.split('');
     if (parts.length > 2) {
       return '${parts[0]} ${parts[1]}'; // Return the first two parts
+    }
+    if (len.length > 15) {
+      return '${parts[0]}'; // Return the first two parts
     }
     return name; // If there's no second space, return the original name
   }

@@ -23,7 +23,7 @@ class PaymentWebview extends StatefulWidget {
   final String academicYr;
   final int receipt_button;
 
-  PaymentWebview({
+  PaymentWebview({super.key,
     required this.regId,
     required this.paymentUrlShare,
     required this.receiptUrl,
@@ -102,7 +102,7 @@ class _PaymentWebviewState extends State<PaymentWebview> {
       backgroundColor: Colors.transparent,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        toolbarHeight: 40.h,
+        toolbarHeight: 80.h,
         title: Text(
           'Fees Payment',
           style: TextStyle(fontSize: 20.sp, color: Colors.white),

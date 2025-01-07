@@ -197,10 +197,88 @@ class _RemarkNotePage extends State<RemarkNotePage> {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return Center(child: CircularProgressIndicator());
                     } else if (snapshot.hasError) {
-                      return Center(child: Text('Error: ${snapshot.error}'));
-                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return Center(child: Text('No remarks assigned'));
-                    } else {
+                      return Center(
+                        child: Container(
+                          margin: const EdgeInsets.all(10),
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(16),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black26,
+                                blurRadius: 10,
+                                offset: Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              // Add emoji or animation here
+                              SizedBox(
+                                height: 150,
+                                width: 150,
+                                child: Image.asset(
+                                  'assets/animations/nodata.gif', // Replace with your emoji or animation file
+                                  fit: BoxFit.contain,
+                                ),
+                              ),
+                              SizedBox(height: 10), // Add spacing between emoji and text
+                              Text(
+                                'No Remarks Assigned',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.red,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          ),
+                        ),
+                      );                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      return Center(
+                        child: Container(
+                          margin: const EdgeInsets.all(10),
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(16),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black26,
+                                blurRadius: 10,
+                                offset: Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              // Add emoji or animation here
+                              SizedBox(
+                                height: 150,
+                                width: 150,
+                                child: Image.asset(
+                                  'assets/animations/nodata.gif', // Replace with your emoji or animation file
+                                  fit: BoxFit.contain,
+                                ),
+                              ),
+                              SizedBox(height: 10), // Add spacing between emoji and text
+                              Text(
+                                'No Remarks Assigned',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.red,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          ),
+                        ),
+                      );                    } else {
                       return ListView.builder(
                         padding: EdgeInsets.only(top: 10.h),
                         itemCount: snapshot.data!.length,

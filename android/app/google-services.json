@@ -2,7 +2,7 @@
   "project_info": {
     "project_number": "997012539911",
     "project_id": "flutterparentapp",
-    "storage_bucket": "flutterparentapp.appspot.com"
+    "storage_bucket": "flutterparentapp.firebasestorage.app"
   },
   "client": [
     {
@@ -26,9 +26,9 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:997012539911:android:93d989448635271acef8a2",
+        "mobilesdk_app_id": "1:997012539911:android:1f12d65720a91541cef8a2",
         "android_client_info": {
-          "package_name": "com.android.application"
+          "package_name": "com.ace.altu.flutter.parentapp.flutter_og"
         }
       },
       "oauth_client": [],

@@ -25,7 +25,7 @@ class StudentProfilePage extends StatelessWidget {
         extendBodyBehindAppBar: true,
         appBar: AppBar(
           // flexibleSpace:  Text(
-      
+
           //           "Student Profile",
           //           style: TextStyle(
           //             fontSize: 18.sp,
@@ -33,7 +33,7 @@ class StudentProfilePage extends StatelessWidget {
           //             color: Colors.white,
           //           ),
           //         ),
-          toolbarHeight: 50.h,
+          toolbarHeight: 80.h,
           title: Text(
             "$shortName EvolvU Smart Parent App($academic_yr)",
             style: TextStyle(fontSize: 14.sp, color: Colors.white),
@@ -55,7 +55,7 @@ class StudentProfilePage extends StatelessWidget {
               // mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 SizedBox(
-                  height: 50.h,
+                  height: 80.h,
                 ),
                 Text(
                   "Student Profile ",

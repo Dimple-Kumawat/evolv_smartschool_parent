@@ -19,3 +19,7 @@ flutter clean
 flutter pub get
 rm -rf ios/Pods ios/.symlinks ios/Flutter/Flutter.framework ios/Flutter/Flutter.podspec
 pod install --repo-update
+
+
+ export PATH="$PATH":"$HOME/.pub-cache/bin"
+ FCM Token: eX0myMufRt2ShLUKeQw-kb:APA91bF_mHj1e4jzG7ZYb-NLX_vai5q3fqh6trcDYwnlXEoBuaE8-XbiXByu5nMOAa1es0dbSTxjfDhSO7HVmD0OCvdgqzlR7fu2lgKvog1numoG_5MqfZw

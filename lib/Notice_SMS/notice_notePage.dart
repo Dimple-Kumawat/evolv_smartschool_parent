@@ -148,7 +148,7 @@ class _NoticeNotePageState extends State<NoticeNotePage> {
         backgroundColor: Colors.transparent,
         extendBodyBehindAppBar: true,
         appBar: AppBar(
-          toolbarHeight: 50.h,
+          toolbarHeight: 100.h,
           title: Text(
             "${widget.shortName} EvolvU Smart Parent App(${widget.academic_yr})",
             style: TextStyle(fontSize: 14.sp, color: Colors.white),
@@ -172,14 +172,94 @@ class _NoticeNotePageState extends State<NoticeNotePage> {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return Center(child: CircularProgressIndicator());
               } else if (snapshot.hasError) {
-                return Center(child: Text('Error: ${snapshot.error}'));
+                return Center(
+                  child: Container(
+                    margin: const EdgeInsets.all(10),
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black26,
+                          blurRadius: 10,
+                          offset: Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // Add emoji or animation here
+                        SizedBox(
+                          height: 150,
+                          width: 150,
+                          child: Image.asset(
+                            'assets/animations/nodata.gif', // Replace with your emoji or animation file
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                        SizedBox(height: 10), // Add spacing between emoji and text
+                        Text(
+                          'No Notice & SMS Found',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.red,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  ),
+                );
               } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                return Center(child: Text('No Notice & SMS'));
+                return Center(
+                  child: Container(
+                    margin: const EdgeInsets.all(10),
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black26,
+                          blurRadius: 10,
+                          offset: Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // Add emoji or animation here
+                        SizedBox(
+                          height: 150,
+                          width: 150,
+                          child: Image.asset(
+                            'assets/animations/nodata.gif', // Replace with your emoji or animation file
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                        SizedBox(height: 10), // Add spacing between emoji and text
+                        Text(
+                          'No Notice & SMS Found',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.red,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  ),
+                );
               } else {
                 final groupedNotes = groupByDate(filteredNotices);
                 return Column(
                   children: [
-                    SizedBox(height: 100.h),
+                    SizedBox(height: 80.h),
                     Text(
                       "Notice/SMS",
                       style: TextStyle(

@@ -155,9 +155,9 @@ class _RemarkDetailPageState extends State<RemarkDetailPage> {
             leading: const Icon(Icons.file_download, size: 25),
             title: isFileNotUploaded
                 ? Text(
-                    '${attachment.imageName}\nFile is not uploaded properly',
-                    style: TextStyle(fontSize: 14.sp, color: Colors.red),
-                  )
+              '${attachment.imageName}\nFile is not uploaded properly',
+              style: TextStyle(fontSize: 14.sp, color: Colors.red),
+            )
                 : Text(attachment.imageName, style: TextStyle(fontSize: 14.sp)),
             subtitle: Text(
               '${(attachment.fileSize / 1024).toStringAsFixed(2)} KB',
@@ -169,17 +169,17 @@ class _RemarkDetailPageState extends State<RemarkDetailPage> {
       ],
     );
   }
-Future<bool> _checkAndRequestPermission() async {
-  if (Platform.isAndroid) {
-    final status = await Permission.storage.status;
-    if (status.isDenied) {
-      final result = await Permission.storage.request();
-      return result.isGranted;
+  Future<bool> _checkAndRequestPermission() async {
+    if (Platform.isAndroid) {
+      final status = await Permission.storage.status;
+      if (status.isDenied) {
+        final result = await Permission.storage.request();
+        return result.isGranted;
+      }
+      return status.isGranted;
     }
-    return status.isGranted;
+    return true; // iOS permissions are typically handled differently
   }
-  return true; // iOS permissions are typically handled differently
-}
 
   Future<void> _handleDownload(Attachment attachment) async {
     DateTime now = DateTime.now();
@@ -211,7 +211,7 @@ Future<bool> _checkAndRequestPermission() async {
 
   downloadFile(String url, BuildContext context, String name) async {
     var directory =
-        Directory("/storage/emulated/0/Download/Remarks");
+    Directory("/storage/emulated/0/Download/Remarks");
 
     if (!await directory.exists()) {
       await directory.create(recursive: true);
@@ -239,34 +239,34 @@ Future<bool> _checkAndRequestPermission() async {
     }
   }
 
-Future<void> _downloadFileIOS(String url, String fileName) async {
-  try {
-    // Get the application's Documents directory
-   final directory = await getApplicationSupportDirectory();
+  Future<void> _downloadFileIOS(String url, String fileName) async {
+    try {
+      // Get the application's Documents directory
+      final directory = await getApplicationSupportDirectory();
 
-    // Create a custom subdirectory within the Documents folder
-    final customDirectory = Directory('${directory.path}/Remarks');
-    if (!await customDirectory.exists()) {
-      await customDirectory.create(recursive: true);
+      // Create a custom subdirectory within the Documents folder
+      final customDirectory = Directory('${directory.path}/Remarks');
+      if (!await customDirectory.exists()) {
+        await customDirectory.create(recursive: true);
+      }
+
+      // Construct the full path for the downloaded file
+      final filePath = '${customDirectory.path}/$fileName';
+      final file = File(filePath);
+
+      // Fetch the file data from the URL
+      final response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        // Write the file to the custom directory
+        await file.writeAsBytes(response.bodyBytes);
+        _showSnackBar('File downloaded successfully. Find it in Remarks folder.');
+      } else {
+        _showSnackBar('Failed to download file: ${response.statusCode}');
+      }
+    } catch (e) {
+      _showSnackBar('Failed to download file: $e');
     }
-
-    // Construct the full path for the downloaded file
-    final filePath = '${customDirectory.path}/$fileName';
-    final file = File(filePath);
-
-    // Fetch the file data from the URL
-    final response = await http.get(Uri.parse(url));
-    if (response.statusCode == 200) {
-      // Write the file to the custom directory
-      await file.writeAsBytes(response.bodyBytes);
-      _showSnackBar('File downloaded successfully. Find it in Remarks folder.');
-    } else {
-      _showSnackBar('Failed to download file: ${response.statusCode}');
-    }
-  } catch (e) {
-    _showSnackBar('Failed to download file: $e');
   }
-}
 
 
 

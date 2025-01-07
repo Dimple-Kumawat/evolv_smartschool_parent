@@ -5,7 +5,6 @@ import 'package:evolvu/calender_Page.dart';
 import 'package:evolvu/common/drawerAppBar.dart';
 import 'package:evolvu/Parent/parentProfile_Page.dart';
 import 'package:evolvu/Student/student_card.dart';
-import 'package:evolvu/drawer.dart';
 import 'package:evolvu/username_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -15,11 +14,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import '../QR/QR_Code.dart';
 import '../Utils&Config/api.dart';
 import '../WebViewScreens/FeesReceiptWebViewScreen.dart';
 import '../WebViewScreens/OnlineFeesPayment.dart';
 import '../aboutUs.dart';
 import '../changePasswordPage.dart';
+import 'DrawerParentProfile.dart';
 
 class ParentDashBoardPage extends StatefulWidget {
   final String academic_yr;
@@ -213,28 +214,7 @@ class _ParentDashBoardPageState extends State<ParentDashBoardPage> {
       ParentProfilePage(),
     ];
 
-    return WillPopScope(
-      onWillPop: () async {
-        return (await showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: const Text('Are you sure?'),
-            content: const Text('Do you want to exit the app?'),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(false),
-                child: const Text('No'),
-              ),
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(true),
-                child: const Text('Yes'),
-              ),
-            ],
-          ),
-        )) ??
-            false;
-      },
-      child: Scaffold(
+    return Scaffold(
         backgroundColor: Colors.blue,
         appBar: AppBar(
           title: Text(
@@ -275,7 +255,6 @@ class _ParentDashBoardPageState extends State<ParentDashBoardPage> {
           ],
         ),
         bottomNavigationBar: buildMyNavBar(),
-      ),
     );
   }
 
@@ -364,18 +343,30 @@ class _ParentDashBoardPageState extends State<ParentDashBoardPage> {
           _buildNavItem(icon: Icons.dashboard, label: 'Dashboard', index: 0),
           _buildNavItem(icon: Icons.calendar_month, label: 'Events', index: 1),
           _buildCenterNavItem(icon: Icons.currency_rupee_sharp, index: 2), // Center icon
-         _buildNavItem(icon: Icons.person, label: 'Profile', index: 3),
+          _buildNavItem(icon: Icons.person, label: 'Profile', index: 3),
           _buildNavItem(icon: Icons.qr_code, label: 'QR', index: 4),
         ],
       ),
     );
   }
 
+
   Widget _buildNavItem({required IconData icon, required String label, required int index}) {
     bool isSelected = pageIndex == index;
 
     return GestureDetector(
-      onTap: () => setState(() => pageIndex = index),
+      onTap: () {
+        if (index == 4) {
+          // Navigate to the QR Code screen without modifying pageIndex
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => QRCodeScreen(regId: reg_id)),
+          );
+        } else {
+          // Change pageIndex for BottomNavigationBar screens
+          setState(() => pageIndex = index);
+        }
+      },
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -393,6 +384,8 @@ class _ParentDashBoardPageState extends State<ParentDashBoardPage> {
       ),
     );
   }
+
+
 
   Widget _buildCenterNavItem({required IconData icon, required int index}) {
     bool isSelected = pageIndex == index;

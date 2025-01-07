@@ -19,6 +19,7 @@ import '../Attendance/circleAttendance.dart';
 import '../ExamTimeTable/examTimeTable.dart';
 import '../ExamTimeTable/timeTable.dart';
 import '../Notice_SMS/notice_notePage.dart';
+import '../QR/QR_Code.dart';
 import '../ResultChart.dart';
 import '../WebViewScreens/OnlineFeesPayment.dart';
 import '../WebViewScreens/SmartChat_WebView.dart';
@@ -1062,39 +1063,43 @@ Container buildMyNavBar(BuildContext context) {
       children: [
         _buildNavItem(icon: Icons.dashboard, label: 'Dashboard', index: 0),
         _buildNavItem(icon: Icons.calendar_month, label: 'Calendar', index: 1),
-        _buildNavItem(icon: Icons.person, label: 'Profile',index: 2), // Center icon for Profile
-        _buildNavItem(icon: Icons.qr_code, label: 'QR', index: 3),
+        _buildNavItem(icon: Icons.person, label: 'Profile',index: 3), // Center icon for Profile
+        _buildNavItem(icon: Icons.qr_code, label: 'QR', index: 4),
       ],
     ),
   );
 }
 
 Widget _buildNavItem({required IconData icon, required String label, required int index}) {
-  bool isSelected = false; // Adjust logic if you need to handle selection
+    bool isSelected = pageIndex == index;
 
-  return GestureDetector(
-    onTap: () {
-      Navigator.of(context).pop(index); // Assuming this handles navigation
-    },
-    child: Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(
-          icon,
-          color: isSelected ? Colors.blue.shade400 : Colors.grey,
-          size: 26,
-        ),
-        SizedBox(height: 4),
-        Text(
-          label,
-          style: TextStyle(
-            color: isSelected ? Colors.blue.shade400 : Colors.grey,
-            fontSize: 10.sp,
-            fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+    return GestureDetector(
+      onTap: () {
+        if (index == 4) {
+          // Navigate to the QR Code screen without modifying pageIndex
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => QRCodeScreen(regId: reg_id)),
+          );
+        } else {
+          Navigator.of(context).pop(index);
+        }
+      },
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, color: isSelected ? Colors.blue.shade400 : Colors.grey, size: 26),
+          SizedBox(height: 4),
+          Text(
+            label,
+            style: TextStyle(
+              color: isSelected ? Colors.blue.shade400 : Colors.grey,
+              fontSize: 10.sp,
+              fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+            ),
           ),
-        ),
-      ],
-    ),
-  );
-}
+        ],
+      ),
+    );
+  }
 }

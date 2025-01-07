@@ -20,7 +20,7 @@ class _CalendarPageState extends State<CalendarPage> {
     return WillPopScope(
       onWillPop: () async {
         _showExitConfirmation(_context);
-        return true;
+        return false;
       },
       child: Container(
         color: Colors.white,
@@ -29,9 +29,9 @@ class _CalendarPageState extends State<CalendarPage> {
           lastDay: DateTime.utc(2030, 12, 31),
           focusedDay: DateTime.now(),
           headerStyle: HeaderStyle(
-    formatButtonVisible: false, // Hides the "2 weeks" button
-    titleCentered: true, // Optional: Center the month and year title
-  ),
+            formatButtonVisible: false, // Hides the "2 weeks" button
+            titleCentered: true, // Optional: Center the month and year title
+          ),
         ),
       ),
     );
