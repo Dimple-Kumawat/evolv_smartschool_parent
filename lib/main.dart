@@ -1,4 +1,3 @@
-import 'package:evolvu/firebase_options.dart';
 import 'package:evolvu/login.dart';
 import 'package:evolvu/username_page.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -10,37 +9,25 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'Magpie.dart';
 import 'Utils&Config/all_routs.dart';
 
+
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized(); // Ensures Flutter bindings are initialized
 
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize Firebase
   try {
-    // Initialize Firebase
-   await Firebase.initializeApp(
-   options: DefaultFirebaseOptions.currentPlatform
-);
+    await Firebase.initializeApp();
     debugPrint("Firebase initialized successfully");
+  } on FirebaseException catch (e) {
+    debugPrint("Firebase initialization failed: ${e.message}");
   } catch (e) {
-    debugPrint("Firebase initialization failed: $e");
+    debugPrint("Firebase initialization failed: $e"); // Log the entire error for further debugging
   }
 
-  // Initialize local notifications
-  await initLocalNotifications();
-
-  runApp(const MyApp());
+  runApp(MyApp());
 }
-
-Future<void> initLocalNotifications() async {
-  const AndroidInitializationSettings initializationSettingsAndroid =
-  AndroidInitializationSettings('@mipmap/ic_launcher');
-
-  const InitializationSettings initializationSettings =
-  InitializationSettings(android: initializationSettingsAndroid);
-
-  await flutterLocalNotificationsPlugin.initialize(initializationSettings);
-}
-
 
 
 class MyApp extends StatelessWidget {

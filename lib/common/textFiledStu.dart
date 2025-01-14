@@ -7,6 +7,7 @@ class StuTextField extends StatelessWidget {
   final bool readOnly;
   final String? initialValue;
   final ValueChanged<String>? onChanged;
+  final bool showRedAsterisk; // New parameter to control red asterisk
 
   const StuTextField({
     Key? key,
@@ -15,6 +16,7 @@ class StuTextField extends StatelessWidget {
     this.readOnly = false,
     this.onChanged,
     required this.label,
+    this.showRedAsterisk = false, // Default value is false
   }) : super(key: key);
 
   @override
@@ -24,15 +26,30 @@ class StuTextField extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // Label
+          // Label with optional red asterisk
           SizedBox(
             width: 100, // Adjust the width to align labels and fields properly
-            child: Text(
-              label,
-              style: const TextStyle(
-                fontWeight: FontWeight.w600,
-                fontSize: 14.0,
-                color: Colors.black,
+            child: RichText(
+              text: TextSpan(
+                children: [
+                  if (showRedAsterisk)
+                    const TextSpan(
+                      text: '* ',
+                      style: TextStyle(
+                        
+                        color: Colors.red,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  TextSpan(
+                    text: label,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14.0,
+                      color: Colors.black,
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -71,6 +88,7 @@ class StuTextField extends StatelessWidget {
               style: const TextStyle(
                 fontSize: 14.0, // Input text size
               ),
+             
             ),
           ),
         ],

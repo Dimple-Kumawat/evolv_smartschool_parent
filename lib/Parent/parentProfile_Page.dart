@@ -1,6 +1,8 @@
 import 'dart:convert';
 
+import 'package:evolvu/Parent/father_birthday.dart';
 import 'package:evolvu/common/Common_dropDownFiled.dart';
+import 'package:evolvu/common/birthdayTextFiled.dart';
 import 'package:evolvu/common/common_textFiled.dart';
 import 'package:evolvu/Parent/parentDashBoard_Page.dart';
 import 'package:evolvu/common/textFiledStu.dart';
@@ -18,8 +20,10 @@ import '../common/StuEditTextField.dart';
 import '../main.dart';
 import 'package:http/http.dart' as http;
 
+//TextEditingController _dobController = TextEditingController();
+  TextEditingController _fatherDobController = TextEditingController();
+   TextEditingController _motherDobController = TextEditingController()  ;
 
-TextEditingController _dobController = TextEditingController();
 bool _isClickable =
     true; // This variable controls if the radio is clickable or not
 
@@ -130,6 +134,8 @@ class ParentProfilePage extends StatefulWidget {
 }
 
 class _ParentProfilePage extends State<ParentProfilePage> {
+  String selectedDatee = "";
+
   String shortName = "";
   String academic_yrstr = "";
   String reg_idstr = "";
@@ -195,7 +201,7 @@ class _ParentProfilePage extends State<ParentProfilePage> {
     print('ParentResponse status code: ${response.statusCode}');
     print('ParentResponse body: ${response.body}');
     if (response.statusCode == 200) {
-      print('Response ````````11111111111````````');
+      print('Response ``11111111111``');
 
       // Assuming 'response' contains the API response
       List<dynamic> ParentResponse = json.decode(response.body);
@@ -282,6 +288,12 @@ class _ParentProfilePage extends State<ParentProfilePage> {
   void initState() {
     super.initState();
     _getSchoolInfo();
+   _fatherDobController = TextEditingController(
+      text: ParentDetmod?.fDob ?? '', // Father's initial DOB
+    );
+    _motherDobController = TextEditingController(
+      text: ParentDetmod?.mDob ?? '', // Mother's initial DOB
+    );
   }
 
   @override
@@ -314,6 +326,7 @@ class _ParentProfilePage extends State<ParentProfilePage> {
                           StuTextField(
                             label: 'Father Name',
                             name: 'Father Name',
+                            showRedAsterisk: true,
                             readOnly: true,
                             // isRequired: true,
                             // isRequired: true,
@@ -323,6 +336,8 @@ class _ParentProfilePage extends State<ParentProfilePage> {
                             labelText: 'Occupation',
                             initialValue: ParentDetmod?.fatherOccupation ?? '',
                             keyboardType: TextInputType.name,
+                            isRequired: true,
+                            
                             onChanged: (value) {
                               setState(() {
                                 ParentDetmod?.fatherOccupation = value;
@@ -331,6 +346,7 @@ class _ParentProfilePage extends State<ParentProfilePage> {
                           ),
                           StuEditTextField(
                             labelText: 'Office Address',
+                            isRequired: true,
                             initialValue: ParentDetmod?.fOfficeAdd ?? '',
                             keyboardType: TextInputType.name,
                             onChanged: (value) {
@@ -343,6 +359,7 @@ class _ParentProfilePage extends State<ParentProfilePage> {
                             labelText: 'Father Adhar Card no.',
                             initialValue: ParentDetmod?.parentAdharNo ?? '',
                             keyboardType: TextInputType.number,
+                            isRequired: true,
                             onChanged: (value) {
                               setState(() {
                                 ParentDetmod?.parentAdharNo = value;
@@ -362,8 +379,6 @@ class _ParentProfilePage extends State<ParentProfilePage> {
                               'O+',
                               'O-'
                             ],
-
-                            // selectedValue:setGender(ParentDetmod!.parentAdharNo),
                             onChanged: (String? newValue) {
                               setState(() {
                                 if (newValue != null) {
@@ -384,90 +399,11 @@ class _ParentProfilePage extends State<ParentProfilePage> {
                             },
                           ),
 
-                          // Column(
-                          //   children: [
-                          //     StuEditTextField(
-                          //       labelText: 'Mobile Number',
-                          //       initialValue: ParentDetmod?.fMobile ?? '',
-                          //       keyboardType: TextInputType.number,
-                          //       onChanged: (value) {
-                          //         setState(() {
-                          //           ParentDetmod?.fMobile = value;
-                          //         });
-                          //       },
-                          //     ),
-                          //     ListTile(
-                          //       title: Row(
-                          //         children: [
-                          //           Padding(
-                          //             padding: const EdgeInsets.only(left: 40),
-                          //             child: Checkbox(
-                          //               value: f_selectedOption == 'Set to receive SMS at this no.',
-                          //               onChanged: (bool? isChecked) async {
-                          //                 setState(() {
-                          //                   if (isChecked == true) {
-                          //                     f_selectedOption = 'Set to receive SMS at this no.';
-                          //                   } else {
-                          //                     f_selectedOption = null;
-                          //                   }
-                          //                 });
-                          //
-                          //                 if (isChecked == true) {
-                          //                   // Trigger the API call
-                          //                   final mobileNumber = ParentDetmod?.fMobile ?? '';
-                          //                   final shortname = shortName; // Replace with the actual shortname
-                          //                   if (mobileNumber.isNotEmpty && mobileNumber.length >= 10) {
-                          //                     await updateContactDetails(mobileNumber, shortname);
-                          //                   } else {
-                          //                     ScaffoldMessenger.of(context).showSnackBar(
-                          //                       SnackBar(
-                          //                         content: Text('Mobile number is empty or invalid. Cannot update contact details.'),
-                          //                       ),
-                          //                     );
-                          //                   }
-                          //                 }
-                          //               },
-                          //             ),
-                          //           ),
-                          //           Text(
-                          //             'Set to receive SMS at this no.',
-                          //             style: const TextStyle(fontSize: 12),
-                          //           ),
-                          //         ],
-                          //       ),
-                          //       onTap: () {
-                          //         // Allow tapping the ListTile to toggle the checkbox
-                          //         setState(() {
-                          //           if (f_selectedOption == 'Set to receive SMS at this no.') {
-                          //             f_selectedOption = null;
-                          //           } else {
-                          //             f_selectedOption = 'Set to receive SMS at this no.';
-                          //           }
-                          //         });
-                          //
-                          //         // Validate and handle API call
-                          //         if (f_selectedOption == 'Set to receive SMS at this no.') {
-                          //           final mobileNumber = ParentDetmod?.fMobile ?? '';
-                          //           final shortname = shortName; // Replace with the actual shortname
-                          //           if (mobileNumber.isNotEmpty && mobileNumber.length >= 10) {
-                          //             updateContactDetails(mobileNumber, shortname);
-                          //           } else {
-                          //             ScaffoldMessenger.of(context).showSnackBar(
-                          //               SnackBar(
-                          //                 content: Text('Mobile number is empty or invalid. Cannot update contact details.'),
-                          //               ),
-                          //             );
-                          //           }
-                          //         }
-                          //       },
-                          //     ),
-                          //   ],
-                          // ),
-
                           StuEditTextField(
                             labelText: 'Email id',
                             initialValue: ParentDetmod?.fEmail ?? '',
                             keyboardType: TextInputType.name,
+                            isRequired: true,
                             onChanged: (value) {
                               setState(() {
                                 ParentDetmod?.fEmail = value;
@@ -475,39 +411,43 @@ class _ParentProfilePage extends State<ParentProfilePage> {
                             },
                           ),
 
-                          StuEditTextField(
-                            labelText: 'Date of Birth',
-                            initialValue: ParentDetmod?.fDob ?? '',
-                            readOnly:
-                                false, // Make the field read-only to prevent manual input
-                            onTap: () async {
-                              // Open the date picker dialog
-                              DateTime? selectedDate = await showDatePicker(
-                                context: context,
-                                initialDate:
-                                    DateTime.now(), // Default date shown
-                                firstDate:
-                                    DateTime(1900), // Earliest selectable date
-                                lastDate:
-                                    DateTime.now(), // Latest selectable date
-                              );
+                        BirthdatTextField(
+  labelText: 'Date of Birth',
+  controller: _fatherDobController,
+  onTap: () async {
+    // Open the date picker dialog
+    DateTime? selectedDate = await showDatePicker(
+      context: context,
+      initialDate: _fatherDobController.text.isNotEmpty
+          ? DateTime.tryParse(_fatherDobController.text) ?? DateTime.now()
+          : DateTime.now(),
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+    );
 
-                              if (selectedDate != null) {
-                                setState(() {
-                                  // Format the selected date as dd-MM-yyyy and update the field
-                                  ParentDetmod?.fDob = DateFormat('dd-MM-yyyy')
-                                      .format(selectedDate);
-                                });
-                              }
-                            },
-                            onChanged: (value) {
-                              // No need for this since we handle the value in onTap
-                            },
-                          ),
+    if (selectedDate != null) {
+      setState(() {
+        // Format the date with leading zeros for day and month
+        String formattedDay = selectedDate.day.toString().padLeft(2, '0');
+        String formattedMonth = selectedDate.month.toString().padLeft(2, '0');
+        String formattedYear = selectedDate.year.toString();
+
+        _fatherDobController.text =
+            "$formattedDay-$formattedMonth-$formattedYear";
+
+        // Update ParentDetmod
+        ParentDetmod?.fDob = "$formattedYear-$formattedMonth-$formattedDay";
+      });
+    }
+  },
+),
+
 
                           StuTextField(
                             label: 'Mother Name',
                             name: 'Mother Name',
+                            showRedAsterisk: true,
+                            
                             readOnly: true,
                             // isRequired: true,
                             // isRequired: true,
@@ -537,6 +477,7 @@ class _ParentProfilePage extends State<ParentProfilePage> {
                             labelText: 'Mother Adhar Card no.',
                             initialValue: ParentDetmod?.parentAdharNo ?? '',
                             keyboardType: TextInputType.number,
+                            isRequired: true,
                             onChanged: (value) {
                               setState(() {
                                 ParentDetmod?.parentAdharNo = value;
@@ -556,7 +497,6 @@ class _ParentProfilePage extends State<ParentProfilePage> {
                               'O+',
                               'O-'
                             ],
-
                             // selectedValue:setGender(ParentDetmod!.parentAdharNo),
                             onChanged: (String? newValue) {
                               setState(() {
@@ -582,66 +522,45 @@ class _ParentProfilePage extends State<ParentProfilePage> {
                             labelText: 'Email id',
                             initialValue: ParentDetmod?.fEmail ?? '',
                             keyboardType: TextInputType.name,
+                            isRequired: true,
                             onChanged: (value) {
                               setState(() {
                                 ParentDetmod?.fEmail = value;
                               });
                             },
                           ),
+                          
+                          BirthdatTextField(
+  labelText: 'Date of Birth',
+  controller: _motherDobController,
+  onTap: () async {
+    // Open the date picker dialog
+    DateTime? selectedDate = await showDatePicker(
+      context: context,
+      initialDate: _motherDobController.text.isNotEmpty
+          ? DateTime.tryParse(_motherDobController.text) ?? DateTime.now()
+          : DateTime.now(),
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+    );
 
-                          StuEditTextField(
-                            labelText: 'Date of Birth',
-                            initialValue: ParentDetmod?.mDob ?? '',
-                            //readOnly: true,
+    if (selectedDate != null) {
+      setState(() {
+        // Format the date with leading zeros for day and month
+        String formattedDay = selectedDate.day.toString().padLeft(2, '0');
+        String formattedMonth = selectedDate.month.toString().padLeft(2, '0');
+        String formattedYear = selectedDate.year.toString();
 
-                            onTap: () async {
-                              // Open the date picker dialog
-                              DateTime? selectedDate = await showDatePicker(
-                                context: context,
-                                initialDate:
-                                    DateTime.now(), // Default date shown
-                                firstDate:
-                                    DateTime(1900), // Earliest selectable date
-                                lastDate:
-                                    DateTime.now(), // Latest selectable date
-                              );
-                              if (selectedDate != null) {
-                                setState(() {
-                                  // Format the selected date and update the field
-                                  ParentDetmod?.mDob =
-                                      "${selectedDate.year}-${selectedDate.month}-${selectedDate.day}";
-                                });
-                              }
-                            },
-                            onChanged:
-                                (value) {}, // No need for this since we handle the value in onTap
-                          ),
-                          StuEditTextField(
-                            labelText: 'Father\'s Date of Birth',
-                            initialValue: ParentDetmod?.mDob ??
-                                '', // Assuming you are storing the father's DOB as 'fatherDob'
-                            onTap: () async {
-                              // Open the date picker dialog
-                              DateTime? selectedDate = await showDatePicker(
-                                context: context,
-                                initialDate:
-                                    DateTime.now(), // Default date shown
-                                firstDate:
-                                    DateTime(1900), // Earliest selectable date
-                                lastDate:
-                                    DateTime.now(), // Latest selectable date
-                              );
-                              if (selectedDate != null) {
-                                setState(() {
-                                  // Format the selected date and update the father's DOB
-                                  ParentDetmod?.mDob =
-                                      "${selectedDate.year}-${selectedDate.month}-${selectedDate.day}";
-                                });
-                              }
-                            },
-                            onChanged:
-                                (value) {}, // You can keep this empty if not using it
-                          ),
+        _motherDobController.text =
+            "$formattedDay-$formattedMonth-$formattedYear";
+
+        // Update ParentDetmod
+        ParentDetmod?.mDob = "$formattedYear-$formattedMonth-$formattedDay";
+      });
+    }
+  },
+),
+
 
                           SizedBox(height: 20),
                           Column(
@@ -679,6 +598,7 @@ class _ParentProfilePage extends State<ParentProfilePage> {
                                           labelText: 'Father\'s Number',
                                           initialValue:
                                               ParentDetmod?.fMobile ?? '',
+                                              isRequired: true,
                                           keyboardType: TextInputType.number,
                                           onChanged: (value) {
                                             setState(() {
@@ -731,6 +651,7 @@ class _ParentProfilePage extends State<ParentProfilePage> {
                                           labelText: 'Mother\'s Number',
                                           initialValue:
                                               ParentDetmod?.mMobile ?? '',
+                                              isRequired: true,
                                           keyboardType: TextInputType.number,
                                           onChanged: (value) {
                                             setState(() {

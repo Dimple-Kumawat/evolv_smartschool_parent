@@ -23,3 +23,17 @@ pod install --repo-update
 
  export PATH="$PATH":"$HOME/.pub-cache/bin"
  FCM Token: eX0myMufRt2ShLUKeQw-kb:APA91bF_mHj1e4jzG7ZYb-NLX_vai5q3fqh6trcDYwnlXEoBuaE8-XbiXByu5nMOAa1es0dbSTxjfDhSO7HVmD0OCvdgqzlR7fu2lgKvog1numoG_5MqfZw
+   
+
+   # delet the folder
+     .symlinks
+     
+
+
+   rm -rf Pods Podfile.lock build .symlinks
+flutter clean
+flutter pub get
+pod deintegrate
+pod update
+pod install
+flutter build ios

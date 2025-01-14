@@ -64,7 +64,7 @@ dependencies:
 
   flutter_file_downloader: ^2.0.0
   url_launcher: ^6.3.0
-  webview_flutter: ^4.8.0
+  webview_flutter: ^4.10.0
 
   cached_network_image: ^3.2.2
   #downloads_path_provider_28: ^0.1.2

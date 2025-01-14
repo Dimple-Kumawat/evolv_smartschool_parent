@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class StuEditTextField extends StatelessWidget {
+class BirthdatTextField extends StatelessWidget {
   final String labelText;
   final String? initialValue;
   final TextInputType keyboardType;
@@ -8,9 +8,9 @@ class StuEditTextField extends StatelessWidget {
   final bool readOnly;
   final VoidCallback? onTap; // For fields like date pickers
   final Widget? suffixIcon; // For icons like calendars or dropdowns
-  final bool isRequired; // Flag for mandatory field
+  final TextEditingController controller; // Accept controller as parameter
 
-  const StuEditTextField({
+  const BirthdatTextField({
     Key? key,
     required this.labelText,
     this.initialValue,
@@ -19,47 +19,31 @@ class StuEditTextField extends StatelessWidget {
     this.readOnly = false,
     this.onTap,
     this.suffixIcon,
-    this.isRequired = false, // Default to not required
+    required this.controller, // Receive controller here
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0), // Space between fields
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center, // Align label and field
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // Label on the left
           SizedBox(
-            width: 100, // Adjust the width as needed
-            child: RichText(
-              text: TextSpan(
-                children: [
-                  if (isRequired) // Add the red asterisk first if required
-                    const TextSpan(
-                      text: '* ',
-                      style: TextStyle(
-                        color: Colors.red, // Asterisk color
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  TextSpan(
-                    text: labelText,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold, // Set font weight to bold
-                      fontSize: 14.0,
-                      color: Colors.black,
-                    ),
-                  ),
-                ],
+            width: 100,
+            child: Text(
+              labelText,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 14.0,
+                color: Colors.black,
               ),
             ),
           ),
-          const SizedBox(width: 20), // Space between label and field
-          // Input field on the right
+          const SizedBox(width: 20),
           Expanded(
             child: TextFormField(
-              initialValue: initialValue,
+              controller: controller, // Use passed controller here
               keyboardType: keyboardType,
               readOnly: readOnly,
               onTap: onTap,
@@ -68,7 +52,7 @@ class StuEditTextField extends StatelessWidget {
                 contentPadding: const EdgeInsets.symmetric(
                   vertical: 14.0,
                   horizontal: 12.0,
-                ), // Adjust inner padding
+                ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10.0),
                   borderSide: BorderSide(
@@ -88,10 +72,10 @@ class StuEditTextField extends StatelessWidget {
                     width: 2.0,
                   ),
                 ),
-                suffixIcon: suffixIcon, // Add any suffix icon if needed
+                suffixIcon: suffixIcon,
               ),
               style: const TextStyle(
-                fontSize: 14.0, // Input text size
+                fontSize: 14.0,
                 color: Colors.black87,
               ),
             ),
