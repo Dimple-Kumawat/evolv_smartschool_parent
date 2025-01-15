@@ -743,6 +743,7 @@ class _StudentFormState extends State<StudentForm> {
                   label: 'First Name',
                   name: 'First Name',
                   readOnly: true,
+                  showRedAsterisk: true,
                   // isRequired: true,
                   // isRequired: true,
                   initialValue: childInfo?.firstName,
@@ -767,6 +768,7 @@ class _StudentFormState extends State<StudentForm> {
                 StuTextField(
                   label: 'Date Of Birth',
                   name: 'Date Of Birth',
+                  showRedAsterisk: true,
                   readOnly: true,
                   initialValue: childInfo?.dob != null
                       ? DateFormat('dd-MM-yyyy').format(DateTime.parse(childInfo!.dob!))
@@ -777,6 +779,7 @@ class _StudentFormState extends State<StudentForm> {
                 StuTextField(
                   label: 'Date Of Admission',
                   name: 'Date Of Admission',
+                  showRedAsterisk: true,
                   readOnly: true,
                   // isRequired: true,
                   initialValue: childInfo?.admissionDate!= null
@@ -789,6 +792,7 @@ class _StudentFormState extends State<StudentForm> {
                   label: 'GRN NO.',
                   name: 'GRN NO.',
                   readOnly: true,
+                  showRedAsterisk: true,
                   //isRequired: true,
                   initialValue: childInfo?.regNo,
                 ),
@@ -814,6 +818,7 @@ class _StudentFormState extends State<StudentForm> {
                   labelText: 'Student Aadhaar No.',
                   initialValue: childInfo?.stuAadhaarNo,
                   keyboardType: TextInputType.number,
+                  isRequired: true,
                   onChanged: (value) {
                     setState(() {
                       childInfo?.stuAadhaarNo = value;
@@ -848,13 +853,15 @@ class _StudentFormState extends State<StudentForm> {
                   initialValue: widget?.cname,
                   label: 'Class',
                   name: 'Class',
-                  // isRequired: true,
+                   showRedAsterisk: true,
+                // isRequired: true,
                   readOnly: true,
                 ),
                 StuTextField(
                   initialValue: widget?.secname,
                   readOnly: true,
                   label: 'Division',
+                   showRedAsterisk: true,
                   //  isRequired: true,
                   name: 'Division',
                 ),
@@ -931,6 +938,7 @@ class _StudentFormState extends State<StudentForm> {
                   labelText: 'Nationality',
                   initialValue: childInfo?.nationality ?? '',
                   keyboardType: TextInputType.name,
+                  isRequired: true,
                   onChanged: (value) {
                     setState(() {
                       childInfo?.nationality = value;
@@ -942,6 +950,7 @@ class _StudentFormState extends State<StudentForm> {
                   labelText: 'Address',
                   initialValue: childInfo?.permantAdd ?? '',
                   keyboardType: TextInputType.name,
+                  isRequired: true,
                   onChanged: (value) {
                     setState(() {
                       childInfo?.permantAdd = value;
@@ -953,6 +962,7 @@ class _StudentFormState extends State<StudentForm> {
                   labelText: 'City',
                   initialValue: childInfo?.city ?? '',
                   keyboardType: TextInputType.name,
+                  isRequired: true,
                   onChanged: (value) {
                     setState(() {
                       childInfo?.city = value;
@@ -964,6 +974,7 @@ class _StudentFormState extends State<StudentForm> {
                   labelText: 'State',
                   initialValue: childInfo?.state ?? '',
                   keyboardType: TextInputType.name,
+                  isRequired: true,
                   onChanged: (value) {
                     setState(() {
                       childInfo?.state = value;
@@ -997,6 +1008,7 @@ class _StudentFormState extends State<StudentForm> {
                   labelText: 'Mother Tongue',
                   initialValue: childInfo?.motherTongue ?? '',
                   keyboardType: TextInputType.name,
+                  isRequired: true,
                   onChanged: (value) {
                     setState(() {
                       childInfo?.motherTongue = value;
@@ -1009,6 +1021,7 @@ class _StudentFormState extends State<StudentForm> {
                   label: 'Religion',
                   name: 'Religion',
                   readOnly: true,
+                   showRedAsterisk: true,
                   // isRequired: true,
                   // isRequired: true,
                   initialValue: childInfo?.religion,
@@ -1025,6 +1038,7 @@ class _StudentFormState extends State<StudentForm> {
                   label: 'Category',
                   name: 'Category',
                   readOnly: true,
+                   showRedAsterisk: true,
                   // isRequired: true,
                   //isRequired: true,
                   initialValue: childInfo?.category,

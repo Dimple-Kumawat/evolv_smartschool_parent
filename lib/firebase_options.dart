@@ -50,19 +50,21 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyDNlYgcc0QjUp5-p_87XnFG5hDVjiF1lvM',
-    appId: '1:997012539911:android:94ab8e27b9b66ed8cef8a2',
-    messagingSenderId: '997012539911',
-    projectId: 'flutterparentapp',
-    storageBucket: 'flutterparentapp.firebasestorage.app',
+    apiKey: 'AIzaSyB1MBLUWiQzbMQsWMDN0l1ItQejqCSUK_0',
+    appId: '1:822080592108:android:35803ff317adc41024adc9',
+    messagingSenderId: '822080592108',
+    projectId: 'evolvuparentapp',
+    storageBucket: 'evolvuparentapp.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyATVqv_1X21XkwU3Lxo36q-pujgOnvR5XA',
-    appId: '1:997012539911:ios:de39c5e2921ad89bcef8a2',
-    messagingSenderId: '997012539911',
-    projectId: 'flutterparentapp',
-    storageBucket: 'flutterparentapp.firebasestorage.app',
+    apiKey: 'AIzaSyADVoMQ9SsxBx-nyHbiHbTtPlPBfbefK5w',
+    appId: '1:822080592108:ios:a172652636634f0624adc9',
+    messagingSenderId: '822080592108',
+    projectId: 'evolvuparentapp',
+    storageBucket: 'evolvuparentapp.firebasestorage.app',
+    androidClientId: '822080592108-fqs7qsmjh74sd18sn82r15jpnros6n3j.apps.googleusercontent.com',
     iosBundleId: 'in.aceventura.evolvu',
   );
+
 }
