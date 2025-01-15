@@ -30,10 +30,10 @@ pod install --repo-update
      
 
 
-   rm -rf Pods Podfile.lock build .symlinks
+rm -rf Pods Podfile.lock build .symlinks
 flutter clean
 flutter pub get
 pod deintegrate
 pod update
 pod install
-flutter build ios
+flutter build ipa
