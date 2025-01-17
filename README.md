@@ -37,3 +37,10 @@ pod deintegrate
 pod update
 pod install
 flutter build ipa
+
+
+
+
+
+# ios
+fsyJhp7UUkc-v6jJrCS9oJ:APA91bHvg_lqLEfDGeV46Aff3NiYPpLyPNHAaaVz31tYt-852cZc_jSi1vgNN-JChbJxK-UsE8WmQuQZhqD9WKrKE6UAPf828rU3x_r7G8K5b0iCsT_EW6g

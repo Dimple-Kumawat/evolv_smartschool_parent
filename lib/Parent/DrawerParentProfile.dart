@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:evolvu/common/Common_dropDownFiled.dart';
+
+
+import 'package:evolvu/common/common_dropDownFiled.dart';
 import 'package:evolvu/common/common_textFiled.dart';
 import 'package:evolvu/Parent/parentDashBoard_Page.dart';
 import 'package:evolvu/common/textFiledStu.dart';
@@ -295,7 +297,7 @@ class _DrawerParentProfilePage extends State<DrawerParentProfilePage> {
       backgroundColor: Colors.transparent,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        toolbarHeight: 80.h,
+        toolbarHeight: 40.h,
         title: Text(
           "Parent Profile",
           style: TextStyle(fontSize: 20.sp, color: Colors.white),
@@ -314,7 +316,7 @@ class _DrawerParentProfilePage extends State<DrawerParentProfilePage> {
         ),
         child: SizedBox(
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(8,90,8,8),
+            padding: const EdgeInsets.fromLTRB(10,110,10,20),
             child: Card(
               child: Container(
                 color: Colors.transparent,

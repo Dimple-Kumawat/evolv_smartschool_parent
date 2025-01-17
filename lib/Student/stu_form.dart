@@ -3,7 +3,10 @@ import 'dart:io';
 
 import 'package:evolvu/Parent/parentDashBoard_Page.dart';
 import 'package:evolvu/Student/StudentDashboard.dart';
-import 'package:evolvu/common/Common_dropDownFiled.dart';
+import 'package:evolvu/common/common_dropDownFiled.dart';
+import 'package:evolvu/common/withHash_dropDown.dart';
+
+
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -830,7 +833,7 @@ class _StudentFormState extends State<StudentForm> {
                 // if (childInfo?.house != null)
                 //   Text('House: ${getFullHouseName(childInfo!.house)}'),
 
-                LabeledDropdown(
+                HashLabeledDropdown(
                   label:
                   "Admitted In Class", // Keep the label static
                   options: [ 'Nursery','LKG', 'UKG', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13'],
@@ -874,9 +877,15 @@ class _StudentFormState extends State<StudentForm> {
                   //  isRequired: true,
                 ),
 
-                LabeledDropdown(
+                HashLabeledDropdown(
                   label: "Gender",
+                  
                   options: ['Male', 'Female'],
+                 
+                  
+                  
+                  
+                  
                   selectedValue: getGender(childInfo?.gender) ??
                       'Male', // Default to a valid option
                   onChanged: (String? newValue) {
@@ -890,7 +899,8 @@ class _StudentFormState extends State<StudentForm> {
                 ),
 
                 LabeledDropdown(
-                  label: "Blood Group", // Static label
+                  label: "Blood Group",
+                   // Static label
                   options: const [
                     "AB+",
                     "AB-",

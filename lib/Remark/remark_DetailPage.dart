@@ -238,28 +238,25 @@ class _RemarkDetailPageState extends State<RemarkDetailPage> {
       );
     }
   }
-
   Future<void> _downloadFileIOS(String url, String fileName) async {
+    // Get the documents directory on iOS
+    final directory = await getApplicationDocumentsDirectory();
+
+    // Create a subdirectory within Documents for downloaded files (optional)
+    // final downloadsDirectory = Directory('${directory.path}/Downloads');
+    // if (!await downloadsDirectory.exists()) {
+    //   await downloadsDirectory.create(recursive: true);
+    // }
+
+    // Construct the full path for the downloaded file
+    final filePath = '${directory.path}/$fileName';
+    final file = File(filePath);
+
     try {
-      // Get the application's Documents directory
-      final directory = await getApplicationSupportDirectory();
-
-      // Create a custom subdirectory within the Documents folder
-      final customDirectory = Directory('${directory.path}/Remarks');
-      if (!await customDirectory.exists()) {
-        await customDirectory.create(recursive: true);
-      }
-
-      // Construct the full path for the downloaded file
-      final filePath = '${customDirectory.path}/$fileName';
-      final file = File(filePath);
-
-      // Fetch the file data from the URL
       final response = await http.get(Uri.parse(url));
       if (response.statusCode == 200) {
-        // Write the file to the custom directory
         await file.writeAsBytes(response.bodyBytes);
-        _showSnackBar('File downloaded successfully. Find it in Remarks folder.');
+        _showSnackBar('File downloaded successfully. Find it in the Files app.');
       } else {
         _showSnackBar('Failed to download file: ${response.statusCode}');
       }
@@ -267,10 +264,6 @@ class _RemarkDetailPageState extends State<RemarkDetailPage> {
       _showSnackBar('Failed to download file: $e');
     }
   }
-
-
-
-
   void _showSnackBar(String message) {
     ScaffoldMessenger.of(context)
         .showSnackBar(SnackBar(content: Text(message)));

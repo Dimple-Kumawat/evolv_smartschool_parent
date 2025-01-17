@@ -2,18 +2,20 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
-class LabeledDropdown extends StatelessWidget {
+class HashLabeledDropdown extends StatelessWidget {
   final String label;
   final List<String> options;
   final String? selectedValue;
   final Function(String?) onChanged;
+  final bool isRequired; // New property to indicate if it's required
 
-  const LabeledDropdown({
+  const HashLabeledDropdown({
     Key? key,
     required this.label,
     required this.options,
     required this.onChanged,
     this.selectedValue,
+    this.isRequired = true, // Default to not required
   }) : super(key: key);
 
   @override
@@ -25,12 +27,26 @@ class LabeledDropdown extends StatelessWidget {
         children: [
           SizedBox(
             width: 100,
-            child: Text(
-              label,
-              style: const TextStyle(
-                fontWeight: FontWeight.w600,
-                fontSize: 14.0,
-                color: Colors.black,
+            child: RichText(
+              text: TextSpan(
+                children: [
+                  if (isRequired) // Add red asterisk if required
+                    const TextSpan(
+                      text: '* ',
+                      style: TextStyle(
+                        color: Colors.red,
+                        fontSize: 14.0,
+                      ),
+                    ),
+                  TextSpan(
+                    text: label,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14.0,
+                      color: Colors.black,
+                    ),
+                  ),
+                ],
               ),
             ),
           ),

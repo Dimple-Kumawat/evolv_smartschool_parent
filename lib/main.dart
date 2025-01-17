@@ -107,6 +107,11 @@ class MyApp extends StatelessWidget {
               ),
             ),
             child: UserNamePage(),
+
+          //  child:SchoolInfo(schoolId: '', name: '', shortName: '', url: '', teacherApkUrl: '', projectUrl: '', defaultPassword: ''),
+           // child:StudentCard(onTap: (int index) {  },),
+          //  child: RemarkDetailCard(shortName: '', academic_yr: '', remarksubject: '', imageList: [], description: '', remarkId: '', remarkDate: '',),
+          //  child: RemarkNotePage(studentId: '', academic_yr: '', shortName: '', classId: '', secId: '',),
           ),
         );
       },
