@@ -259,7 +259,7 @@ class _NoticeNotePageState extends State<NoticeNotePage> {
                 final groupedNotes = groupByDate(filteredNotices);
                 return Column(
                   children: [
-                    SizedBox(height: 70.h),
+                    SizedBox(height: 80.h),
                     Text(
                       "Notice/SMS",
                       style: TextStyle(

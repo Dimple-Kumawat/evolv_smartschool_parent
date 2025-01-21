@@ -20,6 +20,8 @@ import '../WebViewScreens/FeesReceiptWebViewScreen.dart';
 import '../WebViewScreens/OnlineFeesPayment.dart';
 import '../aboutUs.dart';
 import '../changePasswordPage.dart';
+import '../WebViewScreens/DashboardOnlineFeesPayment.dart';
+import '../WebViewScreens/DrawerOnlineFeesPayment.dart';
 import 'DrawerParentProfile.dart';
 
 class ParentDashBoardPage extends StatefulWidget {
@@ -52,7 +54,7 @@ Future<void> _getSchoolInfo() async {
   final prefs = await SharedPreferences.getInstance();
   String? schoolInfoJson = prefs.getString('school_info');
   String? logUrls = prefs.getString('logUrls');
-  print('logUrls====\\\\\: $logUrls');
+    print('logUrls====\\\\\: $schoolInfoJson');
   if (logUrls != null) {
     try {
       Map<String, dynamic> logUrlsparsed = json.decode(logUrls);
@@ -210,7 +212,9 @@ class _ParentDashBoardPageState extends State<ParentDashBoardPage> {
       ),
       CalendarPage(),
 
-      PaymentWebview(regId: reg_id, paymentUrlShare: paymentUrlShare, receiptUrl: receiptUrl, shortName: shortName, academicYr: academic_yr, receipt_button: receipt_button,),
+     // PaymentWebview(regId: reg_id, paymentUrlShare: paymentUrlShare, receiptUrl: receiptUrl, shortName: shortName, academicYr: academic_yr, receipt_button: receipt_button,),
+       Dashboardonlinefeespayment(regId: reg_id, paymentUrlShare: paymentUrlShare, receiptUrl: receiptUrl, shortName: shortName, academicYr: academic_yr, receipt_button: receipt_button,),
+     
       ParentProfilePage(),
     ];
 
@@ -522,7 +526,8 @@ class CustomPopup extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => PaymentWebview(
+            //  builder: (context) => PaymentWebview(
+              builder: (context) => DrawerOnlineFeesPayment(
                   regId: reg_id,paymentUrlShare:paymentUrlShare,receiptUrl:receiptUrl,shortName: shortName,academicYr: academic_yr, receipt_button: receipt_button,),
             ),
           );

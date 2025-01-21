@@ -1,3 +1,4 @@
+
 import 'dart:convert';
 import 'dart:io';
 
@@ -5,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Teacher/Attachment.dart';
@@ -413,9 +415,22 @@ class _HomeWorkDetailPageState extends State<HomeWorkDetailPage> {
                             } else {
                               String downloadUrl = projectUrl +
                                   'uploads/homework/${widget.homeworkInfo.publishDate}/${widget.homeworkInfo.homeworkId}/${attachment.imageName}';
-                              downloadFile(
-                                  downloadUrl, context, attachment.imageName);
-                              print('Failed downloadUrl $downloadUrl');
+                              if (Platform.isAndroid) {
+                                await downloadFile(downloadUrl, context, attachment.imageName);
+                              } else if (Platform.isIOS) {
+                                await _downloadFileIOS(downloadUrl,context, attachment.imageName);
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text('Failed to download file'),
+                                  ),
+                                );
+                              }
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('File Download Successfully '),
+                                ),
+                              );
                             }
                           } catch (e) {
                             ScaffoldMessenger.of(context).showSnackBar(
@@ -467,7 +482,7 @@ class _HomeWorkDetailPageState extends State<HomeWorkDetailPage> {
     super.dispose();
   }
 
-  void downloadFile(String url, BuildContext context, String name) async {
+   downloadFile(String url, BuildContext context, String name) async {
     var directory =
         Directory("/storage/emulated/0/Download/Evolvuschool/Parent/Homework");
 
@@ -489,6 +504,35 @@ class _HomeWorkDetailPageState extends State<HomeWorkDetailPage> {
               'File downloaded successfully: Download/Evolvuschool/Parent/Homework'),
         ),
       );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to download file: $e'),
+        ),
+      );
+    }
+  }
+
+  Future<void> _downloadFileIOS(String url,BuildContext context, String fileName) async {
+    // Get the documents directory on iOS
+    final directory = await getApplicationDocumentsDirectory();
+
+    // Construct the full path for the downloaded file
+    final filePath = '${directory.path}/$fileName';
+    final file = File(filePath);
+
+    try {
+      final response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        await file.writeAsBytes(response.bodyBytes);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Find it in the Files/On My iPhone/EvolvU Smart School - Parent.'),
+          ),
+        );
+      } else {
+
+      }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

@@ -73,7 +73,7 @@ class _LoginDemoState extends State<UserNamePage> {
     checkLoginStatus();
     getVersion();
 
-    _getSchoolInfo();
+    // _getSchoolInfo();
 // Check login status when the login screen is initialized
   }
 
@@ -91,24 +91,6 @@ class _LoginDemoState extends State<UserNamePage> {
     setState(() {
       _isLoading = true; // Start the loading indicator
     });
-    SchoolInfo hardcodedInfo = SchoolInfo(
-      schoolId: "1",
-      name: "St. Arnolds Central School",
-      shortName: "SACS",
-      url: "https://sms.arnoldcentralschool.org/Test_ParentAppService/",
-      teacherApkUrl: "https://sms.arnoldcentralschool.org/SACSv4test/index.php/",
-      projectUrl: "https://sms.arnoldcentralschool.org/SACSv4test/",
-      defaultPassword: "default123",
-    );
-
-    // Store it in SharedPreferences
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString('school_info', jsonEncode(hardcodedInfo.toJson()));
-    // await prefs.setBool('isLoggedIn', true); // Mark user as logged in
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => LoginPage(emailstr)),
-    );
 
     try {
       print('emailstr body: $emailstr');
@@ -179,42 +161,46 @@ class _LoginDemoState extends State<UserNamePage> {
 
   Future<void> _getSchoolInfo() async {
     final prefs = await SharedPreferences.getInstance();
-
-    // Check if school info exists
     String? schoolInfoJson = prefs.getString('school_info');
-    if (schoolInfoJson == null) {
-      // If no data exists, set hardcoded values
-      SchoolInfo hardcodedInfo = SchoolInfo(
-        schoolId: "1",
-        name: "St. Arnolds Central School",
-        shortName: "SACS",
-        url: "https://sms.arnoldcentralschool.org/Test_ParentAppService/",
-        teacherApkUrl: "https://sms.arnoldcentralschool.org/SACSv4test/index.php/",
-        projectUrl: "https://sms.arnoldcentralschool.org/SACSv4test/",
-        defaultPassword: "default123",
-      );
+    String? logUrls = prefs.getString('logUrls');
+    print('logUrls====\\\\\: $logUrls');
+    if (logUrls != null) {
+      try {
+        Map<String, dynamic> logUrlsparsed = json.decode(logUrls);
+        print('logUrls====\\\\\11111: $logUrls');
 
-      // Convert object to JSON and store it
-      String hardcodedJson = jsonEncode(hardcodedInfo.toJson());
-      await prefs.setString('school_info', hardcodedJson);
-      print("Hardcoded school info saved.");
+        user_id = logUrlsparsed['user_id'];
+        academic_yr = logUrlsparsed['academic_yr'];
+        reg_id = logUrlsparsed['reg_id'];
+
+        print('academic_yr ID: $academic_yr');
+        print('reg_id: $reg_id');
+      } catch (e) {
+        print('Error parsing school info: $e');
+      }
     } else {
-      print("School info already exists.");
+      print('School info not found in SharedPreferences.');
     }
 
-    // Fetch the data and parse it
-    String fetchedJson = prefs.getString('school_info')!;
-    Map<String, dynamic> parsedData = jsonDecode(fetchedJson);
+    if (schoolInfoJson != null) {
+      try {
+        Map<String, dynamic> parsedData = json.decode(schoolInfoJson);
 
-    shortName = parsedData['short_name'];
-    url = parsedData['url'];
-    durl = parsedData['project_url'];
+        shortName = parsedData['short_name'];
+        url = parsedData['url'];
+        durl = parsedData['project_url'];
+        checkLoginStatus(); // Check login status when the login screen is initialized
 
-    print('Short Name: $shortName');
-    print('URL: $url');
-    print('Project URL: $durl');
+        print('Short Name: $shortName');
+        print('URL: $url');
+        print('URL: $durl');
+      } catch (e) {
+        print('Error parsing school info: $e');
+      }
+    } else {
+      print('School info not found in SharedPreferences.');
+    }
   }
-
 
   void checkLoginStatus() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -230,7 +216,7 @@ class _LoginDemoState extends State<UserNamePage> {
 
   @override
   Widget build(BuildContext context) {
-    // _getSchoolInfo(); // Check login status when the login screen is initialized
+    _getSchoolInfo(); // Check login status when the login screen is initialized
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
@@ -344,8 +330,7 @@ class _LoginDemoState extends State<UserNamePage> {
                             setState(() {
                               shouldShowText2 = false;
                             });
-                            // loginfun(email.text.toString());
-                            loginfun("dsouza.francis@gmail.com");
+                            loginfun(email.text.toString());
                           }
                         },
                         child: Text(

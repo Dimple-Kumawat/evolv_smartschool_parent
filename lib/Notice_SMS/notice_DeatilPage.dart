@@ -1,28 +1,16 @@
 import 'dart:convert';
 import 'dart:io';
-
-import 'package:evolvu/common/common_style.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-
-import 'package:evolvu/common/common_style.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:evolvu/common/common_style.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:evolvu/common/common_style.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:http/http.dart' as http;
 import 'package:evolvu/common/common_style.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:http/http.dart';
 import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../Utils&Config/DownloadHelper.dart';
 import '../Teacher/Attachment.dart';
+import '../Utils&Config/DownloadHelper.dart';
 
 class NoticeInfo {
   final String classname;
@@ -172,12 +160,20 @@ class _NoticeDetailPageState extends State<NoticeDetailPage> {
                                 String downloadUrl = projectUrl +
                                     'uploads/notice/${widget.noticeInfo.date}/${widget.noticeInfo.noticeId}'
                                         '/${attachment.imageName}';
-                                downloadFile(
-                                    downloadUrl, context, attachment.imageName);
+                                if (Platform.isAndroid) {
+                                  await downloadFile(downloadUrl, context, attachment.imageName);
+                                } else if (Platform.isIOS) {
+                                  await _downloadFileIOS(downloadUrl,context, attachment.imageName);
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text('Failed to download file'),
+                                    ),
+                                  );
+                                }
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
-                                    content:
-                                        Text('File downloaded successfully.'),
+                                    content: Text('File Download Successfully '),
                                   ),
                                 );
                               }
@@ -231,7 +227,7 @@ class _NoticeDetailPageState extends State<NoticeDetailPage> {
     );
   }
 
-  void downloadFile(String url, BuildContext context, String name) async {
+  downloadFile(String url, BuildContext context, String name) async {
     var directory =
         Directory("/storage/emulated/0/Download/Evolvuschool/Parent/Notice");
 
@@ -261,4 +257,34 @@ class _NoticeDetailPageState extends State<NoticeDetailPage> {
       );
     }
   }
+
+  Future<void> _downloadFileIOS(String url,BuildContext context, String fileName) async {
+    // Get the documents directory on iOS
+    final directory = await getApplicationDocumentsDirectory();
+
+    // Construct the full path for the downloaded file
+    final filePath = '${directory.path}/$fileName';
+    final file = File(filePath);
+
+    try {
+      final response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        await file.writeAsBytes(response.bodyBytes);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Find it in the Files/On My iPhone/EvolvU Smart School - Parent.'),
+          ),
+        );
+      } else {
+
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to download file: $e'),
+        ),
+      );
+    }
+  }
+
 }
