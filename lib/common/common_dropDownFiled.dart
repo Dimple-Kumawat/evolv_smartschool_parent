@@ -21,7 +21,7 @@ class LabeledDropdown extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           SizedBox(
             width: 100,
@@ -54,7 +54,11 @@ class LabeledDropdown extends StatelessWidget {
                       value: value,
                       child: Text(
                         value,
-                        style: const TextStyle(fontSize: 16.0),
+                        style: const TextStyle(
+                          fontSize: 16.0,
+                          fontWeight: FontWeight.normal, // Ensure text is not bold
+                          color: Colors.black, // Set color explicitly if needed
+                        ),
                       ),
                     );
                   }).toList(),

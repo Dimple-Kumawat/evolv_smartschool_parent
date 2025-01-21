@@ -91,12 +91,91 @@ class _ExamTimeTablePageState extends State<ExamTimeTablePage> {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return Center(child: CircularProgressIndicator());
                     } else if (snapshot.hasError) {
-                      return Padding(
-                        padding: const EdgeInsets.only(top: 250.0),
-                        child: Center(child: Text("Exam Timetable is not available!",style: TextStyle(fontSize: 18),)),
+                      return Center(
+                        child: Container(
+                          margin: const EdgeInsets.all(10),
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(16),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black26,
+                                blurRadius: 10,
+                                offset: Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              // Add emoji or animation here
+                              SizedBox(
+                                height: 150,
+                                width: 150,
+                                child: Image.asset(
+                    'assets/nodata.gif',
+                                  
+                                  // Replace with your emoji or animation file
+                                  fit: BoxFit.contain,
+                                ),
+                              ),
+                              SizedBox(height: 10), // Add spacing between emoji and text
+                              Text(
+                                'Exam Timetable is not Assigned',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.red,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          ),
+                        ),
                       );
                     } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return Center(child: Text("Exam Timetable is not available"));
+                      return Center(
+                        child: Container(
+                          margin: const EdgeInsets.all(10),
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(16),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black26,
+                                blurRadius: 10,
+                                offset: Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              // Add emoji or animation here
+                              SizedBox(
+                                height: 150,
+                                width: 150,
+                                child: Image.asset(
+                                  'assets/nodata.gif', // Replace with your emoji or animation file
+                                  fit: BoxFit.contain,
+                                ),
+                              ),
+                              SizedBox(height: 10), // Add spacing between emoji and text
+                              Text(
+                                'Exam Timetable is not Assigned',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.red,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
                     } else {
                       // Get the exam name from the first Period object
                       String examName = snapshot.data!.first.name;
@@ -132,6 +211,7 @@ class _ExamTimeTablePageState extends State<ExamTimeTablePage> {
                                   .map((period) => Column(
                                 children: [
                                   PeriodRow(period: period),
+                                  if(period.subject.isNotEmpty)
                                   Divider(color: Colors.grey),
                                 ],
                               ))
@@ -189,45 +269,48 @@ class PeriodRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Icon(
-                period.isStudyLeave ? Icons.book : Icons.school,
-                color: period.isStudyLeave ? Colors.red : Colors.black,
-              ),
-              SizedBox(width: 8),
-              ConstrainedBox(
-                constraints: BoxConstraints(
-                  maxWidth: 150, // Set a fixed width for the subject
+    return Visibility(
+      visible: period.subject.isNotEmpty,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(
+                  period.isStudyLeave ? Icons.book : Icons.school,
+                  color: period.isStudyLeave ? Colors.red : Colors.black,
                 ),
-                child: Text(
-                  period.subject, // Will show "Study Leave" if applicable
-                  style: TextStyle(
-                    fontSize: 14.sp,
-                    fontWeight: FontWeight.bold,
-                    color: period.isStudyLeave ? Colors.red : Colors.black,
+                SizedBox(width: 8),
+                ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxWidth: 150, // Set a fixed width for the subject
                   ),
-                  maxLines: 5, // Allow text to wrap to the next line if necessary
-                  overflow: TextOverflow.visible, // Ensure proper text wrapping
+                  child: Text(
+                    period.subject, // Will show "Study Leave" if applicable
+                    style: TextStyle(
+                      fontSize: 14.sp,
+                      fontWeight: FontWeight.bold,
+                      color: period.isStudyLeave ? Colors.red : Colors.black,
+                    ),
+                    maxLines: 5, // Allow text to wrap to the next line if necessary
+                    overflow: TextOverflow.visible, // Ensure proper text wrapping
+                  ),
                 ),
-              ),
-            ],
-          ),
-          Text(
-            period.date,
-            style: TextStyle(
-              fontSize: 14.sp,
-              color: period.isStudyLeave ? Colors.red : Colors.black,
-              fontWeight: FontWeight.bold,
+              ],
             ),
-          ),
-        ],
+            Text(
+              period.date,
+              style: TextStyle(
+                fontSize: 14.sp,
+                color: period.isStudyLeave ? Colors.red : Colors.black,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -148,7 +148,7 @@ class _NoticeNotePageState extends State<NoticeNotePage> {
         backgroundColor: Colors.transparent,
         extendBodyBehindAppBar: true,
         appBar: AppBar(
-          toolbarHeight: 50.h,
+          toolbarHeight: 100.h,
           title: Text(
             "${widget.shortName} EvolvU Smart Parent App(${widget.academic_yr})",
             style: TextStyle(fontSize: 14.sp, color: Colors.white),
@@ -172,9 +172,89 @@ class _NoticeNotePageState extends State<NoticeNotePage> {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return Center(child: CircularProgressIndicator());
               } else if (snapshot.hasError) {
-                return Center(child: Text('Error: ${snapshot.error}'));
+                return Center(
+                  child: Container(
+                    margin: const EdgeInsets.all(10),
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black26,
+                          blurRadius: 10,
+                          offset: Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // Add emoji or animation here
+                        SizedBox(
+                          height: 150,
+                          width: 150,
+                          child: Image.asset(
+                            'assets/nodata.gif',  // Replace with your emoji or animation file
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                        SizedBox(height: 10), // Add spacing between emoji and text
+                        Text(
+                          'No Notice & SMS Found',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.red,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  ),
+                );
               } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                return Center(child: Text('No Notice & SMS'));
+                return Center(
+                  child: Container(
+                    margin: const EdgeInsets.all(10),
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black26,
+                          blurRadius: 10,
+                          offset: Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // Add emoji or animation here
+                        SizedBox(
+                          height: 150,
+                          width: 150,
+                          child: Image.asset(
+                           'assets/nodata.gif',  // Replace with your emoji or animation file
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                        SizedBox(height: 10), // Add spacing between emoji and text
+                        Text(
+                          'No Notice & SMS Found',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.red,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  ),
+                );
               } else {
                 final groupedNotes = groupByDate(filteredNotices);
                 return Column(
@@ -189,7 +269,7 @@ class _NoticeNotePageState extends State<NoticeNotePage> {
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+                      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 30),
                       child: Container(
                         decoration: BoxDecoration(
                           color: Colors.white.withOpacity(0.2),
@@ -200,7 +280,7 @@ class _NoticeNotePageState extends State<NoticeNotePage> {
                           maxLines: 1,
                           decoration: const InputDecoration(
                             prefixIcon: Icon(Icons.search, color: Colors.white),
-                            hintText: "Search Subject",
+                            hintText: "Search",
                             hintStyle: TextStyle(color: Colors.white),
                             border: InputBorder.none,
                             contentPadding: EdgeInsets.symmetric(vertical: 15.0),
@@ -218,91 +298,88 @@ class _NoticeNotePageState extends State<NoticeNotePage> {
                           final dateNotes = groupedNotes[date]!;
                           return Stack(
                             children: [
-                              Padding(
-                                padding: const EdgeInsets.only(left: 0.0),
-                                child: Column(
-                                  children: [
-                                    Row(
+                              Column(
+                                children: [
+                                  Row(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      SizedBox(
+                                        width: 30,
+                                        child: Column(
+                                          children: [
+                                            Container(
+                                              width: 10,
+                                              height: 18,
+                                              decoration: const BoxDecoration(
+                                                color: Colors.white,
+                                                shape: BoxShape.circle,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      Text(
+                                        date,
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 15.sp,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 30),
+                                    child: Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        SizedBox(
-                                          width: 30,
-                                          child: Column(
-                                            children: [
-                                              Container(
-                                                width: 10,
-                                                height: 18,
-                                                decoration: const BoxDecoration(
-                                                  color: Colors.white,
-                                                  shape: BoxShape.circle,
-                                                ),
+                                        const SizedBox(height: 10),
+                                        Column(
+                                          children: dateNotes.map((note) {
+                                            return Padding(
+                                              padding: const EdgeInsets.all(3.0),
+                                              child: NoticeNoteCard(
+                                                teacher: note.teacherName,
+                                                remarksubject: note.subject,
+                                                type: note.noticeType,
+                                                // attachments: note.imageList,
+                                                // date: note.noticeDate,
+                                                readStatus: note.readStatus,
+                                                onTap: () async {
+                                                  final result = await Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (context) =>
+                                                            NoticeDetailCard(
+                                                                teacher: note.teacherName,
+                                                                remarksubject: note.subject,
+                                                                type: note.noticeType,
+                                                              date: note.noticeDate,
+                                                              noticeID: note.noticeId,
+                                                              academic_yr: note.academicYr,
+                                                              shortName: widget.shortName,
+                                                              classname: note.className,
+                                                              noticeDesc: note.noticeDesc,
+                                                              attachment: note.imageList,
+                                                              ),
+                                                            ),
+                                                      );
+                                                  // Check if the result was 'true', meaning the notice was read
+                                                  if (result == true) {
+                                                    // Refresh the list of notices
+                                                    refreshNotices();
+                                                  }
+                                                },
                                               ),
-                                            ],
-                                          ),
+                                            );
+                                          }).toList(),
                                         ),
-                                        Text(
-                                          date,
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 15.sp,
-                                          ),
-                                        ),
+                                         SizedBox(height: 15),
                                       ],
                                     ),
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 30),
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          const SizedBox(height: 10),
-                                          Column(
-                                            children: dateNotes.map((note) {
-                                              return Padding(
-                                                padding: const EdgeInsets.all(3.0),
-                                                child: NoticeNoteCard(
-                                                  teacher: note.teacherName,
-                                                  remarksubject: note.subject,
-                                                  type: note.noticeType,
-                                                  // attachments: note.imageList,
-                                                  // date: note.noticeDate,
-                                                  readStatus: note.readStatus,
-                                                  onTap: () async {
-                                                    final result = await Navigator.push(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                        builder: (context) =>
-                                                              NoticeDetailCard(
-                                                                  teacher: note.teacherName,
-                                                                  remarksubject: note.subject,
-                                                                  type: note.noticeType,
-                                                                date: note.noticeDate,
-                                                                noticeID: note.noticeId,
-                                                                academic_yr: note.academicYr,
-                                                                shortName: widget.shortName,
-                                                                classname: note.className,
-                                                                noticeDesc: note.noticeDesc,
-                                                                attachment: note.imageList,
-                                                                ),
-                                                              ),
-                                                        );
-                                                    // Check if the result was 'true', meaning the notice was read
-                                                    if (result == true) {
-                                                      // Refresh the list of notices
-                                                      refreshNotices();
-                                                    }
-                                                  },
-                                                ),
-                                              );
-                                            }).toList(),
-                                          ),
-                                           SizedBox(height: 15),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
                             ],
                           );

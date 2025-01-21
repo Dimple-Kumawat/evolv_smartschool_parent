@@ -5,6 +5,7 @@ import 'package:evolvu/Teacher/teacher_noteCard.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
+import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
@@ -121,7 +122,7 @@ class _TeacherNotePageState extends State<TeacherNotePage> {
           ),
           child: Column(
             children: [
-              SizedBox(height: 80.h),
+              SizedBox(height: 100.h),
               Text(
                 "Teacher Note",
                 style: TextStyle(
@@ -138,9 +139,90 @@ class _TeacherNotePageState extends State<TeacherNotePage> {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return Center(child: CircularProgressIndicator());
                     } else if (snapshot.hasError) {
-                      return Center(child: Text('Error: ${snapshot.error}'));
+                      return Center(
+                        child: Container(
+                          margin: const EdgeInsets.all(10),
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(16),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black26,
+                                blurRadius: 10,
+                                offset: Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              // Add emoji or animation here
+                              SizedBox(
+                                height: 150,
+                                width: 150,
+                                child: Image.asset(
+                                  'assets/nodata.gif',  // Replace with your emoji or animation file
+                                  fit: BoxFit.contain,
+                                ),
+                              ),
+                              SizedBox(height: 10), // Add spacing between emoji and text
+                              Text(
+                                'Teacher Notes not Assigned',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.red,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
                     } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return Center(child: Text('No notes available'));
+                      return Center(
+                        child: Container(
+                          margin: const EdgeInsets.all(10),
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(16),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black26,
+                                blurRadius: 10,
+                                offset: Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              // Add emoji or animation here
+                              SizedBox(
+                                height: 150,
+                                width: 150,
+                                child: Image.asset(
+                                   'assets/nodata.gif',  // Replace with your emoji or animation file
+                                  fit: BoxFit.contain,
+                                ),
+                              ),
+                              SizedBox(height: 10), // Add spacing between emoji and text
+                              Text(
+                                'Teacher Notes not Assigned',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.red,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+
                     } else {
                       final notes = snapshot.data!;
                       return ListView.builder(

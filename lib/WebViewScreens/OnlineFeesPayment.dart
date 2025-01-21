@@ -23,7 +23,7 @@ class PaymentWebview extends StatefulWidget {
   final String academicYr;
   final int receipt_button;
 
-  const PaymentWebview({super.key, 
+  PaymentWebview({super.key,
     required this.regId,
     required this.paymentUrlShare,
     required this.receiptUrl,
@@ -151,7 +151,7 @@ class _PaymentWebviewState extends State<PaymentWebview> {
               // Navigator.pop(context);
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => ReceiptWebViewScreen(receiptUrl: '${widget.receiptUrl}?reg_id=${widget.regId}&academic_yr=${widget.academicYr}&short_name=${widget.shortName}',)),
+                MaterialPageRoute(builder: (_) => ReceiptWebViewScreen(receiptUrl: widget.receiptUrl +'?reg_id=${widget.regId}&academic_yr=${widget.academicYr}&short_name=${widget.shortName}',)),
               );
             },
             child: Padding(

@@ -8,6 +8,7 @@ import 'package:evolvu/username_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 // Update the import path accordingly
@@ -65,6 +66,8 @@ class LoginPage extends StatefulWidget {
   _LoginState createState() => _LoginState();
 }
 String shortName1 = "";
+String schoolnamestr = "";
+String teacherApkUrl = "";
 String academic_yr1 = "";
 
 class _LoginState extends State<LoginPage> {
@@ -117,6 +120,7 @@ class _LoginState extends State<LoginPage> {
           String schoolId = parsedData['school_id'];
           String name = parsedData['name'];
            shortName = parsedData['short_name'];
+          schoolnamestr = parsedData['short_name'];
            url = parsedData['url'];
           String teacherApkUrl = parsedData['teacherapk_url'];
           String projectUrl = parsedData['project_url'];
@@ -217,6 +221,25 @@ class _LoginState extends State<LoginPage> {
   // Check login status
   void checkLoginStatus() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? schoolInfoJson = prefs.getString('school_info');
+
+    if (schoolInfoJson != null) {
+      try {
+        Map<String, dynamic> parsedData = json.decode(schoolInfoJson);
+
+        String schoolId = parsedData['school_id'];
+        String name = parsedData['name'];
+        shortName = parsedData['short_name'];
+        schoolnamestr = parsedData['short_name'];
+        url = parsedData['url'];
+         teacherApkUrl = parsedData['project_url'];
+        String projectUrl = parsedData['project_url'];
+        String defaultPassword = parsedData['default_password'];
+      } catch (e) {
+        print('Error parsing school info: $e');
+      }
+    }
+
     bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
     if (isLoggedIn) {
       // If user is already logged in, navigate to QRScannerPage
@@ -225,206 +248,302 @@ class _LoginState extends State<LoginPage> {
         MaterialPageRoute(builder: (_) => UserNamePage()),
       );
     }
+
   }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        body: Stack(
-          fit: StackFit.expand,
-          children: [
-            Image.asset(
-              'assets/img.png', // Replace with your background image
-              fit: BoxFit.cover,
-            ),
-            Container(
-              child: SingleChildScrollView(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(height: 10),
-                    Image.asset(
-                      'assets/logo.png', // Replace with your logo image
-                      width: 200,
-                      height: 140,
-                    ),
-                    Image.asset(
-                      'assets/school.png', // Replace with your logo image
-                      width: 400,
-                      height: 300,
-                    ),
-                    SizedBox(height: 60),
-                    Container(
-                      margin: EdgeInsets.symmetric(horizontal: 30),
-                      padding: EdgeInsets.all(5),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(30),
+    String logoPath ='' ;
+    if(schoolnamestr == 'SACS'){
+      logoPath = teacherApkUrl+'uploads/logo.jpg';
+    } else if (schoolnamestr == 'HSCS'){
+      logoPath = teacherApkUrl+'uploads/logo.jpg';
+    }
+    String schoolName = schoolnamestr == 'HSCS'
+        ? 'Holy Spirit Convent School'
+        : 'St. Arnolds Central School';
+    // print('Error parsing school info: $logoPath');
+
+    return WillPopScope(
+      onWillPop: () async {
+        // Go back to the previous screen
+        Navigator.pop(context);
+        return Future.value(false); // Prevent default back button behavior
+      },
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        home: Scaffold(
+          body: Stack(
+            fit: StackFit.expand,
+            children: [
+              Image.asset(
+                'assets/img.png', // Replace with your background image
+                fit: BoxFit.cover,
+              ),
+              Container(
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SizedBox(height: 10),
+                      Image.asset(
+                        'assets/logo.png',
+                        width: 200,
+                        height: 140,
                       ),
-                      child: TextField(
-                        enabled: false,
-                        controller: email,
-                        decoration: InputDecoration(
-                          hintText: 'Username',
-                          hintStyle: TextStyle(color: Colors.grey),
-                          prefixIcon: Icon(Icons.person_outline),
-                          border: InputBorder.none,
+                      // SizedBox(height: 10),
+
+                      Padding(
+                        padding: const EdgeInsets.only(right: 0.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            // Logo with loading indicator
+                            logoPath.isNotEmpty
+                                ? Image.network(
+                              logoPath,
+                              width: 40,
+                              height: 40,
+                              loadingBuilder: (context, child, loadingProgress) {
+                                if (loadingProgress == null) {
+                                  // The image has loaded successfully
+
+                                  Image.network(
+                                    logoPath, // Replace with your small logo image
+                                    width: 40,
+                                    height: 40,
+                                  );
+
+                                  return child;
+                                }
+                                // Display a CircularProgressIndicator while loading
+                                return SizedBox(
+                                  width: 40,
+                                  height: 40,
+                                  child: Center(
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      value: loadingProgress.expectedTotalBytes != null
+                                          ? loadingProgress.cumulativeBytesLoaded /
+                                          (loadingProgress.expectedTotalBytes ?? 1)
+                                          : null,
+                                    ),
+                                  ),
+                                );
+                              },
+                              errorBuilder: (context, error, stackTrace) {
+                                // Display a local fallback image if network image fails
+                                return Image.asset(
+                                  'assets/logo.png',
+                                  width: 40,
+                                  height: 40,
+                                );
+                              },
+                            )
+                                : Image.asset(
+                              'assets/logo.png',
+                              width: 40,
+                              height: 40,
+                            ),
+                            SizedBox(width: 8),
+
+                            // School name
+                            schoolName.isNotEmpty ?
+                            Text(
+                              schoolName,
+                              style: TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                              ),
+                            ):Text(
+                              'EvolvU Smart Parent App',
+                              style: TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ),
-                    SizedBox(height: 10),
-                    Container(
-                      margin: EdgeInsets.symmetric(horizontal: 30),
-                      padding: EdgeInsets.all(5),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(30),
+
+                      SizedBox(height: 20),
+      
+                      Image.asset(
+                        'assets/school.png', // Replace with your logo image
+                        width: 380,
+                        height: 300,
                       ),
-                      child: TextField(
-                        controller: password,
-                        obscureText: !_passwordVisible, // Negate the visibility state
-                        decoration: InputDecoration(
-                          hintText: 'Password',
-                          hintStyle: TextStyle(color: Colors.grey),
-                          prefixIcon: Icon(Icons.lock_person_outlined),
-                          border: InputBorder.none,
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              _passwordVisible ? Icons.visibility : Icons.visibility_off,
-                              color: Colors.grey,
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                _passwordVisible = !_passwordVisible; // Toggle visibility state
-                              });
-                            },
+                      SizedBox(height: 30),
+                      Container(
+                        margin: EdgeInsets.symmetric(horizontal: 30),
+                        padding: EdgeInsets.all(5),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                        child: TextField(
+                          enabled: false,
+                          controller: email,
+                          decoration: InputDecoration(
+                            hintText: 'Username',
+                            hintStyle: TextStyle(color: Colors.grey),
+                            prefixIcon: Icon(Icons.person_outline),
+                            border: InputBorder.none,
                           ),
                         ),
                       ),
-                    ),
-                    SizedBox(height: 5),
-                    Row(
-                      children: [
-                        // Padding(
-                        //   padding: const EdgeInsets.only(left: 20.0),
-                        //   child: Checkbox(
-                        //     value: _passwordVisible, // Use the same visibility state for the checkbox
-                        //     onChanged: (bool? newValue) {
-                        //       setState(() {
-                        //         _passwordVisible = newValue ?? false;
-                        //       });
-                        //     },
-                        //   ),
-                        // ),
-                        // Text(
-                        //   'Show Password',
-                        //   style: TextStyle(
-                        //     fontSize: 14,
-                        //   ),
-                        // ),
-                        Spacer(), // Use Spacer to push the next widget to the end of the row
-                        Padding(
-                          padding: const EdgeInsets.only(right: 30.0),
-                          child: TextButton(
-                            onPressed: () {
-                              // Fluttertoast.showToast(msg: "$shortName abcd $academic_yr");
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (_) => ForgotPasswordPage(widget.emailstr,shortName: shortName,academic_yr:academic_yr)),
-                              );
-
-                              // Handle "Forgot password"
-                            },
-                            child: Text(
-                              'Forgot password?',
-                              style: TextStyle(color: Colors.black),
+                      SizedBox(height: 10),
+                      Container(
+                        margin: EdgeInsets.symmetric(horizontal: 30),
+                        padding: EdgeInsets.all(5),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                        child: TextField(
+                          controller: password,
+                          obscureText: !_passwordVisible, // Negate the visibility state
+                          decoration: InputDecoration(
+                            hintText: 'Password',
+                            hintStyle: TextStyle(color: Colors.grey),
+                            prefixIcon: Icon(Icons.lock_person_outlined),
+                            border: InputBorder.none,
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _passwordVisible ? Icons.visibility : Icons.visibility_off,
+                                color: Colors.grey,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _passwordVisible = !_passwordVisible; // Toggle visibility state
+                                });
+                              },
                             ),
                           ),
                         ),
-                      ],
-                    ),
-
-                    Visibility(
-                      visible:
-                          shouldShowText, // Set this boolean based on your condition
-                      child: Text(
-                        'Login credentials are wrong. Please try again!',
+                      ),
+                      SizedBox(height: 5),
+                      Row(
+                        children: [
+                          // Padding(
+                          //   padding: const EdgeInsets.only(left: 20.0),
+                          //   child: Checkbox(
+                          //     value: _passwordVisible, // Use the same visibility state for the checkbox
+                          //     onChanged: (bool? newValue) {
+                          //       setState(() {
+                          //         _passwordVisible = newValue ?? false;
+                          //       });
+                          //     },
+                          //   ),
+                          // ),
+                          // Text(
+                          //   'Show Password',
+                          //   style: TextStyle(
+                          //     fontSize: 14,
+                          //   ),
+                          // ),
+                          Spacer(), // Use Spacer to push the next widget to the end of the row
+                          Padding(
+                            padding: const EdgeInsets.only(right: 30.0),
+                            child: TextButton(
+                              onPressed: () {
+                                // Fluttertoast.showToast(msg: "$shortName abcd $academic_yr");
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (_) => ForgotPasswordPage(widget.emailstr,shortName: shortName,academic_yr:academic_yr)),
+                                );
+      
+                                // Handle "Forgot password"
+                              },
+                              child: Text(
+                                'Forgot password?',
+                                style: TextStyle(color: Colors.black),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+      
+                      Visibility(
+                        visible:
+                            shouldShowText, // Set this boolean based on your condition
+                        child: Text(
+                          'Login credentials are wrong. Please try again!',
+                          style: TextStyle(
+                            color: Colors.red,
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      Visibility(
+                        visible:
+                            shouldShowText2, // Set this boolean based on your condition
+                        child: Text(
+                          'Please Enter Password!!',
+                          style: TextStyle(
+                            color: Colors.red,
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      // SizedBox(height: 10),
+                      _isLoading
+                          ? CircularProgressIndicator() // Show progress indicator when loading
+                          : ElevatedButton(
+                        onPressed: () {
+      
+                          if(password.text.toString().isEmpty){
+                            setState(() {
+                              shouldShowText2 = true;
+                            });
+      
+                            Fluttertoast.showToast(
+                              msg: 'Please Enter Password!!',
+                              backgroundColor: Colors.black45,
+                              textColor: Colors.white,
+                              toastLength: Toast.LENGTH_LONG,
+                              gravity: ToastGravity.CENTER,
+                            );
+      
+                          } else {
+                            setState(() {
+                              shouldShowText2 = false;
+                            });
+                            log(email.text.toString(), password.text.toString());
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue, // Button background color
+                          shape: StadiumBorder(),
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 72, vertical: 12),
+                        ),
+                        child: Text(
+                          'Login',
+                          style: TextStyle(color: Colors.white, fontSize: 16),
+                        ),
+                      ),
+                      SizedBox(height: 20),
+                      Text(
+                        'aceventuraservices@gmail.com',
                         style: TextStyle(
-                          color: Colors.red,
-                          fontSize: 14,
+                          color: Colors.black,
+                          fontSize: 13,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                    ),
-                    Visibility(
-                      visible:
-                          shouldShowText2, // Set this boolean based on your condition
-                      child: Text(
-                        'Please Enter Password!!',
-                        style: TextStyle(
-                          color: Colors.red,
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 10),
-                    _isLoading
-                        ? CircularProgressIndicator() // Show progress indicator when loading
-                        : ElevatedButton(
-                      onPressed: () {
-
-                        if(password.text.toString().isEmpty){
-                          setState(() {
-                            shouldShowText2 = true;
-                          });
-
-                          Fluttertoast.showToast(
-                            msg: 'Please Enter Password!!',
-                            backgroundColor: Colors.black45,
-                            textColor: Colors.white,
-                            toastLength: Toast.LENGTH_LONG,
-                            gravity: ToastGravity.CENTER,
-                          );
-
-                        } else {
-                          setState(() {
-                            shouldShowText2 = false;
-                          });
-                          log(email.text.toString(), password.text.toString());
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue, // Button background color
-                        shape: StadiumBorder(),
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 72, vertical: 12),
-                      ),
-                      child: Text(
-                        'Login',
-                        style: TextStyle(color: Colors.white, fontSize: 16),
-                      ),
-                    ),
-                    SizedBox(height: 30),
-                    Text(
-                      'aceventuraservices@gmail.com',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 13,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
 }
-
-

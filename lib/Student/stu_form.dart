@@ -3,7 +3,10 @@ import 'dart:io';
 
 import 'package:evolvu/Parent/parentDashBoard_Page.dart';
 import 'package:evolvu/Student/StudentDashboard.dart';
-import 'package:evolvu/common/Common_dropDownFiled.dart';
+import 'package:evolvu/common/common_dropDownFiled.dart';
+import 'package:evolvu/common/withHash_dropDown.dart';
+
+
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -12,6 +15,7 @@ import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../common/StuEditTextField.dart';
@@ -685,143 +689,151 @@ class _StudentFormState extends State<StudentForm> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                    SizedBox(
-                      height: 200.h,
-                      width: 200.w,
-                      child: Stack(
-                        
-                        children: [
-                          Positioned(
-                            height: 150.w,
-                            left: 0,
-                            right: 0,
-                            top: 10.h,
-                            child: CircleAvatar(
-                              radius: 75.w, // Adjust the radius to make the image circular
-                              backgroundColor: Colors.grey[200], // Placeholder color
-                              backgroundImage: imageUrl.isNotEmpty
-                                  ? NetworkImage(
-                                imageUrl + '?timestamp=${DateTime.now().millisecondsSinceEpoch}',
-                              )
-                                  : AssetImage(
-                                childInfo?.gender == 'M'
-                                    ? 'assets/boy.png'
-                                    : 'assets/girl.png',
-                              ) as ImageProvider,
-                            ),
-                          ),
-                          Positioned(
-                            right: 0,
-                            bottom: 0,
-                            child: Container(
-                              width: 48,
-                              height: 48,
-                              decoration: BoxDecoration(
-                                color: Color.fromARGB(255, 1, 24, 43)
-                                    .withOpacity(0.5),
-                                shape: BoxShape.circle,
-                              ),
-                              child: IconButton(
-                                icon: Icon(Icons.add),
-                                iconSize: 24,
-                                color: Colors.white,
-                                onPressed: () {
-                                  uploadImage(ImageSource.gallery);
-                                },
-                              ),
-                            ),
-                          ),
-                        ],
+                SizedBox(
+                  height: 200.h,
+                  width: 200.w,
+                  child: Stack(
+
+                    children: [
+                      Positioned(
+                        height: 150.w,
+                        left: 0,
+                        right: 0,
+                        top: 10.h,
+                        child: CircleAvatar(
+                          radius: 75.w, // Adjust the radius to make the image circular
+                          backgroundColor: Colors.grey[200], // Placeholder color
+                          backgroundImage: imageUrl.isNotEmpty
+                              ? NetworkImage(
+                            imageUrl + '?timestamp=${DateTime.now().millisecondsSinceEpoch}',
+                          )
+                              : AssetImage(
+                            childInfo?.gender == 'M'
+                                ? 'assets/boy.png'
+                                : 'assets/girl.png',
+                          ) as ImageProvider,
+                        ),
                       ),
-                    ),
-                    SizedBox(
-                      height: 15,
-                    ),
+                      Positioned(
+                        right: 0,
+                        bottom: 0,
+                        child: Container(
+                          width: 48,
+                          height: 48,
+                          decoration: BoxDecoration(
+                            color: Color.fromARGB(255, 1, 24, 43)
+                                .withOpacity(0.5),
+                            shape: BoxShape.circle,
+                          ),
+                          child: IconButton(
+                            icon: Icon(Icons.add),
+                            iconSize: 24,
+                            color: Colors.white,
+                            onPressed: () {
+                              uploadImage(ImageSource.gallery);
+                            },
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  height: 15,
+                ),
 
-                    StuTextField(
-                      label: 'First Name',
-                      name: 'First Name',
-                      readOnly: true,
-                      // isRequired: true,
-                      // isRequired: true,
-                      initialValue: childInfo?.firstName,
-                    ),
+                StuTextField(
+                  label: 'First Name',
+                  name: 'First Name',
+                  readOnly: true,
+                  showRedAsterisk: true,
+                  // isRequired: true,
+                  // isRequired: true,
+                  initialValue: childInfo?.firstName,
+                ),
 
-                    StuTextField(
-                      label: 'Middle Name',
-                      name: 'Middle Name',
-                      readOnly: true,
-                      initialValue: childInfo?.midName,
-                      //  isRequired: true,
-                    ),
+                StuTextField(
+                  label: 'Middle Name',
+                  name: 'Middle Name',
+                  readOnly: true,
+                  initialValue: childInfo?.midName,
+                  //  isRequired: true,
+                ),
 
-                    StuTextField(
-                      label: 'Last Name',
-                      name: 'Last Name',
-                      readOnly: true,
-                      initialValue: childInfo?.lastName,
-                      // isRequired: true,
-                    ),
+                StuTextField(
+                  label: 'Last Name',
+                  name: 'Last Name',
+                  readOnly: true,
+                  initialValue: childInfo?.lastName,
+                  // isRequired: true,
+                ),
 
-                    StuTextField(
-                      label: 'Date Of Birth',
-                      name: 'Date Of Birth',
-                      readOnly: true,
-                      //isRequired: true,
-                      initialValue: childInfo?.dob,
-                    ),
+                StuTextField(
+                  label: 'Date Of Birth',
+                  name: 'Date Of Birth',
+                  showRedAsterisk: true,
+                  readOnly: true,
+                  initialValue: childInfo?.dob != null
+                      ? DateFormat('dd-MM-yyyy').format(DateTime.parse(childInfo!.dob!))
+                      : '',
+                ),
 
-                    // Date Of Admission Field
-                    StuTextField(
-                      label: 'Date Of Admission',
-                      name: 'Date Of Admission',
-                      readOnly: true,
-                      // isRequired: true,
-                      initialValue: childInfo?.admissionDate,
-                    ),
+                // Date Of Admission Field
+                StuTextField(
+                  label: 'Date Of Admission',
+                  name: 'Date Of Admission',
+                  showRedAsterisk: true,
+                  readOnly: true,
+                  // isRequired: true,
+                  initialValue: childInfo?.admissionDate!= null
+                      ? DateFormat('dd-MM-yyyy').format(DateTime.parse(childInfo!.admissionDate!))
+                      : '',
+                ),
 
-                    // GRN NO. CustomTextField
-                    StuTextField(
-                      label: 'GRN NO.',
-                      name: 'GRN NO.',
-                      readOnly: true,
-                      //isRequired: true,
-                      initialValue: childInfo?.regNo,
-                    ),
+                // GRN NO. CustomTextField
+                StuTextField(
+                  label: 'GRN NO.',
+                  name: 'GRN NO.',
+                  readOnly: true,
+                  showRedAsterisk: true,
+                  //isRequired: true,
+                  initialValue: childInfo?.regNo,
+                ),
 
-                    // Student ID NO. Field
-                    StuTextField(
-                      label: 'Student ID NO.',
-                      name: 'Student ID NO.',
-                      readOnly: true,
-                      // isRequired: true,
-                      initialValue: childInfo?.studIdNo,
-                    ),
+                // Student ID NO. Field
+                StuTextField(
+                  label: 'Student ID NO.',
+                  name: 'Student ID NO.',
+                  readOnly: true,
+                  // isRequired: true,
+                  initialValue: childInfo?.studIdNo,
+                ),
 
-                    StuTextField(
-                      label: 'Udise Pen No.',
-                      name: 'Udise Pen No.',
-                      readOnly: true,
-                      // isRequired: true,
-                      initialValue: childInfo?.udisePenNo,
-                    ),
+                StuTextField(
+                  label: 'Udise Pen No.',
+                  name: 'Udise Pen No.',
+                  readOnly: true,
+                  // isRequired: true,
+                  initialValue: childInfo?.udisePenNo,
+                ),
 
-                    StuEditTextField(
-                      labelText: 'Student Aadhaar No.',
-                      initialValue: childInfo?.stuAadhaarNo,
-                      keyboardType: TextInputType.number,
-                      onChanged: (value) {
-                        setState(() {
-                          childInfo?.stuAadhaarNo = value;
-                        });
-                      },
-                    ),
+                StuEditTextField(
+                  labelText: 'Student Aadhaar No.',
+                  initialValue: childInfo?.stuAadhaarNo,
+                  keyboardType: TextInputType.number,
+                  isRequired: true,
+                  onChanged: (value) {
+                    setState(() {
+                      childInfo?.stuAadhaarNo = value;
+                    });
+                  },
+                ),
 
-                    // Display the full house name
-                    // if (childInfo?.house != null)
-                    //   Text('House: ${getFullHouseName(childInfo!.house)}'),
+                // Display the full house name
+                // if (childInfo?.house != null)
+                //   Text('House: ${getFullHouseName(childInfo!.house)}'),
 
-                LabeledDropdown(
+                HashLabeledDropdown(
                   label:
                   "Admitted In Class", // Keep the label static
                   options: [ 'Nursery','LKG', 'UKG', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13'],
@@ -837,405 +849,421 @@ class _StudentFormState extends State<StudentForm> {
                   },
                 ),
 
-                    SizedBox(
-                        width: 16.w), // Space between the two fields
-                    // Class Field
-                    StuTextField(
-                      initialValue: widget?.cname,
-                      label: 'Class',
-                      name: 'Class',
-                      // isRequired: true,
-                      readOnly: true,
-                    ),
-                    StuTextField(
-                      initialValue: widget?.secname,
-                      readOnly: true,
-                      label: 'Division',
-                      //  isRequired: true,
-                      name: 'Division',
-                    ),
+                SizedBox(
+                    width: 16.w), // Space between the two fields
+                // Class Field
+                StuTextField(
+                  initialValue: widget?.cname,
+                  label: 'Class',
+                  name: 'Class',
+                   showRedAsterisk: true,
+                // isRequired: true,
+                  readOnly: true,
+                ),
+                StuTextField(
+                  initialValue: widget?.secname,
+                  readOnly: true,
+                  label: 'Division',
+                   showRedAsterisk: true,
+                  //  isRequired: true,
+                  name: 'Division',
+                ),
 
-                    StuTextField(
-                      readOnly: true,
-                      initialValue: childInfo?.rollNo,
-                      label: 'Roll No.',
-                      name: 'Roll No.',
-                      //  isRequired: true,
-                    ),
+                StuTextField(
+                  readOnly: true,
+                  initialValue: childInfo?.rollNo,
+                  label: 'Roll No.',
+                  name: 'Roll No.',
+                  //  isRequired: true,
+                ),
 
-                    LabeledDropdown(
-                      label: "Gender",
-                      options: ['Male', 'Female'],
-                      selectedValue: getGender(childInfo?.gender) ??
-                          'Male', // Default to a valid option
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          if (newValue != null) {
-                            childInfo?.gender =
-                            newValue == 'Male' ? 'M' : 'F';
-                          }
-                        });
-                      },
-                    ),
+                HashLabeledDropdown(
+                  label: "Gender",
+                  
+                  options: ['Male', 'Female'],
+                 
+                  
+                  
+                  
+                  
+                  selectedValue: getGender(childInfo?.gender) ??
+                      'Male', // Default to a valid option
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      if (newValue != null) {
+                        childInfo?.gender =
+                        newValue == 'Male' ? 'M' : 'F';
+                      }
+                    });
+                  },
+                ),
 
-                    LabeledDropdown(
-                      label: "Blood Group", // Static label
-                      options: const [
-                        "AB+",
-                        "AB-",
-                        "B+",
-                        "B-",
-                        "A+",
-                        "A-",
-                        "O+",
-                        "O-"
-                      ],
-                      selectedValue: childInfo?.bloodGroup ??
-                          '', // Display the selected blood group inside the dropdown
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          if (newValue != null) {
-                            childInfo?.bloodGroup =
-                                newValue; // Update the selected value
-                          }
-                        });
-                      },
-                    ),
+                LabeledDropdown(
+                  label: "Blood Group",
+                   // Static label
+                  options: const [
+                    "AB+",
+                    "AB-",
+                    "B+",
+                    "B-",
+                    "A+",
+                    "A-",
+                    "O+",
+                    "O-"
+                  ],
+                  selectedValue: childInfo?.bloodGroup ??
+                      '', // Display the selected blood group inside the dropdown
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      if (newValue != null) {
+                        childInfo?.bloodGroup =
+                            newValue; // Update the selected value
+                      }
+                    });
+                  },
+                ),
 
-                    LabeledDropdown(
-                      label: 'House', // Static label
-                      options: houseNameMapping.values
-                          .toList(), // List of house names
-                      selectedValue:
-                      selectedHouseName, // Display the selected house name inside the dropdown
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          if (newValue != null) {
-                            selectedHouseName =
-                                newValue; // Update the selected house name
-                            selectedHouseId = houses.firstWhere(
-                                    (house) =>
-                                house['house_name'] ==
-                                    newValue)[
-                            'house_id']; // Update the house ID based on the selected house name
-                          }
-                        });
-                      },
-                    ),
+                LabeledDropdown(
+                  label: 'House', // Static label
+                  options: houseNameMapping.values
+                      .toList(), // List of house names
+                  selectedValue:
+                  selectedHouseName, // Display the selected house name inside the dropdown
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      if (newValue != null) {
+                        selectedHouseName =
+                            newValue; // Update the selected house name
+                        selectedHouseId = houses.firstWhere(
+                                (house) =>
+                            house['house_name'] ==
+                                newValue)[
+                        'house_id']; // Update the house ID based on the selected house name
+                      }
+                    });
+                  },
+                ),
 
-                    StuEditTextField(
-                      labelText: 'Nationality',
-                      initialValue: childInfo?.nationality ?? '',
-                      keyboardType: TextInputType.name,
-                      onChanged: (value) {
-                        setState(() {
-                          childInfo?.nationality = value;
-                        });
-                      },
-                    ),
+                StuEditTextField(
+                  labelText: 'Nationality',
+                  initialValue: childInfo?.nationality ?? '',
+                  keyboardType: TextInputType.name,
+                  isRequired: true,
+                  onChanged: (value) {
+                    setState(() {
+                      childInfo?.nationality = value;
+                    });
+                  },
+                ),
 
-                    StuEditTextField(
-                      labelText: 'Address',
-                      initialValue: childInfo?.permantAdd ?? '',
-                      keyboardType: TextInputType.name,
-                      onChanged: (value) {
-                        setState(() {
-                          childInfo?.permantAdd = value;
-                        });
-                      },
-                    ),
+                StuEditTextField(
+                  labelText: 'Address',
+                  initialValue: childInfo?.permantAdd ?? '',
+                  keyboardType: TextInputType.name,
+                  isRequired: true,
+                  onChanged: (value) {
+                    setState(() {
+                      childInfo?.permantAdd = value;
+                    });
+                  },
+                ),
 
-                    StuEditTextField(
-                      labelText: 'City',
-                      initialValue: childInfo?.city ?? '',
-                      keyboardType: TextInputType.name,
-                      onChanged: (value) {
-                        setState(() {
-                          childInfo?.city = value;
-                        });
-                      },
-                    ),
+                StuEditTextField(
+                  labelText: 'City',
+                  initialValue: childInfo?.city ?? '',
+                  keyboardType: TextInputType.name,
+                  isRequired: true,
+                  onChanged: (value) {
+                    setState(() {
+                      childInfo?.city = value;
+                    });
+                  },
+                ),
 
-                    StuEditTextField(
-                      labelText: 'State',
-                      initialValue: childInfo?.state ?? '',
-                      keyboardType: TextInputType.name,
-                      onChanged: (value) {
-                        setState(() {
-                          childInfo?.state = value;
-                        });
-                      },
-                    ),
+                StuEditTextField(
+                  labelText: 'State',
+                  initialValue: childInfo?.state ?? '',
+                  keyboardType: TextInputType.name,
+                  isRequired: true,
+                  onChanged: (value) {
+                    setState(() {
+                      childInfo?.state = value;
+                    });
+                  },
+                ),
 
-                    StuEditTextField(
-                      labelText: 'Pincode',
-                      initialValue: childInfo?.pincode ?? '',
-                      keyboardType: TextInputType.number,
-                      onChanged: (value) {
-                        setState(() {
-                          childInfo?.pincode = value;
-                        });
-                      },
-                    ),
+                StuEditTextField(
+                  labelText: 'Pincode',
+                  initialValue: childInfo?.pincode ?? '',
+                  keyboardType: TextInputType.number,
+                  onChanged: (value) {
+                    setState(() {
+                      childInfo?.pincode = value;
+                    });
+                  },
+                ),
 
-                    StuEditTextField(
-                      labelText: 'Birth Place',
-                      initialValue: childInfo?.birthPlace ?? '',
-                      keyboardType: TextInputType.name,
-                      onChanged: (value) {
-                        setState(() {
-                          childInfo?.birthPlace = value;
-                        });
-                      },
-                    ),
+                StuEditTextField(
+                  labelText: 'Birth Place',
+                  initialValue: childInfo?.birthPlace ?? '',
+                  keyboardType: TextInputType.name,
+                  onChanged: (value) {
+                    setState(() {
+                      childInfo?.birthPlace = value;
+                    });
+                  },
+                ),
 
-                    StuEditTextField(
-                      labelText: 'Mother Tongue',
-                      initialValue: childInfo?.motherTongue ?? '',
-                      keyboardType: TextInputType.name,
-                      onChanged: (value) {
-                        setState(() {
-                          childInfo?.motherTongue = value;
-                        });
-                      },
-                    ),
+                StuEditTextField(
+                  labelText: 'Mother Tongue',
+                  initialValue: childInfo?.motherTongue ?? '',
+                  keyboardType: TextInputType.name,
+                  isRequired: true,
+                  onChanged: (value) {
+                    setState(() {
+                      childInfo?.motherTongue = value;
+                    });
+                  },
+                ),
 
-                    // Religion TextField
-                    StuTextField(
-                      label: 'Religion',
-                      name: 'Religion',
-                      readOnly: true,
-                      // isRequired: true,
-                      // isRequired: true,
-                      initialValue: childInfo?.religion,
-                    ),
-                    StuTextField(
-                      label: 'Caste',
-                      name: 'Caste',
-                      readOnly: true,
-                      // isRequired: true,
-                      // isRequired: true,
-                      initialValue: childInfo?.caste,
-                    ),
-                    StuTextField(
-                      label: 'Category',
-                      name: 'Category',
-                      readOnly: true,
-                      // isRequired: true,
-                      //isRequired: true,
-                      initialValue: childInfo?.category,
-                    ),
+                // Religion TextField
+                StuTextField(
+                  label: 'Religion',
+                  name: 'Religion',
+                  readOnly: true,
+                   showRedAsterisk: true,
+                  // isRequired: true,
+                  // isRequired: true,
+                  initialValue: childInfo?.religion,
+                ),
+                StuTextField(
+                  label: 'Caste',
+                  name: 'Caste',
+                  readOnly: true,
+                  // isRequired: true,
+                  // isRequired: true,
+                  initialValue: childInfo?.caste,
+                ),
+                StuTextField(
+                  label: 'Category',
+                  name: 'Category',
+                  readOnly: true,
+                   showRedAsterisk: true,
+                  // isRequired: true,
+                  //isRequired: true,
+                  initialValue: childInfo?.category,
+                ),
 
-                    StuEditTextField(
-                      labelText: 'Emergency Name',
-                      initialValue: childInfo?.emergencyName ?? '',
-                      keyboardType: TextInputType.name,
-                      onChanged: (value) {
-                        setState(() {
-                          childInfo?.emergencyName = value;
-                        });
-                      },
-                    ),
+                StuEditTextField(
+                  labelText: 'Emergency Name',
+                  initialValue: childInfo?.emergencyName ?? '',
+                  keyboardType: TextInputType.name,
+                  onChanged: (value) {
+                    setState(() {
+                      childInfo?.emergencyName = value;
+                    });
+                  },
+                ),
 
-                    StuEditTextField(
-                      labelText: 'Emergency Address',
-                      initialValue: childInfo?.emergencyAdd ?? '',
-                      keyboardType: TextInputType.name,
-                      onChanged: (value) {
-                        setState(() {
-                          childInfo?.emergencyAdd = value;
-                        });
-                      },
-                    ),
+                StuEditTextField(
+                  labelText: 'Emergency Address',
+                  initialValue: childInfo?.emergencyAdd ?? '',
+                  keyboardType: TextInputType.name,
+                  onChanged: (value) {
+                    setState(() {
+                      childInfo?.emergencyAdd = value;
+                    });
+                  },
+                ),
 
-                    StuEditTextField(
-                      labelText: 'Emergency Contact',
-                      initialValue: childInfo?.emergencyContact ?? '',
-                      keyboardType: TextInputType.number,
-                      onChanged: (value) {
-                        setState(() {
-                          childInfo?.emergencyContact = value;
-                        });
-                      },
-                    ),
+                StuEditTextField(
+                  labelText: 'Emergency Contact',
+                  initialValue: childInfo?.emergencyContact ?? '',
+                  keyboardType: TextInputType.number,
+                  onChanged: (value) {
+                    setState(() {
+                      childInfo?.emergencyContact = value;
+                    });
+                  },
+                ),
 
-                    StuEditTextField(
-                      labelText: 'Allergies(If ANY)',
-                      initialValue: childInfo?.allergies ?? '',
-                      keyboardType: TextInputType.name,
-                      onChanged: (value) {
-                        setState(() {
-                          childInfo?.allergies = value;
-                        });
-                      },
-                    ),
+                StuEditTextField(
+                  labelText: 'Allergies(If ANY)',
+                  initialValue: childInfo?.allergies ?? '',
+                  keyboardType: TextInputType.name,
+                  onChanged: (value) {
+                    setState(() {
+                      childInfo?.allergies = value;
+                    });
+                  },
+                ),
 
-                    StuEditTextField(
-                      labelText: 'Height',
-                      initialValue: childInfo?.height ?? '',
-                      keyboardType: TextInputType.number,
-                      onChanged: (value) {
-                        setState(() {
-                          childInfo?.height = value;
-                        });
-                      },
-                    ),
+                StuEditTextField(
+                  labelText: 'Height',
+                  initialValue: childInfo?.height ?? '',
+                  keyboardType: TextInputType.number,
+                  onChanged: (value) {
+                    setState(() {
+                      childInfo?.height = value;
+                    });
+                  },
+                ),
 
-                    StuEditTextField(
-                      labelText: 'Weight',
-                      initialValue: childInfo?.weight ?? '',
-                      keyboardType: TextInputType.number,
-                      onChanged: (value) {
-                        setState(() {
-                          childInfo?.weight = value;
-                        });
-                      },
-                    ),
+                StuEditTextField(
+                  labelText: 'Weight',
+                  initialValue: childInfo?.weight ?? '',
+                  keyboardType: TextInputType.number,
+                  onChanged: (value) {
+                    setState(() {
+                      childInfo?.weight = value;
+                    });
+                  },
+                ),
 
-                    LabeledDropdown(
-                      label: 'Transport Mode',
-                      options: displayOptions,
-                      selectedValue: selectedTrans ??
-                          'Select', // Default to 'Select' if null
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          if (newValue != null &&
-                              newValue != 'Select') {
-                            selectedTrans = newValue;
-                            childInfo?.transportMode =
-                                valueMapping[newValue] ?? '';
-                          }
-                        });
-                      },
-                    ),
-                    StuEditTextField(
-                      labelText: '',
-                      initialValue: childInfo?.transportMode ?? '',
-                      keyboardType: TextInputType.name,
-                      onChanged: (value) {
-                        setState(() {
-                          childInfo?.transportMode = value;
-                        });
-                      },
-                    ),
+                LabeledDropdown(
+                  label: 'Transport Mode',
+                  options: displayOptions,
+                  selectedValue: selectedTrans ??
+                      'Select', // Default to 'Select' if null
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      if (newValue != null &&
+                          newValue != 'Select') {
+                        selectedTrans = newValue;
+                        childInfo?.transportMode =
+                            valueMapping[newValue] ?? '';
+                      }
+                    });
+                  },
+                ),
+                StuEditTextField(
+                  labelText: '',
+                  initialValue: childInfo?.transportMode ?? '',
+                  keyboardType: TextInputType.name,
+                  onChanged: (value) {
+                    setState(() {
+                      childInfo?.transportMode = value;
+                    });
+                  },
+                ),
 
-                    LabeledDropdown(
-                      label: 'Has Spectacles?', // Static label
-                      options: ['YES', 'NO'], // Dropdown options
-                      selectedValue: getSpecs(childInfo!
-                          .hasSpecs), // The currently selected spectacles status
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          if (newValue != null) {
-                            childInfo?.hasSpecs =
-                                newValue; // Update the spectacles status
-                          }
-                        });
-                      },
-                    ),
-                    SizedBox(
-                      height: 5,
-                    ),
-                    ElevatedButton(
-                      onPressed: () async {
-                        print('###### body: ${childInfo?.allergies}');
+                LabeledDropdown(
+                  label: 'Has Spectacles?', // Static label
+                  options: ['YES', 'NO'], // Dropdown options
+                  selectedValue: getSpecs(childInfo!
+                      .hasSpecs), // The currently selected spectacles status
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      if (newValue != null) {
+                        childInfo?.hasSpecs =
+                            newValue; // Update the spectacles status
+                      }
+                    });
+                  },
+                ),
+                SizedBox(
+                  height: 5,
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    print('###### body: ${childInfo?.allergies}');
 
-                        try {
-                          Response response = await post(
-                            Uri.parse("${url}update_student"),
-                            body: {
-                              'short_name': shortName ?? '',
-                              'student_id':
-                              childInfo?.studentId ?? '',
-                              'gender': childInfo?.gender ?? '',
-                              'blood_group':
-                              childInfo?.bloodGroup ?? '',
-                              'stu_aadhaar_no':
-                              childInfo?.stuAadhaarNo ?? '',
-                              'nationality':
-                              childInfo?.nationality ?? '',
-                              'permant_add':
-                              childInfo?.permantAdd ?? '',
-                              'city': childInfo?.city ?? '',
-                              'state': childInfo?.state ?? '',
-                              'pincode': childInfo?.pincode ?? '',
-                              'caste': childInfo?.caste ?? '',
-                              'religion': childInfo?.religion ?? '',
-                              'category': childInfo?.category ?? '',
-                              'emergency_contact':
-                              childInfo?.emergencyContact ?? '',
-                              'emergency_name':
-                              childInfo?.emergencyName ?? '',
-                              'emergency_add':
-                              childInfo?.emergencyAdd ?? '',
-                              'transport_mode':
-                              childInfo?.transportMode ?? '',
-                              'vehicle_no':
-                              childInfo?.vehicleNo ?? '',
-                              'has_specs': childInfo?.hasSpecs ?? '',
-                              'birth_place':
-                              childInfo?.birthPlace ?? '',
-                              'mother_tongue':
-                              childInfo?.motherTongue ?? '',
-                              'stud_id_no': childInfo?.studIdNo ?? '',
-                              'admission_class':
-                              childInfo?.admissionClass ?? '',
-                              'allergies': childInfo?.allergies ?? '',
-                              'height': childInfo?.height ?? '',
-                              'weight': childInfo?.weight ?? '',
-                              'house': selectedHouseId ?? '',
-                              'transport_mode':
-                              childInfo?.transportMode ?? '',
-                            },
-                          );
+                    try {
+                      Response response = await post(
+                        Uri.parse("${url}update_student"),
+                        body: {
+                          'short_name': shortName ?? '',
+                          'student_id':
+                          childInfo?.studentId ?? '',
+                          'gender': childInfo?.gender ?? '',
+                          'blood_group':
+                          childInfo?.bloodGroup ?? '',
+                          'stu_aadhaar_no':
+                          childInfo?.stuAadhaarNo ?? '',
+                          'nationality':
+                          childInfo?.nationality ?? '',
+                          'permant_add':
+                          childInfo?.permantAdd ?? '',
+                          'city': childInfo?.city ?? '',
+                          'state': childInfo?.state ?? '',
+                          'pincode': childInfo?.pincode ?? '',
+                          'caste': childInfo?.caste ?? '',
+                          'religion': childInfo?.religion ?? '',
+                          'category': childInfo?.category ?? '',
+                          'emergency_contact':
+                          childInfo?.emergencyContact ?? '',
+                          'emergency_name':
+                          childInfo?.emergencyName ?? '',
+                          'emergency_add':
+                          childInfo?.emergencyAdd ?? '',
+                          'transport_mode':
+                          childInfo?.transportMode ?? '',
+                          'vehicle_no':
+                          childInfo?.vehicleNo ?? '',
+                          'has_specs': childInfo?.hasSpecs ?? '',
+                          'birth_place':
+                          childInfo?.birthPlace ?? '',
+                          'mother_tongue':
+                          childInfo?.motherTongue ?? '',
+                          'stud_id_no': childInfo?.studIdNo ?? '',
+                          'admission_class':
+                          childInfo?.admissionClass ?? '',
+                          'allergies': childInfo?.allergies ?? '',
+                          'height': childInfo?.height ?? '',
+                          'weight': childInfo?.weight ?? '',
+                          'house': selectedHouseId ?? '',
+                          'transport_mode':
+                          childInfo?.transportMode ?? '',
+                        },
+                      );
 
-                          // print('Response body: $qrCode $academic_yr $formattedTime $formattedDate');
-                          print('Response body: ${response.body}');
-                          print(
-                              'childInfo?.stuAadhaarNo33##### body: ${childInfo?.allergies}+${childInfo?.gender}+${childInfo?.transportMode}');
+                      // print('Response body: $qrCode $academic_yr $formattedTime $formattedDate');
+                      print('Response body: ${response.body}');
+                      print(
+                          'childInfo?.stuAadhaarNo33##### body: ${childInfo?.allergies}+${childInfo?.gender}+${childInfo?.transportMode}');
 
-                          if (response.statusCode == 200) {
-                            Fluttertoast.showToast(
-                              msg: "Profile updated successfully",
-                              toastLength: Toast.LENGTH_SHORT,
-                              gravity: ToastGravity.BOTTOM,
-                              timeInSecForIosWeb: 1,
-                              backgroundColor: Colors.green,
-                              textColor: Colors.white,
-                              fontSize: 16.0,
-                            );
+                      if (response.statusCode == 200) {
+                        Fluttertoast.showToast(
+                          msg: "Profile updated successfully",
+                          toastLength: Toast.LENGTH_SHORT,
+                          gravity: ToastGravity.BOTTOM,
+                          timeInSecForIosWeb: 1,
+                          backgroundColor: Colors.green,
+                          textColor: Colors.white,
+                          fontSize: 16.0,
+                        );
 
-                            Navigator.pop(context);
-                          } else {
-                            Fluttertoast.showToast(
-                              msg: "Failed to update Profile",
-                              toastLength: Toast.LENGTH_SHORT,
-                              gravity: ToastGravity.BOTTOM,
-                              timeInSecForIosWeb: 1,
-                              backgroundColor: Colors.red,
-                              textColor: Colors.white,
-                              fontSize: 16.0,
-                            );
-                          }
-                        } catch (e) {
-                          print('Exception: $e');
-                        }
+                        Navigator.pop(context);
+                      } else {
+                        Fluttertoast.showToast(
+                          msg: "Failed to update Profile",
+                          toastLength: Toast.LENGTH_SHORT,
+                          gravity: ToastGravity.BOTTOM,
+                          timeInSecForIosWeb: 1,
+                          backgroundColor: Colors.red,
+                          textColor: Colors.white,
+                          fontSize: 16.0,
+                        );
+                      }
+                    } catch (e) {
+                      print('Exception: $e');
+                    }
 
-                        // UpdateStudent(context,childInfo?.studentId);
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blueAccent,
-                        shape: StadiumBorder(),
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 72, vertical: 12),
-                      ),
-                      child: Text(
-                        'Update',
-                        style: TextStyle(
-                            color: Colors.white, fontSize: 16.sp),
-                      ),
-                    ),
-                    // Continue adding more fields or other widgets
+                    // UpdateStudent(context,childInfo?.studentId);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blueAccent,
+                    shape: StadiumBorder(),
+                    padding: EdgeInsets.symmetric(
+                        horizontal: 72, vertical: 12),
+                  ),
+                  child: Text(
+                    'Update',
+                    style: TextStyle(
+                        color: Colors.white, fontSize: 16.sp),
+                  ),
+                ),
+                // Continue adding more fields or other widgets
               ],
             ),
           )

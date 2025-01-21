@@ -8,6 +8,7 @@ class StuEditTextField extends StatelessWidget {
   final bool readOnly;
   final VoidCallback? onTap; // For fields like date pickers
   final Widget? suffixIcon; // For icons like calendars or dropdowns
+  final bool isRequired; // Flag for mandatory field
 
   const StuEditTextField({
     Key? key,
@@ -18,6 +19,7 @@ class StuEditTextField extends StatelessWidget {
     this.readOnly = false,
     this.onTap,
     this.suffixIcon,
+    this.isRequired = false, // Default to not required
   }) : super(key: key);
 
   @override
@@ -30,12 +32,26 @@ class StuEditTextField extends StatelessWidget {
           // Label on the left
           SizedBox(
             width: 100, // Adjust the width as needed
-            child: Text(
-              labelText,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold, // Set font weight to bold
-                fontSize: 14.0,
-                color: Colors.black,
+            child: RichText(
+              text: TextSpan(
+                children: [
+                  if (isRequired) // Add the red asterisk first if required
+                    const TextSpan(
+                      text: '* ',
+                      style: TextStyle(
+                        color: Colors.red, // Asterisk color
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  TextSpan(
+                    text: labelText,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold, // Set font weight to bold
+                      fontSize: 14.0,
+                      color: Colors.black,
+                    ),
+                  ),
+                ],
               ),
             ),
           ),

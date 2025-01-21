@@ -1,0 +1,30 @@
+{
+    "flutter": {
+        "platforms": {
+            "android": {
+                "default": {
+                    "projectId": "evolvuparentapp",
+                    "appId": "1:822080592108:android:35803ff317adc41024adc9",
+                    "fileOutput": "android/app/google-services.json"
+                }
+            },
+            "ios": {
+                "default": {
+                    "projectId": "evolvuparentapp",
+                    "appId": "1:822080592108:ios:a172652636634f0624adc9",
+                    "uploadDebugSymbols": false,
+                    "fileOutput": "ios/Runner/GoogleService-Info.plist"
+                }
+            },
+            "dart": {
+                "lib/firebase_options.dart": {
+                    "projectId": "evolvuparentapp",
+                    "configurations": {
+                        "android": "1:822080592108:android:35803ff317adc41024adc9",
+                        "ios": "1:822080592108:ios:a172652636634f0624adc9"
+                    }
+                }
+            }
+        }
+    }
+}

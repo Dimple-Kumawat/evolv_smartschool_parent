@@ -135,7 +135,7 @@ class NoticeDetailCard extends StatelessWidget {
           ),
           child: Column(
             children: [
-              SizedBox(height: 80.h),
+              SizedBox(height: 100.h),
               Text(
                 "Notice/SMS Details",
                 style: TextStyle(

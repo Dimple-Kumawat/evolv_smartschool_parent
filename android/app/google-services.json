@@ -1,45 +1,81 @@
 {
   "project_info": {
-    "project_number": "997012539911",
-    "project_id": "flutterparentapp",
-    "storage_bucket": "flutterparentapp.appspot.com"
+    "project_number": "822080592108",
+    "project_id": "evolvuparentapp",
+    "storage_bucket": "evolvuparentapp.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:997012539911:android:94ab8e27b9b66ed8cef8a2",
+        "mobilesdk_app_id": "1:822080592108:android:35803ff317adc41024adc9",
         "android_client_info": {
           "package_name": "altu.ace.dimp.flutter.parentapp"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "822080592108-t0su6kfrjqgejomrk7r1uf8l623atsih.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
-          "current_key": "AIzaSyDNlYgcc0QjUp5-p_87XnFG5hDVjiF1lvM"
+          "current_key": "AIzaSyB1MBLUWiQzbMQsWMDN0l1ItQejqCSUK_0"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "822080592108-t0su6kfrjqgejomrk7r1uf8l623atsih.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:997012539911:android:93d989448635271acef8a2",
+        "mobilesdk_app_id": "1:822080592108:android:4cf28865bab1aa5b24adc9",
         "android_client_info": {
-          "package_name": "com.android.application"
+          "package_name": "in.aceventura.evolvuschool"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "822080592108-fqs7qsmjh74sd18sn82r15jpnros6n3j.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "in.aceventura.evolvuschool",
+            "certificate_hash": "ee6d5b890976802bc05c53ec4eb1f2b980c10262"
+          }
+        },
+        {
+          "client_id": "822080592108-unies40bfho9t3r838hok30mguv43tds.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "in.aceventura.evolvuschool",
+            "certificate_hash": "1a1aa589be6f7820137af7e449b7fd2818fbdb9f"
+          }
+        },
+        {
+          "client_id": "822080592108-t0su6kfrjqgejomrk7r1uf8l623atsih.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
-          "current_key": "AIzaSyDNlYgcc0QjUp5-p_87XnFG5hDVjiF1lvM"
+          "current_key": "AIzaSyB1MBLUWiQzbMQsWMDN0l1ItQejqCSUK_0"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "822080592108-t0su6kfrjqgejomrk7r1uf8l623atsih.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

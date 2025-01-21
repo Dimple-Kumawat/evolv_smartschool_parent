@@ -14,11 +14,15 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import '../QR/QR_Code.dart';
 import '../Utils&Config/api.dart';
 import '../WebViewScreens/FeesReceiptWebViewScreen.dart';
 import '../WebViewScreens/OnlineFeesPayment.dart';
 import '../aboutUs.dart';
 import '../changePasswordPage.dart';
+import '../WebViewScreens/DashboardOnlineFeesPayment.dart';
+import '../WebViewScreens/DrawerOnlineFeesPayment.dart';
+import 'DrawerParentProfile.dart';
 
 class ParentDashBoardPage extends StatefulWidget {
   final String academic_yr;
@@ -50,7 +54,7 @@ Future<void> _getSchoolInfo() async {
   final prefs = await SharedPreferences.getInstance();
   String? schoolInfoJson = prefs.getString('school_info');
   String? logUrls = prefs.getString('logUrls');
-  print('logUrls====\\\\\: $logUrls');
+    print('logUrls====\\\\\: $schoolInfoJson');
   if (logUrls != null) {
     try {
       Map<String, dynamic> logUrlsparsed = json.decode(logUrls);
@@ -208,32 +212,13 @@ class _ParentDashBoardPageState extends State<ParentDashBoardPage> {
       ),
       CalendarPage(),
 
-      PaymentWebview(regId: reg_id, paymentUrlShare: paymentUrlShare, receiptUrl: receiptUrl, shortName: shortName, academicYr: academic_yr, receipt_button: receipt_button,),
+     // PaymentWebview(regId: reg_id, paymentUrlShare: paymentUrlShare, receiptUrl: receiptUrl, shortName: shortName, academicYr: academic_yr, receipt_button: receipt_button,),
+       Dashboardonlinefeespayment(regId: reg_id, paymentUrlShare: paymentUrlShare, receiptUrl: receiptUrl, shortName: shortName, academicYr: academic_yr, receipt_button: receipt_button,),
+     
       ParentProfilePage(),
     ];
 
-    return WillPopScope(
-      onWillPop: () async {
-        return (await showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: const Text('Are you sure?'),
-            content: const Text('Do you want to exit the app?'),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(false),
-                child: const Text('No'),
-              ),
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(true),
-                child: const Text('Yes'),
-              ),
-            ],
-          ),
-        )) ??
-            false;
-      },
-      child: Scaffold(
+    return Scaffold(
         backgroundColor: Colors.blue,
         appBar: AppBar(
           title: Text(
@@ -274,7 +259,6 @@ class _ParentDashBoardPageState extends State<ParentDashBoardPage> {
           ],
         ),
         bottomNavigationBar: buildMyNavBar(),
-      ),
     );
   }
 
@@ -370,11 +354,23 @@ class _ParentDashBoardPageState extends State<ParentDashBoardPage> {
     );
   }
 
+
   Widget _buildNavItem({required IconData icon, required String label, required int index}) {
     bool isSelected = pageIndex == index;
 
     return GestureDetector(
-      onTap: () => setState(() => pageIndex = index),
+      onTap: () {
+        if (index == 4) {
+          // Navigate to the QR Code screen without modifying pageIndex
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => QRCodeScreen(regId: reg_id)),
+          );
+        } else {
+          // Change pageIndex for BottomNavigationBar screens
+          setState(() => pageIndex = index);
+        }
+      },
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -392,6 +388,8 @@ class _ParentDashBoardPageState extends State<ParentDashBoardPage> {
       ),
     );
   }
+
+
 
   Widget _buildCenterNavItem({required IconData icon, required int index}) {
     bool isSelected = pageIndex == index;
@@ -508,7 +506,7 @@ class CustomPopup extends StatelessWidget {
         onTap: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (_) => ParentProfilePage()),
+            MaterialPageRoute(builder: (_) => DrawerParentProfilePage()),
           );
         },
       ),
@@ -528,7 +526,8 @@ class CustomPopup extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => PaymentWebview(
+            //  builder: (context) => PaymentWebview(
+              builder: (context) => DrawerOnlineFeesPayment(
                   regId: reg_id,paymentUrlShare:paymentUrlShare,receiptUrl:receiptUrl,shortName: shortName,academicYr: academic_yr, receipt_button: receipt_button,),
             ),
           );

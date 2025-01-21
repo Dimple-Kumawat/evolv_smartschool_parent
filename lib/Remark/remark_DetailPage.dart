@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Teacher/Attachment.dart';
@@ -27,7 +29,8 @@ class RemarkInfo {
 class RemarkDetailPage extends StatefulWidget {
   final RemarkInfo remarkInfo;
 
-  const RemarkDetailPage({Key? key, required this.remarkInfo}) : super(key: key);
+  const RemarkDetailPage({Key? key, required this.remarkInfo})
+      : super(key: key);
 
   @override
   _RemarkDetailPageState createState() => _RemarkDetailPageState();
@@ -145,7 +148,8 @@ class _RemarkDetailPageState extends State<RemarkDetailPage> {
           ),
         ),
         ...widget.remarkInfo.attachment.map((attachment) {
-          bool isFileNotUploaded = (attachment.fileSize / 1024) == 0.00;
+          bool isFileNotUploaded = attachment.fileSize <= 0;
+
           return ListTile(
             contentPadding: EdgeInsets.zero,
             leading: const Icon(Icons.file_download, size: 25),
@@ -165,6 +169,17 @@ class _RemarkDetailPageState extends State<RemarkDetailPage> {
       ],
     );
   }
+  Future<bool> _checkAndRequestPermission() async {
+    if (Platform.isAndroid) {
+      final status = await Permission.storage.status;
+      if (status.isDenied) {
+        final result = await Permission.storage.request();
+        return result.isGranted;
+      }
+      return status.isGranted;
+    }
+    return true; // iOS permissions are typically handled differently
+  }
 
   Future<void> _handleDownload(Attachment attachment) async {
     DateTime now = DateTime.now();
@@ -177,7 +192,13 @@ class _RemarkDetailPageState extends State<RemarkDetailPage> {
         } else {
           String downloadUrl =
               '$projectUrl/uploads/remark/${widget.remarkInfo.remarkDate}/${widget.remarkInfo.remarkId}/${attachment.imageName}';
-          await downloadFile(downloadUrl, context, attachment.imageName);
+          if (Platform.isAndroid) {
+            await downloadFile(downloadUrl, context, attachment.imageName);
+          } else if (Platform.isIOS) {
+            await _downloadFileIOS(downloadUrl, attachment.imageName);
+          } else {
+            _showSnackBar('Unsupported platform');
+          }
           _showSnackBar('File downloaded successfully.');
         }
       } catch (e) {
@@ -188,8 +209,9 @@ class _RemarkDetailPageState extends State<RemarkDetailPage> {
     }
   }
 
-  Future<void> downloadFile(String url, BuildContext context, String name) async {
-    var directory = Directory("/storage/emulated/0/Download/Evolvuschool/Parent/Remark");
+  downloadFile(String url, BuildContext context, String name) async {
+    var directory =
+    Directory("/storage/emulated/0/Download/Remarks");
 
     if (!await directory.exists()) {
       await directory.create(recursive: true);
@@ -201,13 +223,49 @@ class _RemarkDetailPageState extends State<RemarkDetailPage> {
     try {
       var res = await http.get(Uri.parse(url));
       await file.writeAsBytes(res.bodyBytes);
-      _showSnackBar('File downloaded successfully: Download/Evolvuschool/Parent/Remark');
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+              'File downloaded successfully: Download/Remarks'),
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to download file: $e'),
+        ),
+      );
+    }
+  }
+
+  Future<void> _downloadFileIOS(String url, String fileName) async {
+    // Get the documents directory on iOS
+    final directory = await getApplicationDocumentsDirectory();
+
+    // Construct the full path for the downloaded file
+    final filePath = '${directory.path}/$fileName';
+    final file = File(filePath);
+
+    try {
+      final response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        await file.writeAsBytes(response.bodyBytes);
+        _showSnackBar('Find it in the Files/On My iPhone/EvolvU Smart School - Parent.');
+      } else {
+        _showSnackBar('Failed to download file: ${response.statusCode}');
+      }
     } catch (e) {
       _showSnackBar('Failed to download file: $e');
     }
   }
 
+
+
+
+
   void _showSnackBar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(message)));
   }
 }
