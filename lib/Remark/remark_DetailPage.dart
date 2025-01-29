@@ -251,7 +251,7 @@ class _RemarkDetailPageState extends State<RemarkDetailPage> {
       final response = await http.get(Uri.parse(url));
       if (response.statusCode == 200) {
         await file.writeAsBytes(response.bodyBytes);
-        _showSnackBar('Find it in the Files/On My iPhone/EvolvU Smart School - Parent.');
+          _showSnackBar('Find it in the Files/On My iPhone/EvolvU Smart School - Parent.');
       } else {
         _showSnackBar('Failed to download file: ${response.statusCode}');
       }
@@ -269,3 +269,4 @@ class _RemarkDetailPageState extends State<RemarkDetailPage> {
         .showSnackBar(SnackBar(content: Text(message)));
   }
 }
+

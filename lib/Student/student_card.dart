@@ -1850,19 +1850,24 @@ class _StudentCardItemState extends State<StudentCardItem> {
                         ],
                       ),
                       SizedBox(height: 5.h),
-                      Row(
-                        children: [
-                          Icon(Icons.person, color: Colors.red, size: 14.sp),
-                          SizedBox(width: 5.w),
-                          Text(
-                            'Teacher: ${trimTeacherName(widget.classTeacher)}',
-                            style: TextStyle(
-                              fontSize: 12.sp,
-                              color: Colors.grey[700],
-                            ),
-                          ),
-                        ],
-                      ),
+                     Row(
+  children: [
+    Icon(Icons.person, color: Colors.red, size: 14.sp),
+    SizedBox(width: 5.w),
+    Flexible( // Ensures the text wraps to the next line if necessary
+      child: Text(
+        'Teacher: ${trimTeacherName(widget.classTeacher)}',
+        style: TextStyle(
+          fontSize: 12.sp,
+          color: Colors.grey[700],
+        ),
+        softWrap: true, // Allows text to wrap to the next line
+        overflow: TextOverflow.visible, // Ensures text doesn't get clipped
+      ),
+    ),
+  ],
+),
+
                     ],
                   ),
                 ),

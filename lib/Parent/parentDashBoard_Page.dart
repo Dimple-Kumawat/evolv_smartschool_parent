@@ -514,9 +514,11 @@ class CustomPopup extends StatelessWidget {
       CardItem(
         imagePath: 'assets/logout1.png',
         title: 'LogOut',
+      
         onTap: () {
           showLogoutConfirmationDialog(context);
         },
+     
       ),
 
       CardItem(
@@ -533,6 +535,7 @@ class CustomPopup extends StatelessWidget {
           );
         },
       ),
+
       CardItem(
         imagePath: 'assets/password.png',
         title: 'Change Password',

@@ -1,3 +1,4 @@
+import 'package:device_preview/device_preview.dart';
 import 'package:evolvu/firebase_options.dart';
 import 'package:evolvu/login.dart';
 import 'package:evolvu/username_page.dart';
@@ -43,7 +44,12 @@ void main() async {
     );
   }
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-  runApp(MyApp());
+  runApp( DevicePreview(
+    enabled: false,
+     // enabled: true,
+     
+      builder: (context) => const MyApp(),
+    ),);
 }
 
 class MyApp extends StatelessWidget {

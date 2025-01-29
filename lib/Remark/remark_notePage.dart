@@ -182,7 +182,7 @@ class _RemarkNotePage extends State<RemarkNotePage> {
             children: [
               SizedBox(height: 100.h),
               Text(
-                "Student Remarks",
+                "Remarks",
                 style: TextStyle(
                   fontSize: 20.sp,
                   fontWeight: FontWeight.bold,
@@ -291,6 +291,7 @@ class _RemarkNotePage extends State<RemarkNotePage> {
                               teacher: remark.teacherName,
                               remarksubject: remark.remarkSubject,
                               readStatus: remark.readStatus,
+                              showDownloadIcon: remark.imageList,
                               onTap: () async {
                                 await updateReadStatus(remark.remarkId);
                                 Navigator.push(
@@ -307,6 +308,7 @@ class _RemarkNotePage extends State<RemarkNotePage> {
                                     ),
                                   ),
                                 );
+
                                 refreshRemarkNotes();
                               },
                             ),

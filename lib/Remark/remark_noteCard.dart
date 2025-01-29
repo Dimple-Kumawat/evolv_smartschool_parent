@@ -75,13 +75,14 @@ class Remark {
   }
   }
 
+
 class RemarkNoteCard extends StatelessWidget {
   final String date;
   final String teacher;
   final String remarksubject;
   final String readStatus;
   final VoidCallback onTap;
-
+  final List<Attachment> showDownloadIcon; // New parameter to control visibility
 
   const RemarkNoteCard({
     Key? key,
@@ -90,6 +91,7 @@ class RemarkNoteCard extends StatelessWidget {
     required this.remarksubject,
     required this.readStatus,
     required this.onTap,
+    required this.showDownloadIcon, // Initialize it
   }) : super(key: key);
 
   @override
@@ -105,7 +107,7 @@ class RemarkNoteCard extends StatelessWidget {
           Card(
             color: cardColor,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10.0),
+              borderRadius: BorderRadius.circular(12.0),
             ),
             child: Padding(
               padding: const EdgeInsets.all(10.0),
@@ -118,58 +120,72 @@ class RemarkNoteCard extends StatelessWidget {
                         'assets/studying.png',
                         height: 50,
                       ),
-                      SizedBox(width: 15),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text.rich(
-                            TextSpan(
-                              children: [
-                              const TextSpan(
-                              text: 'Date: ',style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                                // style: Commonstyle.lableBold,
-
-
-                            ),
-                            TextSpan(
-                              text: formattedDate,
-
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 5),
-                      Text.rich(
-                        TextSpan(
+                      SizedBox(width: 10),
+                    
+                    
+                    
+                    
+                    
+                    
+                     Expanded(
+                       child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const TextSpan(
-                              text: 'Teacher: ',style: TextStyle(
-                              fontWeight: FontWeight.bold,
+                            Text.rich(
+                              TextSpan(
+                                children: [
+                                  const TextSpan(
+                                    text: 'Date: ',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text: formattedDate,
+                                  ),
+                                ],
+                              ),
                             ),
-                               // style: Commonstyle.lableBold,
+                            const SizedBox(height: 2),
+                            Text.rich(
+                              TextSpan(
+                                children: [
+                                  const TextSpan(
+                                    text: 'Teacher: ',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text: teacher,
+                                  ),
+                                ],
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
                             ),
-                            TextSpan(
-                              text: teacher,
-
+                            const SizedBox(height: 2),
+                             Text.rich(
+                              TextSpan(
+                                children: [
+                                  const TextSpan(
+                                    text:  'Remark Subject: ',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text:  remarksubject,
+                                  ),
+                                ],
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
                             ),
+                            
                           ],
                         ),
-                      ),
-                          const SizedBox(height: 5),
-                          Text(
-                            'Remark Subject: ',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          Text(
-                            remarksubject,
-                            overflow: TextOverflow.visible,
-                          ),
-                        ],
-                      ),
+                     ),
                     ],
                   ),
                 ],
@@ -184,6 +200,15 @@ class RemarkNoteCard extends StatelessWidget {
               color: Color.fromARGB(255, 175, 49, 40),
             ),
           ),
+          if (showDownloadIcon.isNotEmpty) // Conditional rendering of the download icon
+            const Positioned(
+              top: 75,
+              right: 12,
+              child: Icon(
+                Icons.download_for_offline,
+                color: Colors.black,
+              ),
+            ),
         ],
       ),
     );

@@ -96,7 +96,7 @@ class HomeWorkNoteCard extends StatelessWidget {
   final String status;
   final String readStatus;
   final VoidCallback onTap;
-
+  final List<Attachment> imageList;
   const HomeWorkNoteCard({
     Key? key,
     required this.subject,
@@ -105,6 +105,7 @@ class HomeWorkNoteCard extends StatelessWidget {
     required this.status,
     required this.readStatus,
     required this.onTap,
+    required this.imageList,
   }) : super(key: key);
 
   @override
@@ -137,88 +138,104 @@ class HomeWorkNoteCard extends StatelessWidget {
                     height: 50,
                   ),
                   SizedBox(width: 15),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text.rich(
-                        TextSpan(
-                          children: [
-                            TextSpan(
-                              text: 'Subject:  ',
-                                style: Commonstyle.lableBold,
-                              
+          Expanded(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text.rich(
+                          TextSpan(
+                            children: [
+                              TextSpan(
+                                text: 'Subject:  ',
+                                  style: Commonstyle.lableBold,
+                                
+                    
+                              ),
+                              TextSpan(
+                                text: subject,
+                                style: const TextStyle(
+                                  fontSize: 14.0,
+                             
+                                ),
+                              ),
 
-                            ),
-                            TextSpan(
-                              text: subject,
-                              style: const TextStyle(
-                                fontSize: 14.0,
-                           
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 5),
-                      Text.rich(
-                        TextSpan(
-                          children: [
-                            TextSpan(
-                              text: 'Assigned Date: ',
+                            ],
 
-                               style: Commonstyle.lableBold,
-                            ),
-                            TextSpan(
-                              text: formatted_assignedDate,
-
-                            ),
-                          ],
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 5),
-                      Text.rich(
-                        TextSpan(
-                          children: [
-                            TextSpan(
-                              text: 'Submission Date: ',
-                              style: const TextStyle(
-                                fontSize: 14.0,
-                                fontWeight: FontWeight.bold,
+                        const SizedBox(height: 5),
+                        Text.rich(
+                          TextSpan(
+                            children: [
+                              TextSpan(
+                                text: 'Assigned Date: ',
+                    
+                                 style: Commonstyle.lableBold,
                               ),
-                            ),
-                            TextSpan(
-                              text: formatted_submissionDate,
-                              style: const TextStyle(
-                                fontSize: 14.0,
-                                fontWeight: FontWeight.normal,
+                              TextSpan(
+                                text: formatted_assignedDate,
+                    
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 5),
-                      Text.rich(
-                        TextSpan(
-                          children: [
-                            TextSpan(
-                              text: 'Status: ',
-                              style: const TextStyle(
-                                fontSize: 14.0,
-                                fontWeight: FontWeight.bold,
+                        const SizedBox(height: 5),
+                        Text.rich(
+                          TextSpan(
+                            children: [
+                              TextSpan(
+                                text: 'Submission Date: ',
+                                style: const TextStyle(
+                                  fontSize: 14.0,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
-                            ),
-                            TextSpan(
-                              text: status,
-                              style: const TextStyle(
-                                fontSize: 14.0,
-                                fontWeight: FontWeight.normal,
+                              TextSpan(
+                                text: formatted_submissionDate,
+                                style: const TextStyle(
+                                  fontSize: 14.0,
+                                  fontWeight: FontWeight.normal,
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                        const SizedBox(height: 5),
+                        Text.rich(
+                          TextSpan(
+                            children: [
+                              TextSpan(
+                                text: 'Status: ',
+                                style: const TextStyle(
+                                  fontSize: 14.0,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              TextSpan(
+                                text: status,
+                                style: const TextStyle(
+                                  fontSize: 14.0,
+                                  fontWeight: FontWeight.normal,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
+                if (imageList.isNotEmpty)
+                Icon(
+                  Icons.download_for_offline,
+                  color: Colors.black,
+                  size: 24,
+                ),
+                ],
+            ),),
                 ],
               ),
             ],

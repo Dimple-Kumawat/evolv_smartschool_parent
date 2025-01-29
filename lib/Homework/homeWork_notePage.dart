@@ -172,7 +172,7 @@ class _HomeWorkNotePage extends State<HomeWorkNotePage> {
                                 height: 150,
                                 width: 150,
                                 child: Image.asset(
-                                  'assets/nodata.gif', // Replace with your emoji or animation file
+                                  'assets/animations/nodata.gif', // Replace with your emoji or animation file
                                   fit: BoxFit.contain,
                                 ),
                               ),
@@ -214,7 +214,7 @@ class _HomeWorkNotePage extends State<HomeWorkNotePage> {
                                 height: 150,
                                 width: 150,
                                 child: Image.asset(
-                                  'assets/nodata.gif', // Replace with your emoji or animation file
+                                  'assets/animations/nodata.gif', // Replace with your emoji or animation file
                                   fit: BoxFit.contain,
                                 ),
                               ),
@@ -246,6 +246,7 @@ class _HomeWorkNotePage extends State<HomeWorkNotePage> {
                               submissionDate: truncateEndDate(note.endDate),
                               status: note.homeworkStatus,
                               readStatus: note.readStatus,
+                              imageList: note.imageList,
                               onTap: () async {
                                 await Navigator.push(
                                   context,
