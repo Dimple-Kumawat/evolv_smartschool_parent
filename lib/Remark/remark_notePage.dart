@@ -80,6 +80,8 @@ class _RemarkNotePage extends State<RemarkNotePage> {
       },
     );
 
+    
+
     if (response.statusCode == 200) {
       print('Response: ${response.body}');
 
@@ -90,6 +92,12 @@ class _RemarkNotePage extends State<RemarkNotePage> {
       throw Exception('Failed to load remarks: ${response.statusCode}');
     }
   }
+
+
+  
+  
+  
+  
   Future<void> updateReadStatus(String remarkId) async {
     final prefs = await SharedPreferences.getInstance();
     String? schoolInfoJson = prefs.getString('school_info');
@@ -182,7 +190,7 @@ class _RemarkNotePage extends State<RemarkNotePage> {
             children: [
               SizedBox(height: 100.h),
               Text(
-                "Student Remarks",
+                "Remarks",
                 style: TextStyle(
                   fontSize: 20.sp,
                   fontWeight: FontWeight.bold,
@@ -291,6 +299,7 @@ class _RemarkNotePage extends State<RemarkNotePage> {
                               teacher: remark.teacherName,
                               remarksubject: remark.remarkSubject,
                               readStatus: remark.readStatus,
+                              showDownloadIcon: remark.imageList,
                               onTap: () async {
                                 await updateReadStatus(remark.remarkId);
                                 Navigator.push(
@@ -307,6 +316,7 @@ class _RemarkNotePage extends State<RemarkNotePage> {
                                     ),
                                   ),
                                 );
+
                                 refreshRemarkNotes();
                               },
                             ),
