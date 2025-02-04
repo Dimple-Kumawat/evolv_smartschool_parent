@@ -293,6 +293,8 @@ class TeacherDetailCard extends StatelessWidget {
                               ),
                           ],
                         ),
+
+                        
                       ),
                     ),
                   ),

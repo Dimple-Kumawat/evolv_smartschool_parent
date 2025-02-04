@@ -95,7 +95,7 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text('Verify Parents by QR Code'),
+          title: Text('Verify Parents by QR Code', style: TextStyle(color: Colors.white),),
           backgroundColor: Colors.pink,
         ),
         body: Stack(

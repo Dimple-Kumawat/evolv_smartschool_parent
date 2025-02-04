@@ -273,9 +273,9 @@ class _NoticeDetailPageState extends State<NoticeDetailPage> {
       if (response.statusCode == 200) {
         print("Writing file...");
         await File(filePath).writeAsBytes(response.bodyBytes);
-        print("File saved successfully.");
+        print('Find it in the Files/On My iPhone/EvolvU Smart School - Parent.');
         ScaffoldMessenger.of(fun).showSnackBar(
-          SnackBar(content: Text('File downloaded successfully.')),
+          SnackBar(content: Text('Find it in the Files/On My iPhone/EvolvU Smart School - Parent.')),
         );
       } else {
         throw Exception("Failed with status: ${response.statusCode}");

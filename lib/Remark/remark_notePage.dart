@@ -80,6 +80,8 @@ class _RemarkNotePage extends State<RemarkNotePage> {
       },
     );
 
+    
+
     if (response.statusCode == 200) {
       print('Response: ${response.body}');
 
@@ -90,6 +92,12 @@ class _RemarkNotePage extends State<RemarkNotePage> {
       throw Exception('Failed to load remarks: ${response.statusCode}');
     }
   }
+
+
+  
+  
+  
+  
   Future<void> updateReadStatus(String remarkId) async {
     final prefs = await SharedPreferences.getInstance();
     String? schoolInfoJson = prefs.getString('school_info');

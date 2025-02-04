@@ -474,6 +474,7 @@ class _StudentActivityPageState extends State<StudentActivityPage> {
               builder: (context) => StudentProfilePage(studentId: widget.studentId,shortName: shortName,cname: widget.cname,
                 secname: widget.secname,academic_yr: academic_yr
                 ,),
+                
             ),
           );
         },
@@ -1116,7 +1117,7 @@ CardItem(
                                           '$unreadCount',
                                           style: TextStyle(
                                             color: Colors.white,
-                                            fontSize: 14.sp,
+                                            fontSize: 12.sp,
                                             fontWeight: FontWeight.bold,
                                           ),
                                         ),
@@ -1134,7 +1135,7 @@ CardItem(
                                           '$noticeunreadCount',
                                           style: TextStyle(
                                             color: Colors.white,
-                                            fontSize: 14.sp,
+                                            fontSize: 12.sp,
                                             fontWeight: FontWeight.bold,
                                           ),
                                         ),
@@ -1152,7 +1153,7 @@ CardItem(
                                           '$TnoteunreadCount',
                                           style: TextStyle(
                                             color: Colors.white,
-                                            fontSize: 14.sp,
+                                            fontSize: 12.sp,
                                             fontWeight: FontWeight.bold,
                                           ),
                                         ),
@@ -1169,7 +1170,7 @@ CardItem(
                                           '$ReamrkunreadCount',
                                           style: TextStyle(
                                             color: Colors.white,
-                                            fontSize: 14.sp,
+                                            fontSize: 12.sp,
                                             fontWeight: FontWeight.bold,
                                           ),
                                         ),
