@@ -446,6 +446,8 @@ class _StudentCardState extends State<StudentCard> {
                         itemBuilder: (context, index) {
                           return StudentCardItem(
                             firstName: students[index]['first_name'] ?? '',
+                            midName: students[index]['mid_name'] ?? '',
+                            lastName: students[index]['last_name'] ?? '',
                             rollNo: students[index]['roll_no'] ?? '',
                             className: (students[index]['class_name'] ?? '') +
                                 (students[index]['section_name'] ?? ''),
@@ -1667,6 +1669,8 @@ class _StudentCardState extends State<StudentCard> {
 
 class StudentCardItem extends StatefulWidget {
   final String firstName;
+  final String midName;
+  final String lastName;
   final String rollNo;
   final String className;
   final String cname;
@@ -1683,6 +1687,8 @@ class StudentCardItem extends StatefulWidget {
 
   StudentCardItem({
     required this.firstName,
+    required this.midName,
+    required this.lastName,
     required this.rollNo,
     required this.className,
     required this.cname,
@@ -1813,10 +1819,10 @@ class _StudentCardItemState extends State<StudentCardItem> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        widget.firstName,
+                        widget.firstName+" "+widget.midName+" "+widget.lastName,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          fontSize: 16.sp,
+                          fontSize: 14.sp,
                           color: Colors.black87,
                         ),
                       ),
@@ -1850,24 +1856,19 @@ class _StudentCardItemState extends State<StudentCardItem> {
                         ],
                       ),
                       SizedBox(height: 5.h),
-                     Row(
-  children: [
-    Icon(Icons.person, color: Colors.red, size: 14.sp),
-    SizedBox(width: 5.w),
-    Flexible( // Ensures the text wraps to the next line if necessary
-      child: Text(
-        'Teacher: ${trimTeacherName(widget.classTeacher)}',
-        style: TextStyle(
-          fontSize: 12.sp,
-          color: Colors.grey[700],
-        ),
-        softWrap: true, // Allows text to wrap to the next line
-        overflow: TextOverflow.visible, // Ensures text doesn't get clipped
-      ),
-    ),
-  ],
-),
-
+                      Row(
+                        children: [
+                          Icon(Icons.person, color: Colors.red, size: 14.sp),
+                          SizedBox(width: 5.w),
+                          Text(
+                            'Teacher: ${trimTeacherName(widget.classTeacher)}',
+                            style: TextStyle(
+                              fontSize: 12.sp,
+                              color: Colors.grey[700],
+                            ),
+                          ),
+                        ],
+                      ),
                     ],
                   ),
                 ),

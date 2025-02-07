@@ -195,7 +195,7 @@ class _NoticeNotePageState extends State<NoticeNotePage> {
                           height: 150,
                           width: 150,
                           child: Image.asset(
-                            'assets/animations/nodata.gif', // Replace with your emoji or animation file
+                            'assets/nodata.gif', // Replace with your emoji or animation file
                             fit: BoxFit.contain,
                           ),
                         ),
@@ -237,7 +237,7 @@ class _NoticeNotePageState extends State<NoticeNotePage> {
                           height: 150,
                           width: 150,
                           child: Image.asset(
-                            'assets/animations/nodata.gif', // Replace with your emoji or animation file
+                            'assets/nodata.gif', // Replace with your emoji or animation file
                             fit: BoxFit.contain,
                           ),
                         ),
@@ -259,7 +259,7 @@ class _NoticeNotePageState extends State<NoticeNotePage> {
                 final groupedNotes = groupByDate(filteredNotices);
                 return Column(
                   children: [
-                    SizedBox(height: 125.h),
+                    SizedBox(height: 120.h),
                     Text(
                       "Notice/SMS",
                       style: TextStyle(

@@ -276,7 +276,7 @@ class _LoginDemoState extends State<UserNamePage> {
                       ),
                     ),
 
-                    SizedBox(height: 5),
+                    SizedBox(height: 7),
                     Visibility(
                       visible:
                           shouldShowText, // Set this boolean based on your condition
@@ -295,7 +295,7 @@ class _LoginDemoState extends State<UserNamePage> {
                       child: Text(
                         'Please Enter User Name!!',
                         style: TextStyle(
-                          color: Colors.blue,
+                          color: Colors.red,
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
                         ),

@@ -157,7 +157,7 @@ class NoteCard extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 10),
-            //  const Divider(thickness: 2),
+              // const Divider(thickness: 2),
               const SizedBox(height: 5),
               Text.rich(
                 TextSpan(

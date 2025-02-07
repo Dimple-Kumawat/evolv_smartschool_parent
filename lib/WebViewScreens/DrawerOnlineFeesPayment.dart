@@ -74,7 +74,7 @@ class _PaymentWebviewState extends State<DrawerOnlineFeesPayment> {
         backgroundColor: Colors.transparent,
         extendBodyBehindAppBar: true,
         appBar: AppBar(
-          toolbarHeight: 65.h,
+          toolbarHeight: 55.h,
           title: Text(
             'Fees Payment',
             style: TextStyle(fontSize: 20.sp, color: Colors.white),
@@ -92,14 +92,14 @@ class _PaymentWebviewState extends State<DrawerOnlineFeesPayment> {
           ),
           child: Column(
             children: [
-              SizedBox(height: 110.h),
+              SizedBox(height: 100.h),
               Expanded(
                 child: WebViewWidget(controller: _controller),
               ),
             ],
           ),
         ),
-        floatingActionButton: Stack(
+        floatingActionButton:  Stack(
           alignment: Alignment.bottomRight,
           children: [
             FloatingActionButton(

@@ -75,7 +75,6 @@ class Remark {
   }
   }
 
-
 class RemarkNoteCard extends StatelessWidget {
   final String date;
   final String teacher;
@@ -94,6 +93,8 @@ class RemarkNoteCard extends StatelessWidget {
     required this.showDownloadIcon, // Initialize it
   }) : super(key: key);
 
+
+
   @override
   Widget build(BuildContext context) {
     DateTime parsedDate = DateTime.parse(date);
@@ -107,7 +108,7 @@ class RemarkNoteCard extends StatelessWidget {
           Card(
             color: cardColor,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12.0),
+              borderRadius: BorderRadius.circular(10.0),
             ),
             child: Padding(
               padding: const EdgeInsets.all(10.0),
@@ -120,67 +121,54 @@ class RemarkNoteCard extends StatelessWidget {
                         'assets/studying.png',
                         height: 50,
                       ),
-                      SizedBox(width: 10),
-                    
-                     Expanded(
-                       child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text.rich(
-                              TextSpan(
-                                children: [
-                                  const TextSpan(
-                                    text: 'Date: ',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                      SizedBox(width: 15),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text.rich(
+                            TextSpan(
+                              children: [
+                                const TextSpan(
+                                  text: 'Date: ',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
                                   ),
-                                  TextSpan(
-                                    text: formattedDate,
-                                  ),
-                                ],
-                              ),
+                                ),
+                                TextSpan(
+                                  text: formattedDate,
+                                ),
+                              ],
                             ),
-                            const SizedBox(height: 2),
-                            Text.rich(
-                              TextSpan(
-                                children: [
-                                  const TextSpan(
-                                    text: 'Teacher: ',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                          ),
+                          const SizedBox(height: 5),
+                          Text.rich(
+                            TextSpan(
+                              children: [
+                                const TextSpan(
+                                  text: 'Teacher: ',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
                                   ),
-                                  TextSpan(
-                                    text: teacher,
-                                  ),
-                                ],
-                              ),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
+                                ),
+                                TextSpan(
+                                  text: '${trimTeacherName(teacher)}',
+                                ),
+                              ],
                             ),
-                            const SizedBox(height: 2),
-                             Text.rich(
-                              TextSpan(
-                                children: [
-                                  const TextSpan(
-                                    text:  'Remark Subject: ',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  TextSpan(
-                                    text:  remarksubject,
-                                  ),
-                                ],
-                              ),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
+                          ),
+                          const SizedBox(height: 5),
+                          Text(
+                            'Remark Subject: ',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
                             ),
-                            
-                          ],
-                        ),
-                     ),
+                          ),
+                          Text(
+                            remarksubject,
+                            overflow: TextOverflow.visible,
+                          ),
+                        ],
+                      ),
                     ],
                   ),
                 ],
@@ -207,5 +195,12 @@ class RemarkNoteCard extends StatelessWidget {
         ],
       ),
     );
+  }
+  String trimTeacherName(String name) {
+    List<String> parts = name.split(' ');
+    if (parts.length > 2) {
+      return '${parts[0]} ${parts[1]}'; // Return the first two parts
+    }
+    return name; // If there's no second space, return the original name
   }
 }

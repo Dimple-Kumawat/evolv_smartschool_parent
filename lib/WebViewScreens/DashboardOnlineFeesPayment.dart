@@ -74,7 +74,7 @@ class _PaymentWebviewState extends State<Dashboardonlinefeespayment> {
         backgroundColor: Colors.transparent,
         extendBodyBehindAppBar: true,
         appBar: AppBar(
-          toolbarHeight: 20.h,
+          toolbarHeight: 30.h,
           title: Center(
             child: Text(
               'Fees Payment',
@@ -94,7 +94,7 @@ class _PaymentWebviewState extends State<Dashboardonlinefeespayment> {
           ),
           child: Column(
             children: [
-              SizedBox(height: 30.h),
+              SizedBox(height: 50.h),
               Expanded(
                 child: WebViewWidget(controller: _controller),
               ),
@@ -134,7 +134,6 @@ class _PaymentWebviewState extends State<Dashboardonlinefeespayment> {
             ),
           ],
         )
-            // Return null if the condition is false
       );
     }
   }
