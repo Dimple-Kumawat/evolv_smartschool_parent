@@ -30,7 +30,7 @@ class BirthdatTextField extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           SizedBox(
-            width: 100,
+            width: 120,
             child: Text(
               labelText,
               style: const TextStyle(

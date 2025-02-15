@@ -23,8 +23,6 @@ TextEditingController _dobController = TextEditingController();
 bool _isClickable = true; // This variable controls if the radio is clickable or not
 TextEditingController _fatherDobController = TextEditingController();
 TextEditingController _motherDobController = TextEditingController()  ;
-
-
 class ParentDet {
   String? parentId;
   String? fatherName;
@@ -222,6 +220,9 @@ class _ParentProfilePage extends State<ParentProfilePage> {
     }
   }
 
+
+
+
   void _initializeDateControllers() {
     // Format the initial date for display (dd-MM-yyyy)
     String formattedFatherDob = _formatDateForDisplay(ParentDetmod?.fDob);
@@ -265,12 +266,12 @@ class _ParentProfilePage extends State<ParentProfilePage> {
     if (response.statusCode == 200) {
       print('Contact details updated successfully: ${response.body}');
       Fluttertoast.showToast(
-        msg: "Parent Mobile no. updated successfully",
+        msg: "Parent Mobile no. Selected",
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.BOTTOM,
         timeInSecForIosWeb: 1,
-        backgroundColor: Colors.green,
-        textColor: Colors.white,
+        backgroundColor: Colors.white,
+        textColor: Colors.black,
         fontSize: 16.0,
       );
     } else {
@@ -322,7 +323,7 @@ class _ParentProfilePage extends State<ParentProfilePage> {
   }
 
 
-
+  DateTime? _lastPressedTime;
 
   @override
   void initState() {
@@ -334,457 +335,582 @@ class _ParentProfilePage extends State<ParentProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Card(
-          child: Container(
-            color: Colors.transparent,
-            padding: const EdgeInsets.all(20),
-            child: isLoading
-                ? Center(
-                child:
-                CircularProgressIndicator()) // Show a loading indicator
-                : SingleChildScrollView(
-              child: FormBuilder(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Parent Profile",
-                      style: TextStyle(
-                          fontSize: 18.sp, fontWeight: FontWeight.bold),
-                    ),
-                    SizedBox(
-                      height: 10.h,
-                    ),
+    return WillPopScope(
+      onWillPop: () async {
+        final now = DateTime.now();
+        final bool isDoublePress = _lastPressedTime != null &&
+            now.difference(_lastPressedTime!) < Duration(seconds: 2);
 
-                    StuTextField(
-                      label: 'Father Name',
-                      name: 'Father Name',
-                      showRedAsterisk: true,
-                      readOnly: true,
-                      // isRequired: true,
-                      // isRequired: true,
-                      initialValue: ParentDetmod?.fatherName ?? '',
-                    ),
-                    StuEditTextField(
-                      labelText: 'Occupation',
-                      initialValue: ParentDetmod?.fatherOccupation ?? '',
-                      keyboardType: TextInputType.name,
-                      isRequired: true,
-
-                      onChanged: (value) {
-                        setState(() {
-                          ParentDetmod?.fatherOccupation = value;
-                        });
-                      },
-                    ),
-                    StuEditTextField(
-                      labelText: 'Office Address',
-                      isRequired: true,
-                      initialValue: ParentDetmod?.fOfficeAdd ?? '',
-                      keyboardType: TextInputType.name,
-                      onChanged: (value) {
-                        setState(() {
-                          ParentDetmod?.fOfficeAdd = value;
-                        });
-                      },
-                    ),
-                    StuEditTextField(
-                      labelText: 'Father Adhar Card no.',
-                      initialValue: ParentDetmod?.parentAdharNo ?? '',
-                      keyboardType: TextInputType.number,
-                      isRequired: true,
-                      onChanged: (value) {
-                        setState(() {
-                          ParentDetmod?.parentAdharNo = value;
-                        });
-                      },
-                    ),
-
-                    LabeledDropdown(
-                      label: "Blood Group ", // Keep the label static
-                      options: [
-                        'AB+',
-                        'AB-',
-                        'B+',
-                        'B-',
-                        'A+',
-                        'A-',
-                        'O+',
-                        'O-'
-                      ],
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          if (newValue != null) {
-                            ParentDetmod?.fBloodGroup = newValue;
-                          }
-                        });
-                      },
-                    ),
-
-                    StuEditTextField(
-                      labelText: 'Telephone',
-                      initialValue: ParentDetmod?.fOfficeTel ?? '',
-                      keyboardType: TextInputType.number,
-                      onChanged: (value) {
-                        setState(() {
-                          ParentDetmod?.fOfficeTel = value;
-                        });
-                      },
-                    ),
-
-                    StuEditTextField(
-                      labelText: 'Email id',
-                      initialValue: ParentDetmod?.fEmail ?? '',
-                      keyboardType: TextInputType.name,
-                      isRequired: true,
-                      onChanged: (value) {
-                        setState(() {
-                          ParentDetmod?.fEmail = value;
-                        });
-                      },
-                    ),
-
-                    BirthdatTextField(
-                      labelText: 'Date of Birth',
-                      controller: _fatherDobController,
-                      onTap: () async {
-                        // Open the date picker dialog
-                        DateTime? selectedDate = await showDatePicker(
-                          context: context,
-                          initialDate: _fatherDobController.text.isNotEmpty
-                              ? DateTime.tryParse(_fatherDobController.text) ?? DateTime.now()
-                              : DateTime.now(),
-                          firstDate: DateTime(1900),
-                          lastDate: DateTime.now(),
-                        );
-
-                        if (selectedDate != null) {
-                          setState(() {
-                            // Format the date with leading zeros for day and month
-                            String formattedDay = selectedDate.day.toString().padLeft(2, '0');
-                            String formattedMonth = selectedDate.month.toString().padLeft(2, '0');
-                            String formattedYear = selectedDate.year.toString();
-
-                            _fatherDobController.text =
-                            "$formattedDay-$formattedMonth-$formattedYear";
-
-                            // Update ParentDetmod
-                            ParentDetmod?.fDob = "$formattedYear-$formattedMonth-$formattedDay";
-                          });
-                        }
-                      },
-                    ),
-
-
-                    StuTextField(
-                      label: 'Mother Name',
-                      name: 'Mother Name',
-                      showRedAsterisk: true,
-
-                      readOnly: true,
-                      // isRequired: true,
-                      // isRequired: true,
-                      initialValue: ParentDetmod?.motherName ?? '',
-                    ),
-                    StuEditTextField(
-                      labelText: 'Occupation',
-                      initialValue: ParentDetmod?.motherOccupation ?? '',
-                      keyboardType: TextInputType.name,
-                      onChanged: (value) {
-                        setState(() {
-                          ParentDetmod?.motherOccupation = value;
-                        });
-                      },
-                    ),
-                    StuEditTextField(
-                      labelText: 'Office Address',
-                      initialValue: ParentDetmod?.mOfficeAdd ?? '',
-                      keyboardType: TextInputType.name,
-                      onChanged: (value) {
-                        setState(() {
-                          ParentDetmod?.mOfficeAdd = value;
-                        });
-                      },
-                    ),
-                    StuEditTextField(
-                      labelText: 'Mother Adhar Card no.',
-                      initialValue: ParentDetmod?.parentAdharNo ?? '',
-                      keyboardType: TextInputType.number,
-                      isRequired: true,
-                      onChanged: (value) {
-                        setState(() {
-                          ParentDetmod?.parentAdharNo = value;
-                        });
-                      },
-                    ),
-
-                    LabeledDropdown(
-                      label: "Blood Group ", // Keep the label static
-                      options: [
-                        'AB+',
-                        'AB-',
-                        'B+',
-                        'B-',
-                        'A+',
-                        'A-',
-                        'O+',
-                        'O-'
-                      ],
-                      // selectedValue:setGender(ParentDetmod!.parentAdharNo),
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          if (newValue != null) {
-                            ParentDetmod?.mBloodGroup = newValue;
-                          }
-                        });
-                      },
-                    ),
-
-                    StuEditTextField(
-                      labelText: 'Telephone',
-                      initialValue: ParentDetmod?.mOfficeTel ?? '',
-                      keyboardType: TextInputType.number,
-                      onChanged: (value) {
-                        setState(() {
-                          ParentDetmod?.mOfficeTel = value;
-                        });
-                      },
-                    ),
-
-                    StuEditTextField(
-                      labelText: 'Email id',
-                      initialValue: ParentDetmod?.fEmail ?? '',
-                      keyboardType: TextInputType.name,
-                      isRequired: true,
-                      onChanged: (value) {
-                        setState(() {
-                          ParentDetmod?.fEmail = value;
-                        });
-                      },
-                    ),
-
-                    BirthdatTextField(
-                      labelText: 'Date of Birth',
-                      controller: _motherDobController,
-                      onTap: () async {
-                        // Open the date picker dialog
-                        DateTime? selectedDate = await showDatePicker(
-                          context: context,
-                          initialDate: _motherDobController.text.isNotEmpty
-                              ? DateTime.tryParse(_motherDobController.text) ?? DateTime.now()
-                              : DateTime.now(),
-                          firstDate: DateTime(1900),
-                          lastDate: DateTime.now(),
-                        );
-
-                        if (selectedDate != null) {
-                          setState(() {
-                            // Format the date with leading zeros for day and month
-                            String formattedDay = selectedDate.day.toString().padLeft(2, '0');
-                            String formattedMonth = selectedDate.month.toString().padLeft(2, '0');
-                            String formattedYear = selectedDate.year.toString();
-
-                            _motherDobController.text =
-                            "$formattedDay-$formattedMonth-$formattedYear";
-
-                            // Update ParentDetmod
-                            ParentDetmod?.mDob = "$formattedYear-$formattedMonth-$formattedDay";
-                          });
-                        }
-                      },
-                    ),
-
-
-                    SizedBox(height: 20),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Parent's Mobile Numbers Section
-                        Text(
-                          'Parent\'s Mobile Numbers',
-                          style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.bold),
-                        ),
-                        SizedBox(height: 20),
-                        // Common Message
-                        Center(
-                          child: Text(
-                            'Set to receive SMS at this number',
-                            style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w400,
-                                color: Colors.grey[600]),
-                          ),
-                        ),
-                        SizedBox(height: 10),
-
-                        // Father's Mobile Number
-                        Row(
-                          children: [
-                            Expanded(
-                              flex: 2,
-                              child: Column(
-                                crossAxisAlignment:
-                                CrossAxisAlignment.start,
-                                children: [
-                                  StuEditTextField(
-                                    labelText: 'Father\'s Number',
-                                    initialValue:
-                                    ParentDetmod?.fMobile ?? '',
-                                    isRequired: true,
-                                    keyboardType: TextInputType.number,
-                                    onChanged: (value) {
-                                      setState(() {
-                                        ParentDetmod?.fMobile = value;
-                                      });
-                                    },
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Radio<String>(
-                              value: 'Father',
-                              groupValue: selectedSmsRecipient,
-                              onChanged: (value) async {
-                                setState(() {
-                                  selectedSmsRecipient = value!;
-                                });
-
-                                // Validate and make API call if selected
-                                if (ParentDetmod?.fMobile?.isNotEmpty ==
-                                    true &&
-                                    ParentDetmod!.fMobile!.length >= 10) {
-                                  await updateContactDetails(
-                                      ParentDetmod!.fMobile!, shortName);
-                                } else {
-                                  ScaffoldMessenger.of(context)
-                                      .showSnackBar(
-                                    SnackBar(
-                                      content: Text(
-                                          'Father\'s mobile number is empty or invalid.'),
-                                    ),
-                                  );
-                                }
-                              },
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 0),
-
-                        // Mother's Mobile Number
-                        Row(
-                          children: [
-                            Expanded(
-                              flex: 2,
-                              child: Column(
-                                crossAxisAlignment:
-                                CrossAxisAlignment.start,
-                                children: [
-                                  StuEditTextField(
-                                    labelText: 'Mother\'s Number',
-                                    initialValue:
-                                    ParentDetmod?.mMobile ?? '',
-                                    isRequired: true,
-                                    keyboardType: TextInputType.number,
-                                    onChanged: (value) {
-                                      setState(() {
-                                        ParentDetmod?.mMobile = value;
-                                      });
-                                    },
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Radio<String>(
-                              value: 'Mother',
-                              groupValue: selectedSmsRecipient,
-                              onChanged: (value) async {
-                                setState(() {
-                                  selectedSmsRecipient = value!;
-                                });
-
-                                // Validate and make API call if selected
-                                if (ParentDetmod?.mMobile?.isNotEmpty ==
-                                    true &&
-                                    ParentDetmod!.mMobile!.length >= 10) {
-                                  await updateContactDetails(
-                                      ParentDetmod!.mMobile!, shortName);
-                                } else {
-                                  ScaffoldMessenger.of(context)
-                                      .showSnackBar(
-                                    SnackBar(
-                                      content: Text(
-                                          'Mother\'s mobile number is empty or invalid.'),
-                                    ),
-                                  );
-                                }
-                              },
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 10),
-
-                        ],
+        if (isDoublePress) {
+          return true; // Exit the app
+        } else {
+          // Show a toast or snackbar to inform the user to press back again
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Press back again to exit'),
+              duration: Duration(seconds: 2),
+            ),
+          );
+          _lastPressedTime = now;
+          return false; // Do not exit the app
+        }
+      },
+      child: SizedBox(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Card(
+            child: Container(
+              color: Colors.transparent,
+              padding: const EdgeInsets.all(20),
+              child: isLoading
+                  ? Center(
+                  child:
+                  CircularProgressIndicator()) // Show a loading indicator
+                  : SingleChildScrollView(
+                child: FormBuilder(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Parent Profile",
+                        style: TextStyle(
+                            fontSize: 18.sp, fontWeight: FontWeight.bold),
                       ),
-
-
                       SizedBox(
-                        height: 20.h,
+                        height: 10.h,
                       ),
+
+                      StuTextField(
+                        label: 'Father Name',
+                        name: 'Father Name',
+                        showRedAsterisk: true,
+                        readOnly: true,
+                        // isRequired: true,
+                        // isRequired: true,
+                        initialValue: ParentDetmod?.fatherName ?? '',
+                      ),
+                      StuEditTextField(
+                        labelText: 'Occupation',
+                        initialValue: ParentDetmod?.fatherOccupation ?? '',
+                        keyboardType: TextInputType.name,
+                        isRequired: true,
+
+                        onChanged: (value) {
+                          setState(() {
+                            ParentDetmod?.fatherOccupation = value;
+                          });
+                        },
+                      ),
+                      StuEditTextField(
+                        labelText: 'Office Address',
+                        isRequired: true,
+                        initialValue: ParentDetmod?.fOfficeAdd ?? '',
+                        keyboardType: TextInputType.name,
+                        onChanged: (value) {
+                          setState(() {
+                            ParentDetmod?.fOfficeAdd = value;
+                          });
+                        },
+                      ),
+
+                      StuEditTextField(
+                        labelText: 'Telephone',
+                        initialValue: ParentDetmod?.fOfficeTel ?? '',
+                        keyboardType: TextInputType.number,
+                        onChanged: (value) {
+                          setState(() {
+                            ParentDetmod?.fOfficeTel = value;
+                          });
+                        },
+                      ),
+
+                      StuEditTextField(
+                        labelText: 'Father Adhar Card no.',
+                        initialValue: ParentDetmod?.parentAdharNo ?? '',
+                        keyboardType: TextInputType.number,
+                        isRequired: true,
+                        onChanged: (value) {
+                          setState(() {
+                            ParentDetmod?.parentAdharNo = value;
+                          });
+                        },
+                      ),
+
+                      LabeledDropdown(
+                        label: "Blood Group", // Keep the label static
+                        options: ['Select','AB+', 'AB-', 'B+', 'B-', 'A+', 'A-', 'O+', 'O-'],
+                        selectedValue: ParentDetmod?.fBloodGroup ?? '', // Ensure the selected value is set
+                        onChanged: (String? newValue) {
+                          setState(() {
+                            if (newValue != null) {
+                              ParentDetmod?.fBloodGroup = newValue;
+                            }
+                          });
+                        },
+                      ),
+
+                      StuEditTextField(
+                        labelText: 'Email id',
+                        initialValue: ParentDetmod?.fEmail ?? '',
+                        keyboardType: TextInputType.name,
+                        isRequired: true,
+                        onChanged: (value) {
+                          setState(() {
+                            ParentDetmod?.fEmail = value;
+                          });
+                        },
+                      ),
+
+                      BirthdatTextField(
+                        labelText: 'Date of Birth',
+                        controller: _fatherDobController,
+                        onTap: () async {
+                          // Open the date picker dialog
+                          DateTime? selectedDate = await showDatePicker(
+                            context: context,
+                            initialDate: _fatherDobController.text.isNotEmpty
+                                ? DateTime.tryParse(_fatherDobController.text) ?? DateTime.now()
+                                : DateTime.now(),
+                            firstDate: DateTime(1900),
+                            lastDate: DateTime.now(),
+                          );
+
+                          if (selectedDate != null) {
+                            setState(() {
+                              // Format the date with leading zeros for day and month
+                              String formattedDay = selectedDate.day.toString().padLeft(2, '0');
+                              String formattedMonth = selectedDate.month.toString().padLeft(2, '0');
+                              String formattedYear = selectedDate.year.toString();
+
+                              _fatherDobController.text =
+                              "$formattedDay-$formattedMonth-$formattedYear";
+
+                              // Update ParentDetmod
+                              ParentDetmod?.fDob = "$formattedYear-$formattedMonth-$formattedDay";
+                            });
+                          }
+                        },
+                      ),
+
+
+                      StuTextField(
+                        label: 'Mother Name',
+                        name: 'Mother Name',
+                        showRedAsterisk: true,
+
+                        readOnly: true,
+                        // isRequired: true,
+                        // isRequired: true,
+                        initialValue: ParentDetmod?.motherName ?? '',
+                      ),
+                      StuEditTextField(
+                        labelText: 'Occupation',
+                        initialValue: ParentDetmod?.motherOccupation ?? '',
+                        keyboardType: TextInputType.name,
+                        onChanged: (value) {
+                          setState(() {
+                            ParentDetmod?.motherOccupation = value;
+                          });
+                        },
+                      ),
+                      StuEditTextField(
+                        labelText: 'Office Address',
+                        initialValue: ParentDetmod?.mOfficeAdd ?? '',
+                        keyboardType: TextInputType.name,
+                        onChanged: (value) {
+                          setState(() {
+                            ParentDetmod?.mOfficeAdd = value;
+                          });
+                        },
+                      ),
+
+                      StuEditTextField(
+                        labelText: 'Telephone',
+                        initialValue: ParentDetmod?.mOfficeTel ?? '',
+                        keyboardType: TextInputType.number,
+                        onChanged: (value) {
+                          setState(() {
+                            ParentDetmod?.mOfficeTel = value;
+                          });
+                        },
+                      ),
+
+                      StuEditTextField(
+                        labelText: 'Mother Adhar Card no.',
+                        initialValue: ParentDetmod?.mAdharNo ?? '',
+                        keyboardType: TextInputType.number,
+                        isRequired: true,
+                        onChanged: (value) {
+                          setState(() {
+                            ParentDetmod?.mAdharNo = value;
+                          });
+                        },
+                      ),
+
+                      LabeledDropdown(
+                        label: "Blood Group", // Keep the label static
+                        options: ['Select','AB+', 'AB-', 'B+', 'B-', 'A+', 'A-', 'O+', 'O-'],
+                        selectedValue: ParentDetmod?.mBloodGroup ?? '', // Ensure the selected value is set
+                        onChanged: (String? newValue) {
+                          setState(() {
+                            if (newValue != null) {
+                              ParentDetmod?.mBloodGroup = newValue;
+                            }
+                          });
+                        },
+                      ),
+
+
+
+                      StuEditTextField(
+                        labelText: 'Email id',
+                        initialValue: ParentDetmod?.fEmail ?? '',
+                        keyboardType: TextInputType.name,
+                        isRequired: true,
+                        onChanged: (value) {
+                          setState(() {
+                            ParentDetmod?.fEmail = value;
+                          });
+                        },
+                      ),
+
+                      BirthdatTextField(
+                        labelText: 'Date of Birth',
+                        controller: _motherDobController,
+                        onTap: () async {
+                          // Open the date picker dialog
+                          DateTime? selectedDate = await showDatePicker(
+                            context: context,
+                            initialDate: _motherDobController.text.isNotEmpty
+                                ? DateTime.tryParse(_motherDobController.text) ?? DateTime.now()
+                                : DateTime.now(),
+                            firstDate: DateTime(1900),
+                            lastDate: DateTime.now(),
+                          );
+
+                          if (selectedDate != null) {
+                            setState(() {
+                              // Format the date with leading zeros for day and month
+                              String formattedDay = selectedDate.day.toString().padLeft(2, '0');
+                              String formattedMonth = selectedDate.month.toString().padLeft(2, '0');
+                              String formattedYear = selectedDate.year.toString();
+
+                              _motherDobController.text =
+                              "$formattedDay-$formattedMonth-$formattedYear";
+
+                              // Update ParentDetmod
+                              ParentDetmod?.mDob = "$formattedYear-$formattedMonth-$formattedDay";
+                            });
+                          }
+                        },
+                      ),
+
+
+                      SizedBox(height: 20),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Parent's Mobile Numbers Section
+                          // Text(
+                          //   'Parent\'s Mobile Numbers',
+                          //   style: TextStyle(
+                          //       fontSize: 16, fontWeight: FontWeight.bold),
+                          // ),
+                          // Common Message
+                          Center(
+                            child: Text(
+                              'Set to receive SMS at this number',
+                              style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w400,
+                                  color: Colors.grey[600]),
+                            ),
+                          ),
+                          SizedBox(height: 10),
+
+                          // Father's Mobile Number
+                          Row(
+                            children: [
+                              Expanded(
+                                flex: 2,
+                                child: Column(
+                                  crossAxisAlignment:
+                                  CrossAxisAlignment.start,
+                                  children: [
+                                    StuEditTextField(
+                                      labelText: 'Father\'s No.',
+                                      initialValue:
+                                      ParentDetmod?.fMobile ?? '',
+                                      isRequired: true,
+                                      keyboardType: TextInputType.number,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          ParentDetmod?.fMobile = value;
+                                        });
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Radio<String>(
+                                value: 'Father',
+                                groupValue: selectedSmsRecipient,
+                                onChanged: (value) async {
+                                  setState(() {
+                                    selectedSmsRecipient = value!;
+                                  });
+
+                                  // Validate and make API call if selected
+                                  if (ParentDetmod?.fMobile?.isNotEmpty ==
+                                      true &&
+                                      ParentDetmod!.fMobile!.length >= 10) {
+                                    await updateContactDetails(
+                                        ParentDetmod!.fMobile!, shortName);
+                                  } else {
+                                    ScaffoldMessenger.of(context)
+                                        .showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                            'Father\'s mobile number is empty or invalid.'),
+                                      ),
+                                    );
+                                  }
+                                },
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 0),
+
+                          // Mother's Mobile Number
+                          Row(
+                            children: [
+                              Expanded(
+                                flex: 2,
+                                child: Column(
+                                  crossAxisAlignment:
+                                  CrossAxisAlignment.start,
+                                  children: [
+                                    StuEditTextField(
+                                      labelText: 'Mother\'s No.',
+                                      initialValue:
+                                      ParentDetmod?.mMobile ?? '',
+                                      isRequired: true,
+                                      keyboardType: TextInputType.number,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          ParentDetmod?.mMobile = value;
+                                        });
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Radio<String>(
+                                value: 'Mother',
+                                groupValue: selectedSmsRecipient,
+                                onChanged: (value) async {
+                                  setState(() {
+                                    selectedSmsRecipient = value!;
+                                  });
+
+                                  // Validate and make API call if selected
+                                  if (ParentDetmod?.mMobile?.isNotEmpty ==
+                                      true &&
+                                      ParentDetmod!.mMobile!.length >= 10) {
+                                    await updateContactDetails(
+                                        ParentDetmod!.mMobile!, shortName);
+                                  } else {
+                                    ScaffoldMessenger.of(context)
+                                        .showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                            'Mother\'s mobile number is empty or invalid.'),
+                                      ),
+                                    );
+                                  }
+                                },
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 10),
+
+                          ],
+                        ),
+
+
+                        SizedBox(
+                          height: 20.h,
+                        ),
                       ElevatedButton(
                         onPressed: () async {
-                          Response response = await post(
-                            Uri.parse("${url}update_parent"),
-                            body: {
-                              'reg_id': reg_idstr,
-                              'father_occupation': ParentDetmod?.fatherOccupation ?? '',
-                              'f_office_add': ParentDetmod?.fOfficeAdd ?? '',
-                              'f_office_tel': ParentDetmod?.fOfficeTel ?? '',
-                              'f_mobile': ParentDetmod?.fMobile ?? '',
-                              'f_email': ParentDetmod?.fEmail ?? '',
-                              'parent_adhar_no': ParentDetmod?.parentAdharNo ?? '',
-                              'f_dob': ParentDetmod?.fDob ?? '',
-                              'm_dob': ParentDetmod?.mDob ?? '',
-                              'mother_occupation': ParentDetmod?.motherOccupation ?? '',
-                              'm_office_add': ParentDetmod?.mEmailid ?? '',
-                              'm_office_tel': ParentDetmod?.mOfficeTel,
-                              'm_mobile': ParentDetmod?.mMobile,
-                              // 'academic_yr': academic_yrstr,
-                              'short_name': shortName
-                            },
-                          );
-                          print('ParentResponse status code: ${response.statusCode}');
-                          print('ParentResponse body: ${response.body}');
 
-                          if (response.statusCode == 200) {
-                            Fluttertoast.showToast(
-                              msg: "Profile updated successfully",
-                              toastLength: Toast.LENGTH_SHORT,
-                              gravity: ToastGravity.BOTTOM,
-                              timeInSecForIosWeb: 1,
-                              backgroundColor: Colors.green,
-                              textColor: Colors.white,
-                              fontSize: 16.0,
+                          if (selectedSmsRecipient == null) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('Please select either Father or Mother mobile number to proceed.'),
+                                backgroundColor: Colors.red,
+                              ),
                             );
-                            setState(() {
-                              WidgetsFlutterBinding.ensureInitialized();
-                              runApp(MyApp());
-                            });
+                            return;
+                          }
 
-                          } else {
+                          String selectedNumber = selectedSmsRecipient == 'Father'
+                              ? ParentDetmod?.fMobile ?? ''
+                              : ParentDetmod?.mMobile ?? '';
+
+                          if (selectedNumber.length != 10) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('Please enter a valid 10-digit mobile number.'),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                            return;
+                          }
+
+
+                          String? aadharNumber = ParentDetmod?.parentAdharNo;
+
+                          // Check if Aadhar number is empty or not exactly 12 digits
+                          if (aadharNumber == null || aadharNumber.length != 12 || !RegExp(r'^[0-9]{12}$').hasMatch(aadharNumber)) {
                             Fluttertoast.showToast(
-                              msg: "Failed to update Profile",
-                              toastLength: Toast.LENGTH_SHORT,
+                              msg: "Enter a valid 12-digit numeric Father Aadhar number",
+                              toastLength: Toast.LENGTH_LONG,
                               gravity: ToastGravity.BOTTOM,
-                              timeInSecForIosWeb: 1,
                               backgroundColor: Colors.red,
                               textColor: Colors.white,
                               fontSize: 16.0,
                             );
+                            return; // Stop execution if validation fails
                           }
+
+                          String? memail = ParentDetmod?.mEmailid;
+
+                          if (memail == '') {
+                            Fluttertoast.showToast(
+                              msg: "Please enter Mother email address",
+                              toastLength: Toast.LENGTH_SHORT,
+                              gravity: ToastGravity.BOTTOM,
+                              backgroundColor: Colors.red,
+                              textColor: Colors.white,
+                              fontSize: 16.0,
+                            );
+                            return; // Stop execution if validation fails
+                          }
+
+                          if (ParentDetmod?.fEmail == '') {
+                            Fluttertoast.showToast(
+                              msg: "Please enter Father email address",
+                              toastLength: Toast.LENGTH_SHORT,
+                              gravity: ToastGravity.BOTTOM,
+                              backgroundColor: Colors.red,
+                              textColor: Colors.white,
+                              fontSize: 16.0,
+                            );
+                            return; // Stop execution if validation fails
+                          }
+
+                          if (ParentDetmod?.fOfficeAdd == '') {
+                            Fluttertoast.showToast(
+                              msg: "Please enter Office address",
+                              toastLength: Toast.LENGTH_SHORT,
+                              gravity: ToastGravity.BOTTOM,
+                              backgroundColor: Colors.red,
+                              textColor: Colors.white,
+                              fontSize: 16.0,
+                            );
+                            return; // Stop execution if validation fails
+                          }
+
+
+                          if (ParentDetmod?.fatherOccupation == '') {
+                            Fluttertoast.showToast(
+                              msg: "Please enter Father Occupation",
+                              toastLength: Toast.LENGTH_SHORT,
+                              gravity: ToastGravity.BOTTOM,
+                              backgroundColor: Colors.red,
+                              textColor: Colors.white,
+                              fontSize: 16.0,
+                            );
+                            return; // Stop execution if validation fails
+                          }
+
+                          String? maadharNumber = ParentDetmod?.mAdharNo;
+
+                          // Check if Aadhar number is empty or not exactly 12 digits
+                          if (maadharNumber == null || maadharNumber.length != 12 || !RegExp(r'^[0-9]{12}$').hasMatch(maadharNumber)) {
+                            Fluttertoast.showToast(
+                              msg: "Enter a valid 12-digit numeric Mother Aadhar number",
+                              toastLength: Toast.LENGTH_LONG,
+                              gravity: ToastGravity.BOTTOM,
+                              backgroundColor: Colors.red,
+                              textColor: Colors.white,
+                              fontSize: 16.0,
+                            );
+                            return; // Stop execution if validation fails
+                          } else {
+                            Response response = await post(
+                              Uri.parse("${url}update_parent"),
+                              body: {
+                                'reg_id': reg_idstr,
+                                'father_occupation': ParentDetmod?.fatherOccupation ?? '',
+
+                                'f_blood_group': ParentDetmod?.fBloodGroup ?? '',
+                                'm_blood_group': ParentDetmod?.mBloodGroup ?? '',
+                                'parent_adhar_no': ParentDetmod?.parentAdharNo ?? '',
+                                'm_adhar_no': ParentDetmod?.mAdharNo ?? '',
+
+                                'f_dob': ParentDetmod?.fDob ?? '',
+                                'm_dob': ParentDetmod?.mDob ?? '',
+
+                                'f_office_add': ParentDetmod?.fOfficeAdd ?? '',
+                                'f_office_tel': ParentDetmod?.fOfficeTel ?? '',
+                                'f_mobile': ParentDetmod?.fMobile ?? '',
+                                'f_email': ParentDetmod?.fEmail ?? '',
+                                'parent_adhar_no': ParentDetmod?.parentAdharNo ?? '',
+
+                                'mother_occupation': ParentDetmod?.motherOccupation ?? '',
+                                'm_office_add': ParentDetmod?.mEmailid ?? '',
+                                'm_office_tel': ParentDetmod?.mOfficeTel,
+                                'm_mobile': ParentDetmod?.mMobile,
+                                // 'academic_yr': academic_yrstr,
+                                'short_name': shortName
+                              },
+                            );
+                            print(
+                                'ParentResponse status code: ${response.statusCode}');
+                            print(
+                                'ParentResponse body: ${response.body}');
+
+                            if (response.statusCode == 200) {
+                              Fluttertoast.showToast(
+                                msg: "Profile updated successfully",
+                                toastLength: Toast.LENGTH_SHORT,
+                                gravity: ToastGravity.BOTTOM,
+                                timeInSecForIosWeb: 1,
+                                backgroundColor: Colors.green,
+                                textColor: Colors.white,
+                                fontSize: 16.0,
+                              );
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (_) => ParentDashBoardPage(academic_yr:academic_yrstr,shortName: shortName)),
+                              );
+                              // Navigator.pop(context);
+                            } else {
+                              Fluttertoast.showToast(
+                                msg: "Failed to update Profile",
+                                toastLength: Toast.LENGTH_SHORT,
+                                gravity: ToastGravity.BOTTOM,
+                                timeInSecForIosWeb: 1,
+                                backgroundColor: Colors.red,
+                                textColor: Colors.white,
+                                fontSize: 16.0,
+                              );
+                            }
+                          }
+
+
 
                         },
                         style: ElevatedButton.styleFrom(
@@ -799,8 +925,9 @@ class _ParentProfilePage extends State<ParentProfilePage> {
                               color: Colors.white, fontSize: 16.sp),
                         ),
                       ),
-                    // Continue adding more fields or other widgets
-                  ],
+                      // Continue adding more fields or other widgets
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -867,7 +994,7 @@ class BirthdatTextField extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           SizedBox(
-            width: 100,
+            width: 120,
             child: Text(
               labelText,
               style: const TextStyle(

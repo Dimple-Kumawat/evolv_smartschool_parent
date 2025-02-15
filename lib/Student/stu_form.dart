@@ -680,10 +680,10 @@ class _StudentFormState extends State<StudentForm> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(6.0),
+      padding: const EdgeInsets.all(8.0),
       child: Card(
         child: Padding(
-          padding: const EdgeInsets.all(35),
+          padding: const EdgeInsets.all(20),
           child: isLoading
               ? const Center(child: CircularProgressIndicator())
               : childInfo != null

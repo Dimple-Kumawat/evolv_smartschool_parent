@@ -16,12 +16,12 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import '../QR/QR_Code.dart';
 import '../Utils&Config/api.dart';
+import '../WebViewScreens/DashboardOnlineFeesPayment.dart';
+import '../WebViewScreens/DrawerOnlineFeesPayment.dart';
 import '../WebViewScreens/FeesReceiptWebViewScreen.dart';
 import '../WebViewScreens/OnlineFeesPayment.dart';
 import '../aboutUs.dart';
 import '../changePasswordPage.dart';
-import '../WebViewScreens/DashboardOnlineFeesPayment.dart';
-import '../WebViewScreens/DrawerOnlineFeesPayment.dart';
 import 'DrawerParentProfile.dart';
 
 class ParentDashBoardPage extends StatefulWidget {
@@ -54,7 +54,7 @@ Future<void> _getSchoolInfo() async {
   final prefs = await SharedPreferences.getInstance();
   String? schoolInfoJson = prefs.getString('school_info');
   String? logUrls = prefs.getString('logUrls');
-    print('logUrls====\\\\\: $schoolInfoJson');
+  print('logUrls====\\\\\: $schoolInfoJson');
   if (logUrls != null) {
     try {
       Map<String, dynamic> logUrlsparsed = json.decode(logUrls);
@@ -191,7 +191,7 @@ Future<void> PostMsg1() async {
 class _ParentDashBoardPageState extends State<ParentDashBoardPage> {
   int pageIndex = 0;
   late BuildContext _context;
-
+  DateTime? _lastPressedTime;
   @override
   void initState() {
     super.initState();
@@ -212,53 +212,72 @@ class _ParentDashBoardPageState extends State<ParentDashBoardPage> {
       ),
       CalendarPage(),
 
-     // PaymentWebview(regId: reg_id, paymentUrlShare: paymentUrlShare, receiptUrl: receiptUrl, shortName: shortName, academicYr: academic_yr, receipt_button: receipt_button,),
-       Dashboardonlinefeespayment(regId: reg_id, paymentUrlShare: paymentUrlShare, receiptUrl: receiptUrl, shortName: shortName, academicYr: academic_yr, receipt_button: receipt_button,),
-     
+      Dashboardonlinefeespayment(regId: reg_id, paymentUrlShare: paymentUrlShare, receiptUrl: receiptUrl, shortName: shortName, academicYr: academic_yr, receipt_button: receipt_button,),
       ParentProfilePage(),
     ];
 
-    return Scaffold(
-        backgroundColor: Colors.blue,
-        appBar: AppBar(
-          title: Text(
-            "${widget.shortName} EvolvU Smart Parent App(${widget.academic_yr})",
-            style: TextStyle(fontSize: 14.sp, color: Colors.white),
-          ),
-          backgroundColor: Colors.pink,
-          elevation: 0,
-          leading: IconButton(
-            icon: const CircleAvatar(
-              backgroundColor: Colors.white,
-              radius: 18,
-              child: Icon(Icons.menu, color: Colors.pink),
+    return WillPopScope(
+      onWillPop: () async {
+        final now = DateTime.now();
+        final bool isDoublePress = _lastPressedTime != null &&
+            now.difference(_lastPressedTime!) < Duration(seconds: 2);
+
+        if (isDoublePress) {
+          return true; // Exit the app
+        } else {
+          // Show a toast or snackbar to inform the user to press back again
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Press back again to exit'),
+              duration: Duration(seconds: 2),
             ),
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return CustomPopup();
-                },
-              );
-            },
+          );
+          _lastPressedTime = now;
+          return false; // Do not exit the app
+        }
+      },
+      child: Scaffold(
+          backgroundColor: Colors.blue,
+          appBar: AppBar(
+            title: Text(
+              "${widget.shortName} EvolvU Smart Parent App(${widget.academic_yr})",
+              style: TextStyle(fontSize: 14.sp, color: Colors.white),
+            ),
+            backgroundColor: Colors.pink,
+            elevation: 0,
+            leading: IconButton(
+              icon: const CircleAvatar(
+                backgroundColor: Colors.white,
+                radius: 18,
+                child: Icon(Icons.menu, color: Colors.pink),
+              ),
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return CustomPopup();
+                  },
+                );
+              },
+            ),
           ),
-        ),
-        body: Stack(
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Colors.pink, Colors.blue],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
+          body: Stack(
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [Colors.pink, Colors.blue],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                  ),
                 ),
               ),
-            ),
-            // Page content
-            pages[pageIndex],
-          ],
-        ),
-        bottomNavigationBar: buildMyNavBar(),
+              // Page content
+              pages[pageIndex],
+            ],
+          ),
+          bottomNavigationBar: buildMyNavBar(),
+      ),
     );
   }
 
@@ -514,11 +533,9 @@ class CustomPopup extends StatelessWidget {
       CardItem(
         imagePath: 'assets/logout1.png',
         title: 'LogOut',
-      
         onTap: () {
           showLogoutConfirmationDialog(context);
         },
-     
       ),
 
       CardItem(
@@ -528,14 +545,12 @@ class CustomPopup extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-            //  builder: (context) => PaymentWebview(
               builder: (context) => DrawerOnlineFeesPayment(
                   regId: reg_id,paymentUrlShare:paymentUrlShare,receiptUrl:receiptUrl,shortName: shortName,academicYr: academic_yr, receipt_button: receipt_button,),
             ),
           );
         },
       ),
-
       CardItem(
         imagePath: 'assets/password.png',
         title: 'Change Password',
