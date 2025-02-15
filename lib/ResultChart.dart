@@ -310,7 +310,7 @@ class _ResultChartState extends State<ResultChart> {
     );
   }
 
-
+//need to chnage here dimple
 
 // Dynamically create exam names as column titles with horizontal scrolling
   Widget _buildTermTitles() {
@@ -318,7 +318,7 @@ class _ResultChartState extends State<ResultChart> {
       padding: const EdgeInsets.only(bottom: 4.0),
       child: Row(
         children: [
-          const SizedBox(width: 110), // For the subject name column
+          const SizedBox(width: 95), // For the subject name column
           // Wrap exam titles in a horizontal scroll view
           Expanded(
             child: SingleChildScrollView(
@@ -326,12 +326,12 @@ class _ResultChartState extends State<ResultChart> {
               child: Row(
                 children: lineChartData.map((subjectData) {
                   return Container(
-                    width: 50, // Fixed width for each exam title
+                    width: 55, // Fixed width for each exam title
                     alignment: Alignment.center,
                     child: Text(
                       subjectData['Exam_name'],
                       style: TextStyle(
-                        fontSize: 12,
+                        fontSize: 9.5,
                         fontWeight: FontWeight.bold,
                       ),
                       textAlign: TextAlign.center,
@@ -380,7 +380,7 @@ class _ResultChartState extends State<ResultChart> {
             width: 75,
             child: Text(
               subjectName,
-              style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
             ),
           ),
           // Display each exam's score as a segment

@@ -94,6 +94,7 @@ class NoticeNoteCard extends StatelessWidget {
   final String type;
   final String readStatus;
   final VoidCallback onTap;
+  final List<Attachment> imageList;
 
   const NoticeNoteCard({
     required this.teacher,
@@ -101,6 +102,7 @@ class NoticeNoteCard extends StatelessWidget {
     required this.type,
     required this.readStatus,
     required this.onTap,
+    required this.imageList,
   });
 
   @override
@@ -129,6 +131,10 @@ class NoticeNoteCard extends StatelessWidget {
                     height: 40,
                   ),
                   const SizedBox(width: 10),
+          Expanded(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -159,6 +165,14 @@ class NoticeNoteCard extends StatelessWidget {
                       ],
                     ),
                   ),
+                if (imageList.isNotEmpty)
+                Icon(
+                  Icons.download_for_offline,
+                  color: Colors.black,
+                  size: 24,
+                ),
+                ],
+            ),),
                 ],
               ),
               const Divider(thickness: 1),

@@ -77,6 +77,7 @@ dependencies:
   flutter_datetime_picker: ^1.5.1
   firebase_core: ^3.10.0
   firebase_messaging: ^15.2.0
+  device_preview: ^1.2.0
   
   
  

@@ -26,6 +26,8 @@ class _RemarkNotePage extends State<RemarkNotePage> {
   String reg_id = "";
   String url = "";
 
+
+
   @override
   void initState() {
     super.initState();
@@ -61,7 +63,7 @@ class _RemarkNotePage extends State<RemarkNotePage> {
       print('School info not found in SharedPreferences.');
     }
 
-    // print('API URL: $url+get_premark');
+    print('API URL: $url+get_premark');
     // print('Request Body:');
     // print({
     //   'student_id': widget.studentId,
@@ -220,7 +222,7 @@ class _RemarkNotePage extends State<RemarkNotePage> {
                                 height: 150,
                                 width: 150,
                                 child: Image.asset(
-                                  'assets/animations/nodata.gif', // Replace with your emoji or animation file
+                                   'assets/nodata.gif', // Replace with your emoji or animation file
                                   fit: BoxFit.contain,
                                 ),
                               ),
@@ -237,7 +239,8 @@ class _RemarkNotePage extends State<RemarkNotePage> {
                             ],
                           ),
                         ),
-                      );                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      );
+                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
                       return Center(
                         child: Container(
                           margin: const EdgeInsets.all(10),
@@ -261,7 +264,7 @@ class _RemarkNotePage extends State<RemarkNotePage> {
                                 height: 150,
                                 width: 150,
                                 child: Image.asset(
-                                  'assets/animations/nodata.gif', // Replace with your emoji or animation file
+                                   'assets/nodata.gif', // Replace with your emoji or animation file
                                   fit: BoxFit.contain,
                                 ),
                               ),
@@ -278,7 +281,12 @@ class _RemarkNotePage extends State<RemarkNotePage> {
                             ],
                           ),
                         ),
-                      );                    } else {
+                      );
+                    } else {
+                      List<Remark> sortedRemarks = List.from(snapshot.data ?? []);
+                      sortedRemarks.sort((a, b) => DateTime.parse(b.remarkDate)
+                          .compareTo(DateTime.parse(a.remarkDate)));
+
                       return ListView.builder(
                         padding: EdgeInsets.only(top: 10.h),
                         itemCount: snapshot.data!.length,
@@ -291,6 +299,7 @@ class _RemarkNotePage extends State<RemarkNotePage> {
                               teacher: remark.teacherName,
                               remarksubject: remark.remarkSubject,
                               readStatus: remark.readStatus,
+                              showDownloadIcon: remark.imageList,
                               onTap: () async {
                                 await updateReadStatus(remark.remarkId);
                                 Navigator.push(
@@ -307,6 +316,7 @@ class _RemarkNotePage extends State<RemarkNotePage> {
                                     ),
                                   ),
                                 );
+
                                 refreshRemarkNotes();
                               },
                             ),

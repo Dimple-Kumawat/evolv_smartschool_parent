@@ -74,7 +74,7 @@ class _PaymentWebviewState extends State<Dashboardonlinefeespayment> {
         backgroundColor: Colors.transparent,
         extendBodyBehindAppBar: true,
         appBar: AppBar(
-          toolbarHeight: 20.h,
+          toolbarHeight: 30.h,
           title: Center(
             child: Text(
               'Fees Payment',
@@ -94,15 +94,14 @@ class _PaymentWebviewState extends State<Dashboardonlinefeespayment> {
           ),
           child: Column(
             children: [
-              SizedBox(height: 30.h),
+              SizedBox(height: 50.h),
               Expanded(
                 child: WebViewWidget(controller: _controller),
               ),
             ],
           ),
         ),
-        floatingActionButton: widget.receipt_button == 1 // Simplified conditional
-            ? Stack(
+        floatingActionButton: Stack(
           alignment: Alignment.bottomRight,
           children: [
             FloatingActionButton(
@@ -124,7 +123,7 @@ class _PaymentWebviewState extends State<Dashboardonlinefeespayment> {
             ),
             Positioned(
               bottom: 5,
-              right: 0,
+              right: 5,
               child: const Text( // Use const here as well
                 'Receipt',
                 style: TextStyle(
@@ -135,7 +134,6 @@ class _PaymentWebviewState extends State<Dashboardonlinefeespayment> {
             ),
           ],
         )
-            : null, // Return null if the condition is false
       );
     }
   }

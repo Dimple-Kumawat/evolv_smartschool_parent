@@ -3,10 +3,7 @@ import 'dart:io';
 
 import 'package:evolvu/Parent/parentDashBoard_Page.dart';
 import 'package:evolvu/Student/StudentDashboard.dart';
-import 'package:evolvu/common/common_dropDownFiled.dart';
-import 'package:evolvu/common/withHash_dropDown.dart';
-
-
+import 'package:evolvu/common/Common_dropDownFiled.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -20,6 +17,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../common/StuEditTextField.dart';
 import '../common/textFiledStu.dart';
+import '../common/withHash_dropDown.dart';
 
 class StuInfoModal {
   String? studentId;
@@ -487,11 +485,11 @@ class _StudentFormState extends State<StudentForm> {
         file = croppedFile;
       });
 
-      uploadImageToServer(croppedFile, base64Image);
+      await uploadImageToServer(croppedFile, base64Image);
 
-      setState(() {
-        imageUrl = imageUrl;
-      });
+      // setState(() {
+      //   imageUrl = imageUrl;
+      // });
     }
   }
 
@@ -545,6 +543,10 @@ class _StudentFormState extends State<StudentForm> {
         print("Error uploading image: $shortName");
         // print("Error uploading image: $base64Image");
         print("Error uploading image: $base64Image");
+
+        setState(() {
+          imageUrl = "${projectUrl}uploads/student_image/${widget.studentId}.jpg?timestamp=${DateTime.now().millisecondsSinceEpoch}";
+        });
 
         // Assuming the server responds with a JSON containing the image URL
         var responseBody = jsonDecode(response.body);
@@ -678,10 +680,10 @@ class _StudentFormState extends State<StudentForm> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(6.0),
+      padding: const EdgeInsets.all(8.0),
       child: Card(
         child: Padding(
-          padding: const EdgeInsets.all(35),
+          padding: const EdgeInsets.all(20),
           child: isLoading
               ? const Center(child: CircularProgressIndicator())
               : childInfo != null
@@ -705,7 +707,7 @@ class _StudentFormState extends State<StudentForm> {
                           backgroundColor: Colors.grey[200], // Placeholder color
                           backgroundImage: imageUrl.isNotEmpty
                               ? NetworkImage(
-                            imageUrl + '?timestamp=${DateTime.now().millisecondsSinceEpoch}',
+                            imageUrl,
                           )
                               : AssetImage(
                             childInfo?.gender == 'M'
@@ -856,15 +858,15 @@ class _StudentFormState extends State<StudentForm> {
                   initialValue: widget?.cname,
                   label: 'Class',
                   name: 'Class',
-                   showRedAsterisk: true,
-                // isRequired: true,
+                  showRedAsterisk: true,
+                  // isRequired: true,
                   readOnly: true,
                 ),
                 StuTextField(
                   initialValue: widget?.secname,
                   readOnly: true,
                   label: 'Division',
-                   showRedAsterisk: true,
+                  showRedAsterisk: true,
                   //  isRequired: true,
                   name: 'Division',
                 ),
@@ -879,13 +881,13 @@ class _StudentFormState extends State<StudentForm> {
 
                 HashLabeledDropdown(
                   label: "Gender",
-                  
+
                   options: ['Male', 'Female'],
-                 
-                  
-                  
-                  
-                  
+
+
+
+
+
                   selectedValue: getGender(childInfo?.gender) ??
                       'Male', // Default to a valid option
                   onChanged: (String? newValue) {
@@ -900,7 +902,7 @@ class _StudentFormState extends State<StudentForm> {
 
                 LabeledDropdown(
                   label: "Blood Group",
-                   // Static label
+                  // Static label
                   options: const [
                     "AB+",
                     "AB-",
@@ -1031,7 +1033,7 @@ class _StudentFormState extends State<StudentForm> {
                   label: 'Religion',
                   name: 'Religion',
                   readOnly: true,
-                   showRedAsterisk: true,
+                  showRedAsterisk: true,
                   // isRequired: true,
                   // isRequired: true,
                   initialValue: childInfo?.religion,
@@ -1048,7 +1050,7 @@ class _StudentFormState extends State<StudentForm> {
                   label: 'Category',
                   name: 'Category',
                   readOnly: true,
-                   showRedAsterisk: true,
+                  showRedAsterisk: true,
                   // isRequired: true,
                   //isRequired: true,
                   initialValue: childInfo?.category,
@@ -1138,11 +1140,11 @@ class _StudentFormState extends State<StudentForm> {
                 ),
                 StuEditTextField(
                   labelText: '',
-                  initialValue: childInfo?.transportMode ?? '',
+                  initialValue: childInfo?.vehicleNo ?? '',
                   keyboardType: TextInputType.name,
                   onChanged: (value) {
                     setState(() {
-                      childInfo?.transportMode = value;
+                      childInfo?.vehicleNo = value;
                     });
                   },
                 ),

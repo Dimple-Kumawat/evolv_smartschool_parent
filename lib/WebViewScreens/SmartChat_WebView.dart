@@ -47,7 +47,7 @@ class _WebViewPageState extends State<WebViewPage> {
       backgroundColor: Colors.transparent,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        toolbarHeight: 80.h,
+        toolbarHeight: 46.h,
         title: Text(
           'Smart Chat',
           style: TextStyle(fontSize: 20.sp, color: Colors.white),

@@ -162,7 +162,7 @@ class _TeacherNotePageState extends State<TeacherNotePage> {
                                 height: 150,
                                 width: 150,
                                 child: Image.asset(
-                                  'assets/nodata.gif',  // Replace with your emoji or animation file
+                                  'assets/nodata.gif', // Replace with your emoji or animation file
                                   fit: BoxFit.contain,
                                 ),
                               ),
@@ -204,7 +204,7 @@ class _TeacherNotePageState extends State<TeacherNotePage> {
                                 height: 150,
                                 width: 150,
                                 child: Image.asset(
-                                   'assets/nodata.gif',  // Replace with your emoji or animation file
+                                   'assets/nodata.gif', // Replace with your emoji or animation file
                                   fit: BoxFit.contain,
                                 ),
                               ),
@@ -240,6 +240,7 @@ class _TeacherNotePageState extends State<TeacherNotePage> {
                               classname: note.className,
                               sectionname: note.sectionname,
                               readStatus: note.read_status,
+                              showDownloadIcon: note.imageList,
                               onTap: () async {
                                 // Navigate to TeacherDetailCard and wait for the result
                                 final result = await Navigator.push(

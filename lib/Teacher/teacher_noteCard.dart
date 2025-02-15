@@ -77,6 +77,7 @@ class NoteCard extends StatelessWidget {
   final String sectionname;
   final String readStatus;
   final VoidCallback onTap;
+  final List<Attachment> showDownloadIcon;
 
   const NoteCard({
     Key? key,
@@ -88,6 +89,7 @@ class NoteCard extends StatelessWidget {
     required this.sectionname,
     required this.readStatus,
     required this.onTap,
+    required this.showDownloadIcon,
   }) : super(key: key);
 
   @override
@@ -110,44 +112,53 @@ class NoteCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Image.asset(
                     'assets/teacher.png', // Replace with your logo image
                     height: 55,
                   ),
-                  const SizedBox(width: 5),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: Padding(
-                      padding: const EdgeInsets.fromLTRB(20, 15, 0, 0),
-                      child: Text(
-                        name,
-                        style: const TextStyle(
-                          fontSize: 14.0,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.pink,
-                        ),
-                        //overflow: TextOverflow.ellipsis,
+                      padding: const EdgeInsets.only(top: 5),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            name,
+                            style: const TextStyle(
+                              fontSize: 14.0,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.pink,
+                            ),
+                          ),
+                          const SizedBox(height: 5),
+                          Text(
+                            'Date: $formattedDate',
+                            style: const TextStyle(
+                              fontSize: 12.0,
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
-                  const SizedBox(width: 5),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 25.0),
-                    child: Text(
-                      'Date: $formattedDate',
-                      style: const TextStyle(
-                        fontSize: 12.0,
+                  if (showDownloadIcon.isNotEmpty) // Show the icon only if attachments exist
+                    Padding(
+                      padding: const EdgeInsets.only(top: 10.0),
+                      child: Icon(
+                        Icons.download_for_offline,
                         color: Colors.black,
-                         fontWeight: FontWeight.bold,
                       ),
-                      overflow: TextOverflow.ellipsis,
                     ),
-                  ),
                 ],
               ),
-              const SizedBox(height: 2),
-              const Divider(thickness: 2),
-              const SizedBox(height: 2),
+              const SizedBox(height: 10),
+              // const Divider(thickness: 2),
+              const SizedBox(height: 5),
               Text.rich(
                 TextSpan(
                   children: [
@@ -168,7 +179,7 @@ class NoteCard extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(height: 2),
+              const SizedBox(height: 5),
               Text.rich(
                 TextSpan(
                   children: [

@@ -137,6 +137,7 @@ class _ResultPageState extends State<ResultPage> {
         int flag = data['flag'];
         print('check_report_card response: ${response.body}');
         print('check_report_card response: ${response.statusCode}');
+        print('check_report_card response111: ${error_msg}');
 
         setState(() {
           // Update viewReportCardVisible based on the API flag
@@ -190,8 +191,7 @@ class _ResultPageState extends State<ResultPage> {
         } else {
           try {
             // Handle the error_msg
-            String msg =
-                data['error_msg'] ?? ''; // Use default value '' if null
+            String msg = data['error_msg'] ?? '';
             print('error_msg ==> $msg');
 
             // Checking for the graph (should be an integer check)
@@ -272,7 +272,7 @@ class _ResultPageState extends State<ResultPage> {
 
         // Map the JSON response to a list of ExamResult objects
         List<ExamResult> results =
-        jsonData.map((data) => ExamResult.fromJson(data)).toList();
+            jsonData.map((data) => ExamResult.fromJson(data)).toList();
 
 //Set Validation herrrrrre
 
@@ -384,208 +384,200 @@ class _ResultPageState extends State<ResultPage> {
             ),
           ),
           child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: isLoading
-                  ? Center(child: CircularProgressIndicator())
-              //     :ShowResult == 'N' ? Padding(
-              //   padding: const EdgeInsets.all(8.0),
-              //   child: Center(child: Text('Plase Pay pending fees to view marks and report card.',style: TextStyle(color: Colors.yellow,fontSize: 14),)),
-              // )
-                  : examData.isEmpty
-                  ? Center(
-                child: Container(
-                  margin: const EdgeInsets.all(10),
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black26,
-                        blurRadius: 10,
-                        offset: Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      // Add emoji or animation here
-                      SizedBox(
-                        height: 150,
-                        width: 150,
-                        child: Image.asset(
-                          'assets/nodata.gif',
-                          // Replace with your emoji or animation file
-                          fit: BoxFit.contain,
+            padding: const EdgeInsets.all(16.0),
+            child: isLoading
+                ? Center(child: CircularProgressIndicator())
+                //     :ShowResult == 'N' ? Padding(
+                //   padding: const EdgeInsets.all(8.0),
+                //   child: Center(child: Text('Plase Pay pending fees to view marks and report card.',style: TextStyle(color: Colors.yellow,fontSize: 14),)),
+                // )
+                : examData.isEmpty
+                    ? Center(
+                        child: Container(
+                          margin: const EdgeInsets.all(10),
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(16),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black26,
+                                blurRadius: 10,
+                                offset: Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              // Add emoji or animation here
+                              SizedBox(
+                                height: 150,
+                                width: 150,
+                                child: Image.asset(
+                                  'assets/animations/nodata.gif',
+                                  // Replace with your emoji or animation file
+                                  fit: BoxFit.contain,
+                                ),
+                              ),
+                              SizedBox(height: 10),
+                              // Add spacing between emoji and text
+                              Text(
+                                'No Result Available',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.red,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          ),
                         ),
+                      )
+                    : Column(
+                        children: [
+                          if (isAnyCardVisible)
+                            GridView.count(
+                              shrinkWrap: true,
+                              // Let the grid take only the space it needs
+                              crossAxisCount: 3,
+                              // Display 3 cards in each row
+                              crossAxisSpacing: 7.w,
+                              // Space between columns
+                              mainAxisSpacing: 7.h,
+                              // Space between rows
+                              children: [
+                                if (cbseCardVisible == 1)
+                                  _buildCard('CBSE Report Card', Icons.school,
+                                      Colors.deepPurple, () {
+                                    // Handle CBSE Report Card tap
+                                    // _showToast("CBSE Report Card");
+                                    print('URL: $durl');
+
+                                    String url = "";
+
+                                    // switch ('9') {
+                                    //   case "9":
+                                    //     url = durl + "index.php/assessment/pdf_download_class9_cbseformat"
+                                    //         "?student_id=${'2444'}&class_id=${'25'}&login_type=P&acd_yr=${'2023-2024'}&short_name=${'91'}";
+                                    //     break;
+                                    //   case "11":
+                                    //     url = durl + "index.php/HSC/pdf_download_class11_cbseformat"
+                                    //         "?student_id=${widget.studentId}&class_id=${widget.classId}&login_type=P&acd_yr=${widget.academicYr}&short_name=${widget.shortName}";
+                                    //     break;
+                                    // }
+
+                                    switch (widget.className) {
+                                      case "9":
+                                        url = durl +
+                                            "index.php/assessment/pdf_download_class9_cbseformat"
+                                                "?student_id=${widget.studentId}&class_id=${widget.classId}&login_type=P&acd_yr=${widget.academicYr}&short_name=${widget.shortName}";
+                                        break;
+                                      case "11":
+                                        url = durl +
+                                            "index.php/HSC/pdf_download_class11_cbseformat"
+                                                "?student_id=${widget.studentId}&class_id=${widget.classId}&login_type=P&acd_yr=${widget.academicYr}&short_name=${widget.shortName}";
+                                        break;
+                                    }
+
+                                    DateTime now = DateTime.now();
+                                    String date =
+                                        DateFormat('yyyy-MM-dd').format(now);
+
+                                    downloadFile(url, context,
+                                        'CBSE_RC_${widget.Fname + '-' + date}.pdf');
+                                    print(' resultUrl downloadUrl $url');
+                                  }),
+                                if (viewReportCardVisible == 1)
+                                  _buildCard('View Report Card',
+                                      Icons.insert_drive_file, Colors.teal, () {
+                                    // Handle View Report Card tap
+
+                                    String resultUrl = "";
+
+                                    // resultUrl = durl + "index.php/assessment/pdf_download" +
+                                    //     "?student_id=" + '2444' + "&class_id=" + '25' + "&login_type=P&" + "acd_yr=" + '2023-2024' + "&short_name=" + shortName;
+
+                                    resultUrl = durl +
+                                        "index.php/assessment/pdf_download" +
+                                        "?student_id=${widget.studentId}&class_id=${widget.classId}&login_type=P&" +
+                                        "acd_yr=${widget.academicYr}&short_name=" +
+                                        shortName;
+
+                                    DateTime now = DateTime.now();
+                                    String date =
+                                        DateFormat('yyyy-MM-dd').format(now);
+
+                                    downloadFile(resultUrl, context,
+                                        'RC_${widget.Fname + '-' + date}.pdf');
+                                    print('downloadUrl $resultUrl');
+
+                                    print('cbseCardVisible: $cbseCardVisible');
+                                    print(
+                                        'viewReportCardVisible: $viewReportCardVisible');
+                                    print(
+                                        'resultChartVisible: $resultChartVisible');
+                                  }),
+                                if (resultChartVisible == 1)
+                                  _buildCard('Result Chart', Icons.bar_chart,
+                                      Colors.orange, () {
+                                    // Handle Result Chart tap
+
+                                    print('cbseCardVisible: $cbseCardVisible');
+                                    print(
+                                        'viewReportCardVisible: $viewReportCardVisible');
+                                    print(
+                                        'resultChartVisible: $resultChartVisible');
+
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => ResultChart(
+                                            studentId: widget.studentId,
+                                            shortName: shortName,
+                                            academicYr: academic_yr,
+                                            classId: widget.classId,
+                                            secId: widget.secId,
+                                            className: widget.className),
+                                      ),
+                                    );
+                                  }),
+                              ],
+                            ),
+
+                          // Add some spacing and divider
+                          const SizedBox(height: 7),
+
+                          // Expanded list of exam results below the cards
+
+                          Expanded(
+                            flex: 6,
+                            // Adjusts the space allocated for the exam results list
+                            child: ListView.builder(
+                              padding: EdgeInsets.all(6),
+                              itemCount: examData.length,
+                              itemBuilder: (context, index) {
+                                final exam = examData[index];
+                                return Padding(
+                                  padding: const EdgeInsets.only(bottom: 16.0),
+                                  child: _buildExpandableCard(exam),
+                                );
+                              },
+                            ),
+                          ),
+                        ],
                       ),
-                      SizedBox(height: 10),
-                      // Add spacing between emoji and text
-                      Text(
-                        'No Result Available',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.red,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
-                ),
-              )
-              : Column(
-              children: [
-              if (isAnyCardVisible)
-          GridView.count(
-          shrinkWrap: true,
-          // Let the grid take only the space it needs
-          crossAxisCount: 3,
-          // Display 3 cards in each row
-          crossAxisSpacing: 7.w,
-          // Space between columns
-          mainAxisSpacing: 7.h,
-          // Space between rows
-          children: [
-            if (cbseCardVisible == 1)
-              _buildCard('CBSE Report Card', Icons.school,
-                  Colors.deepPurple, () {
-                    // Handle CBSE Report Card tap
-                    // _showToast("CBSE Report Card");
-                    print('URL: $durl');
-
-                    String url = "";
-
-                    // switch ('9') {
-                    //   case "9":
-                    //     url = durl + "index.php/assessment/pdf_download_class9_cbseformat"
-                    //         "?student_id=${'2444'}&class_id=${'25'}&login_type=P&acd_yr=${'2023-2024'}&short_name=${'91'}";
-                    //     break;
-                    //   case "11":
-                    //     url = durl + "index.php/HSC/pdf_download_class11_cbseformat"
-                    //         "?student_id=${widget.studentId}&class_id=${widget.classId}&login_type=P&acd_yr=${widget.academicYr}&short_name=${widget.shortName}";
-                    //     break;
-                    // }
-
-                    switch (widget.className) {
-                      case "9":
-                        url = durl +
-                            "index.php/assessment/pdf_download_class9_cbseformat"
-                                "?student_id=${widget
-                                .studentId}&class_id=${widget
-                                .classId}&login_type=P&acd_yr=${widget
-                                .academicYr}&short_name=${widget.shortName}";
-                        break;
-                      case "11":
-                        url = durl +
-                            "index.php/HSC/pdf_download_class11_cbseformat"
-                                "?student_id=${widget
-                                .studentId}&class_id=${widget
-                                .classId}&login_type=P&acd_yr=${widget
-                                .academicYr}&short_name=${widget.shortName}";
-                        break;
-                    }
-
-                    DateTime now = DateTime.now();
-                    String date =
-                    DateFormat('yyyy-MM-dd').format(now);
-
-                    downloadFile(url, context,
-                        'CBSE_RC_${widget.Fname + '-' + date}.pdf');
-                    print(' resultUrl downloadUrl $url');
-                  }),
-            if (viewReportCardVisible == 1)
-              _buildCard('View Report Card',
-                  Icons.insert_drive_file, Colors.teal, () {
-                    // Handle View Report Card tap
-
-                    String resultUrl = "";
-
-                    // resultUrl = durl + "index.php/assessment/pdf_download" +
-                    //     "?student_id=" + '2444' + "&class_id=" + '25' + "&login_type=P&" + "acd_yr=" + '2023-2024' + "&short_name=" + shortName;
-
-                    resultUrl = durl +
-                        "index.php/assessment/pdf_download" +
-                        "?student_id=${widget.studentId}&class_id=${widget
-                            .classId}&login_type=P&" +
-                        "acd_yr=${widget.academicYr}&short_name=" +
-                        shortName;
-
-                    DateTime now = DateTime.now();
-                    String date =
-                    DateFormat('yyyy-MM-dd').format(now);
-
-                    downloadFile(resultUrl, context,
-                        'RC_${widget.Fname + '-' + date}.pdf');
-                    print('downloadUrl $resultUrl');
-
-                    print('cbseCardVisible: $cbseCardVisible');
-                    print(
-                        'viewReportCardVisible: $viewReportCardVisible');
-                    print(
-                        'resultChartVisible: $resultChartVisible');
-                  }),
-            if (resultChartVisible == 1)
-              _buildCard('Result Chart', Icons.bar_chart,
-                  Colors.orange, () {
-                    // Handle Result Chart tap
-
-                    print('cbseCardVisible: $cbseCardVisible');
-                    print(
-                        'viewReportCardVisible: $viewReportCardVisible');
-                    print(
-                        'resultChartVisible: $resultChartVisible');
-
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            ResultChart(
-                                studentId: widget.studentId,
-                                shortName: shortName,
-                                academicYr: academic_yr,
-                                classId: widget.classId,
-                                secId: widget.secId,
-                                className: widget.className),
-                      ),
-                    );
-                  }),
-          ],
-        ),
-
-        // Add some spacing and divider
-        const SizedBox(height: 7),
-
-        // Expanded list of exam results below the cards
-        Expanded(
-          flex: 6,
-          // Adjusts the space allocated for the exam results list
-          child: ListView.builder(
-            padding: EdgeInsets.all(6),
-            itemCount: examData.length,
-            itemBuilder: (context, index) {
-              final exam = examData[index];
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 16.0),
-                child: _buildExpandableCard(exam),
-              );
-            },
           ),
         ),
-        ],
       ),
-    ),)
-    ,
-    )
-    ,
     );
   }
 
   // Function to show notification with the file path in the payload
   void showNotification(String title, String body, String filePath) async {
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
-    AndroidNotificationDetails(
+        AndroidNotificationDetails(
       'download_channel',
       'Download Notifications',
       channelDescription: 'Notification channel for file downloads',
@@ -594,7 +586,7 @@ class _ResultPageState extends State<ResultPage> {
       ticker: 'ticker',
     );
     const NotificationDetails platformChannelSpecifics =
-    NotificationDetails(android: androidPlatformChannelSpecifics);
+        NotificationDetails(android: androidPlatformChannelSpecifics);
 
     await flutterLocalNotificationsPlugin.show(
       0, // Notification ID
@@ -605,11 +597,11 @@ class _ResultPageState extends State<ResultPage> {
     );
   }
 
-  Future<void> downloadFile(String url, BuildContext context,
-      String name) async {
+  Future<void> downloadFile(
+      String url, BuildContext context, String name) async {
     // Define the directory path where the file will be saved
     var directory =
-    Directory("/storage/emulated/0/Download/Evolvuschool/Parent/Result");
+        Directory("/storage/emulated/0/Download/Evolvuschool/Parent/Result");
 
     // Ensure the directory exists, create if necessary
     if (!await directory.exists()) {
@@ -624,10 +616,9 @@ class _ResultPageState extends State<ResultPage> {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) =>
-          Center(
-            child: CircularProgressIndicator(),
-          ),
+      builder: (context) => Center(
+        child: CircularProgressIndicator(),
+      ),
     );
 
     try {
@@ -642,7 +633,8 @@ class _ResultPageState extends State<ResultPage> {
       // Show a snackbar to indicate successful download
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('File downloaded successfully: $filePath'),
+          content: Text(
+              'File downloaded successfully: Download/Evolvuschool/Parent/Result'),
         ),
       );
 
@@ -672,8 +664,8 @@ class _ResultPageState extends State<ResultPage> {
   }
 
   // Card Builder Function for the top grid
-  Widget _buildCard(String title, IconData icon, Color color,
-      VoidCallback onTap) {
+  Widget _buildCard(
+      String title, IconData icon, Color color, VoidCallback onTap) {
     return FractionallySizedBox(
       widthFactor: 1, // Full width of the grid item
       heightFactor: 0.80, // Reduce the height of the card
