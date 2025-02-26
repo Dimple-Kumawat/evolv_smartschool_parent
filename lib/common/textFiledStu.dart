@@ -32,7 +32,7 @@ class StuTextField extends StatelessWidget {
             child: RichText(
               text: TextSpan(
                 children: [
-                  
+
                   TextSpan(
                     text: label,
                     style: const TextStyle(
@@ -51,7 +51,7 @@ class StuTextField extends StatelessWidget {
                     ),
                 ],
               ),
-             // overflow: TextOverflow.ellipsis, // Prevents text overflow issues
+              // overflow: TextOverflow.ellipsis, // Prevents text overflow issues
             ),
           ),
           const SizedBox(width: 20), // Space between label and field

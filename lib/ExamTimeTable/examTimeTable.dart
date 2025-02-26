@@ -116,7 +116,7 @@ class _ExamTimeTablePageState extends State<ExamTimeTablePage> {
                                 height: 150,
                                 width: 150,
                                 child: Image.asset(
-                                  'assets/animations/nodata.gif',
+                                  'assets/nodata.gif',
                                   // Replace with your emoji or animation file
                                   fit: BoxFit.contain,
                                 ),
@@ -160,7 +160,7 @@ class _ExamTimeTablePageState extends State<ExamTimeTablePage> {
                                 height: 150,
                                 width: 150,
                                 child: Image.asset(
-                                  'assets/animations/nodata.gif',
+                                  'assets/nodata.gif',
                                   // Replace with your emoji or animation file
                                   fit: BoxFit.contain,
                                 ),

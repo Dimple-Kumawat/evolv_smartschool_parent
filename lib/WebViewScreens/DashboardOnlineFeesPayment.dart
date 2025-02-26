@@ -69,71 +69,54 @@ class _PaymentWebviewState extends State<Dashboardonlinefeespayment> {
   }
 
 
-    Widget build(BuildContext context) {
-      return Scaffold( // Use Scaffold here
+  Widget build(BuildContext context) {
+    return Scaffold( // Use Scaffold here
+      backgroundColor: Colors.transparent,
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        toolbarHeight: 70.h,
+        title: Text(
+          'Fees Payment',
+          style: TextStyle(fontSize: 20.sp, color: Colors.white),
+        ),
         backgroundColor: Colors.transparent,
-        extendBodyBehindAppBar: true,
-        appBar: AppBar(
-          toolbarHeight: 30.h,
-          title: Center(
-            child: Text(
-              'Fees Payment',
-              style: TextStyle(fontSize: 15.sp, color: Colors.white),
-            ),
-          ),
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-        ),
-        body: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Colors.pink, Colors.blue],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-            ),
-          ),
-          child: Column(
-            children: [
-              SizedBox(height: 50.h),
-              Expanded(
-                child: WebViewWidget(controller: _controller),
-              ),
-            ],
+        elevation: 0,
+      ),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.pink, Colors.blue],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
           ),
         ),
-        floatingActionButton: Stack(
-          alignment: Alignment.bottomRight,
+        child: Column(
           children: [
-            FloatingActionButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => ReceiptWebViewScreen(
-                      receiptUrl: widget.receiptUrl +
-                          '?reg_id=${widget.regId}&academic_yr=${widget.academicYr}&short_name=${widget.shortName}',
-                    ),
-                  ),
-                );
-              },
-              child: const Padding( // Use const for unchanging widgets
-                padding: EdgeInsets.only(bottom: 10),
-                child: Icon(Icons.arrow_downward),
-              ),
-            ),
-            Positioned(
-              bottom: 5,
-              right: 5,
-              child: const Text( // Use const here as well
-                'Receipt',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.black,
-                ),
-              ),
+            SizedBox(height: 110.h),
+            Expanded(
+              child: WebViewWidget(controller: _controller),
             ),
           ],
-        )
-      );
-    }
+        ),
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) =>
+                  ReceiptWebViewScreen(
+                    receiptUrl: widget.receiptUrl +
+                        '?reg_id=${widget.regId}&academic_yr=${widget
+                            .academicYr}&short_name=${widget.shortName}',
+                  ),
+            ),
+          );
+        },
+        icon: const Icon(Icons.receipt,color: Colors.black,),
+        label: const Text("Receipt"),
+        backgroundColor: Colors.blue.shade400,
+      ),
+    );
   }
+}

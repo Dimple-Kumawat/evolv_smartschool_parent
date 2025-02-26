@@ -121,14 +121,13 @@ class _PaymentWebviewState extends State<PaymentWebview> {
         ),
       child: Column(
         children: [
-          SizedBox(height: 120.h),
+          SizedBox(height: 100.h),
           Expanded(
             child: WebViewWidget(controller: _controller),
           ),
         ],
       ),
       ),
-
       // body: WebView(
       //   initialUrl: "http://holyspiritconvent.evolvu.in/test/hscs_test/index.php/worldline/WL_online_payment_req_apk/?reg_id=1039&academic_yr=2024-2025&user_id=8421853656&encryptedUsername=a34dca3f54ec276c214d5a423c537af101cc67b7&short_name=HSCS",
       //   javascriptMode: JavaScriptMode.unrestricted,
@@ -143,39 +142,23 @@ class _PaymentWebviewState extends State<PaymentWebview> {
       //     return NavigationDecision.navigate;
       //   },
       // ),
-     
-     
-
-      floatingActionButton: Stack(
-        alignment: Alignment.bottomCenter,
-        children: [
-          if(widget.receipt_button == 1)
-          FloatingActionButton(
-            onPressed: () {
-              // Navigator.pop(context);
-              Navigator.push(
-                context,
-
-                MaterialPageRoute(builder: (_) => ReceiptWebViewScreen(receiptUrl: widget.receiptUrl +'?reg_id=${widget.regId}&academic_yr=${widget.academicYr}&short_name=${widget.shortName}',)),
-             
-              );
-            },
-            child: Padding(
-                padding: EdgeInsets.only( bottom:10),
-                child: Icon(Icons.arrow_downward)
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) =>
+                  ReceiptWebViewScreen(
+                    receiptUrl: widget.receiptUrl +
+                        '?reg_id=${widget.regId}&academic_yr=${widget
+                            .academicYr}&short_name=${widget.shortName}',
+                  ),
             ),
-          ),
-          Positioned(
-            bottom: 5,
-            child: Text(
-              'Receipt',
-              style: TextStyle(
-                fontSize: 12,
-                color: Colors.black,
-              ),
-            ),
-          ),
-        ],
+          );
+        },
+        icon: const Icon(Icons.receipt,color: Colors.black,),
+        label: const Text("Receipt"),
+        backgroundColor: Colors.blue.shade400,
       ),
     );
   }

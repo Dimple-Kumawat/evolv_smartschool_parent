@@ -344,7 +344,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                         controller: _motherNameController,
                         decoration: InputDecoration(
                           contentPadding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 10.w),
-                          hintText: "What is your mother's maiden name?",
+                          hintText: "What is your mother's name?",
                           hintStyle: TextStyle(fontSize: 14.sp),
                           border: OutlineInputBorder(),
                         ),

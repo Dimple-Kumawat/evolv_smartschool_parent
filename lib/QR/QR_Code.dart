@@ -1,16 +1,15 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:evolvu/Parent/parentDashBoard_Page.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:intl/intl.dart';
 
 class QRCodeScreen extends StatefulWidget {
   final String regId;
 
-
-  QRCodeScreen({
-    required this.regId,
-  });
+  QRCodeScreen({required this.regId});
 
   @override
   _QRCodeScreenState createState() => _QRCodeScreenState();
@@ -20,6 +19,9 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
   bool isLoading = true;
   bool showQRCode = false;
   String errorMessage = '';
+  String qrData = '';
+  Timer? _timer;
+  int _remainingTime = 300;
 
   @override
   void initState() {
@@ -27,6 +29,7 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
     fetchConfirmationStatus();
   }
 
+  /// Fetch confirmation status from API
   Future<void> fetchConfirmationStatus() async {
     final String apiUrl = durl+"index.php/IdcardApi/get_confirmation_status";
 
@@ -38,24 +41,17 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
         "parent_id": widget.regId,
       };
 
-      // Make the POST request
       final response = await http.post(Uri.parse(apiUrl), body: params);
 
       if (response.statusCode == 200) {
-        // Parse the JSON response
         final jsonResponse = json.decode(response.body);
-        print('QRCodeScreen: $jsonResponse');
-        // Handle 'status' as a bool or a String
         final status = jsonResponse["status"];
         final confirmation = jsonResponse["confirmation"] ?? "";
 
         if ((status is bool && !status) || (status is String && status == "false") || confirmation == "N") {
           handleQRNotAvailable();
         } else if (confirmation == "Y") {
-          setState(() {
-            showQRCode = true;
-            isLoading = false;
-          });
+          generateQR();
         } else {
           setState(() {
             errorMessage = "Unknown confirmation status";
@@ -71,19 +67,63 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
     } catch (e) {
       setState(() {
         errorMessage = "Exception: $e";
-        print('QRCodeScreen: $e');
-
         isLoading = false;
       });
     }
   }
 
+  /// Generate QR Code with timestamp and start countdown
+  void generateQR() {
+    String timestamp = DateFormat("yyyy-MM-dd HH:mm:ss").format(DateTime.now());
+    setState(() {
+      qrData = "${widget.regId} $timestamp";
+      showQRCode = true;
+      isLoading = false;
+      _remainingTime = 300; // Reset timer
+    });
+
+    _startCountdown();
+  }
+
+  void _startCountdown() {
+    _timer?.cancel();
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      if (_remainingTime > 0) {
+        setState(() {
+          _remainingTime--;
+        });
+      } else {
+        timer.cancel();
+        setState(() {
+          showQRCode = false;
+          errorMessage = "QR Code expired. Please refresh.";
+        });
+      }
+    });
+  }
+
+  /// Refresh QR Code
+  void refreshQR() {
+    setState(() {
+      isLoading = true;
+      showQRCode = false;
+    });
+    generateQR();
+  }
+
+  /// Handle case when QR is not available
   void handleQRNotAvailable() {
     setState(() {
       showQRCode = false;
       isLoading = false;
-      errorMessage = "QR Code not available.";
+      errorMessage = "QR Code not available. Please fill the details of Parent ID Card";
     });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
   }
 
   @override
@@ -97,6 +137,13 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
         appBar: AppBar(
           title: Text('Verify Parents by QR Code', style: TextStyle(color: Colors.white),),
           backgroundColor: Colors.pink,
+          actions: [
+            if(errorMessage.isEmpty)
+            IconButton(
+              icon: Icon(Icons.refresh),
+              onPressed: refreshQR, // Refresh button in app bar
+            ),
+          ],
         ),
         body: Stack(
           children: [
@@ -115,7 +162,7 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
                   ? CircularProgressIndicator() // Loader
                   : showQRCode
                   ? buildQRCodeWidget() // Show QR Code
-                  : buildErrorWidget(), // Show error
+                  : buildErrorWidget(), // Show error with refresh button
             ),
           ],
         ),
@@ -123,6 +170,7 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
     );
   }
 
+  /// Widget to display the QR code with countdown
   Widget buildQRCodeWidget() {
     return Container(
       margin: const EdgeInsets.all(20),
@@ -142,17 +190,28 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
         mainAxisSize: MainAxisSize.min,
         children: [
           QrImageView(
-            data: widget.regId,
+            data: qrData,
             version: QrVersions.auto,
             size: 200.0,
           ),
           SizedBox(height: 20),
           Text(
-            'Scan the QR Code',
+            'Scan the QR Code\nValid for ${_remainingTime ~/ 60}:${(_remainingTime % 60).toString().padLeft(2, '0')} minutes',
             style: TextStyle(
-              fontSize: 18,
+              fontSize: 16,
               fontWeight: FontWeight.bold,
               color: Colors.black,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          SizedBox(height: 20),
+          ElevatedButton.icon(
+            onPressed: refreshQR,
+            icon: Icon(Icons.refresh),
+            label: Text('Refresh QR Code'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.pink,
+              foregroundColor: Colors.white,
             ),
           ),
         ],
@@ -160,6 +219,7 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
     );
   }
 
+  /// Widget to display an error message with Refresh button
   Widget buildErrorWidget() {
     return Container(
       margin: const EdgeInsets.all(20),
@@ -175,14 +235,30 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
           ),
         ],
       ),
-      child: Text(
-        errorMessage,
-        style: TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.bold,
-          color: Colors.red,
-        ),
-        textAlign: TextAlign.center,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            errorMessage,
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.red,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          SizedBox(height: 20),
+          if(errorMessage.isEmpty)
+          ElevatedButton.icon(
+            onPressed: refreshQR,
+            icon: Icon(Icons.refresh),
+            label: Text('Refresh QR Code'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.pink,
+              foregroundColor: Colors.white,
+            ),
+          ),
+        ],
       ),
     );
   }

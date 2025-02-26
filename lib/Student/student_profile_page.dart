@@ -55,7 +55,7 @@ class StudentProfilePage extends StatelessWidget {
               // mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 SizedBox(
-                  height: 80.h,
+                  height: 110.h,
                 ),
                 Text(
                   "Student Profile ",

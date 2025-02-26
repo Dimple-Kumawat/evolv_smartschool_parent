@@ -7,8 +7,10 @@ import 'package:evolvu/Parent/parentDashBoard_Page.dart';
 import 'package:evolvu/username_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 // Update the import path accordingly
@@ -57,6 +59,7 @@ class LogUrls {
 
 }
 
+
 class LoginPage extends StatefulWidget {
   final String emailstr;
 
@@ -71,6 +74,8 @@ String teacherApkUrl = "";
 String academic_yr1 = "";
 
 class _LoginState extends State<LoginPage> {
+  String? _token;
+
   TextEditingController password = TextEditingController();
   TextEditingController email = TextEditingController();
   bool shouldShowText2 = false; // Set this based on your condition
@@ -79,16 +84,54 @@ class _LoginState extends State<LoginPage> {
   bool _isLoading = false; // Add this line
 
   String url = "";
-
+  String? token;
   @override
   void initState() {
     super.initState();
+    requestPermission(); // Request notification permission
+    getToken(); // Get FCM token
 
-    // _initializeFirebase(); // Initialize Firebase
-    getDeviceId(); // Initialize Firebase
+    getDeviceId();
     email = TextEditingController(text: widget.emailstr);
     checkLoginStatus(); // Check login status when the login screen is initialized
   }
+
+  // Request Permission for Notifications
+  void requestPermission() async {
+    FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+    NotificationSettings settings = await messaging.requestPermission(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
+
+    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+      print('User granted permission');
+      debugPrint("Failed to fetch FCM token111111.");
+
+    } else {
+      print('User declined or has not accepted permission');
+      debugPrint("Failed to fetch FCM token22222.");
+
+    }
+  }
+
+  void getToken() async {
+    try {
+      FirebaseMessaging messaging = FirebaseMessaging.instance;
+       token = await messaging.getToken();
+
+      if (token != null) {
+        debugPrint("FCM Token: $token");
+      } else {
+        debugPrint("Failed to fetch FCM token.");
+      }
+    } catch (e) {
+      debugPrint("Error fetching FCM token: $e");
+    }
+  }
+
 
   Future<String> getDeviceId() async {
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
@@ -147,7 +190,7 @@ class _LoginState extends State<LoginPage> {
 
       http.Response response = await http.post(
         Uri.parse(url+"get_login"),
-        body: {'user_id': ema, 'password': pass,'short_name': shortName,'device_id':deviceId},
+        body: {'user_id': ema, 'password': pass,'short_name': shortName,'device_id':deviceId,'token': token},
       );
 
       print('Response status code: ${response.statusCode}');
@@ -190,10 +233,19 @@ class _LoginState extends State<LoginPage> {
           //             onPressed: () {
           //               Navigator.of(context).pushNamed(loginPage);
           //             },
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => ParentDashBoardPage(academic_yr:academicYr,shortName: shortName)),
+          // Navigator.push(
+          //   context,
+          //   MaterialPageRoute(builder: (_) => ParentDashBoardPage(academic_yr:academicYr,shortName: shortName)),
+          // );
+
+          // After successful login, navigate to ParentDashBoardPage like this:
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(
+              builder: (context) => ParentDashBoardPage(academic_yr:academicYr,shortName: shortName),
+            ),
+                (Route<dynamic> route) => false, // This removes all previous routes
           );
+
         }
       } else {
         setState(() {
@@ -254,11 +306,13 @@ class _LoginState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     String logoPath ='' ;
-    if(schoolnamestr == 'SACS'){
+    // if(schoolnamestr == 'SACS'){
+
       logoPath = teacherApkUrl+'uploads/logo.jpg';
-    } else if (schoolnamestr == 'HSCS'){
-      logoPath = teacherApkUrl+'uploads/logo.jpg';
-    }
+
+    // } else if (schoolnamestr == 'HSCS'){
+    //   logoPath = teacherApkUrl+'uploads/logo.jpg';
+    // }
     String schoolName = schoolnamestr == 'HSCS'
         ? 'Holy Spirit Convent School'
         : 'St. Arnolds Central School';

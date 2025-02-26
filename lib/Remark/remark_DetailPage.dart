@@ -211,7 +211,7 @@ class _RemarkDetailPageState extends State<RemarkDetailPage> {
 
   downloadFile(String url, BuildContext context, String name) async {
     var directory =
-    Directory("/storage/emulated/0/Download/Remarks");
+    Directory("/storage/emulated/0/Download/Evolvuschool/Parent/Remarks");
 
     if (!await directory.exists()) {
       await directory.create(recursive: true);
@@ -269,4 +269,3 @@ class _RemarkDetailPageState extends State<RemarkDetailPage> {
         .showSnackBar(SnackBar(content: Text(message)));
   }
 }
-

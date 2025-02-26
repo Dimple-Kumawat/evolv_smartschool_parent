@@ -734,13 +734,13 @@ class _ParentProfilePage extends State<ParentProfilePage> {
                           ),
                           SizedBox(height: 10),
 
-                          ],
-                        ),
+                        ],
+                      ),
 
 
-                        SizedBox(
-                          height: 20.h,
-                        ),
+                      SizedBox(
+                        height: 20.h,
+                      ),
                       ElevatedButton(
                         onPressed: () async {
 

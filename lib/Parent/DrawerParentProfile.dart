@@ -267,12 +267,12 @@ class _DrawerParentProfilePage extends State<DrawerParentProfilePage> {
     if (response.statusCode == 200) {
       print('Contact details updated successfully: ${response.body}');
       Fluttertoast.showToast(
-        msg: "Parent Mobile no. updated successfully",
+        msg: "Parent Mobile no. Selected",
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.BOTTOM,
         timeInSecForIosWeb: 1,
-        backgroundColor: Colors.green,
-        textColor: Colors.white,
+        backgroundColor: Colors.white,
+        textColor: Colors.black,
         fontSize: 16.0,
       );
     } else {
@@ -360,7 +360,7 @@ class _DrawerParentProfilePage extends State<DrawerParentProfilePage> {
         ),
         child: SizedBox(
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(10,110,10,20),
+          padding: const EdgeInsets.fromLTRB(10,110,10,20),
             child: Card(
               child: Container(
                 color: Colors.transparent,
@@ -374,11 +374,7 @@ class _DrawerParentProfilePage extends State<DrawerParentProfilePage> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Text(
-                          "Parent Profile",
-                          style: TextStyle(
-                              fontSize: 18.sp, fontWeight: FontWeight.bold),
-                        ),
+                       
                         SizedBox(
                           height: 10.h,
                         ),
