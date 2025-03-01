@@ -21,6 +21,7 @@ import '../ExamTimeTable/timeTable.dart';
 import '../Notice_SMS/notice_notePage.dart';
 import '../QR/QR_Code.dart';
 import '../ResultChart.dart';
+import '../Utils&Config/api.dart';
 import '../WebViewScreens/OnlineFeesPayment.dart';
 import '../WebViewScreens/SmartChat_WebView.dart';
 import '../common/rotatedDivider_Card.dart';
@@ -474,7 +475,6 @@ class _StudentActivityPageState extends State<StudentActivityPage> {
               builder: (context) => StudentProfilePage(studentId: widget.studentId,shortName: shortName,cname: widget.cname,
                 secname: widget.secname,academic_yr: academic_yr
                 ,),
-                
             ),
           );
         },
@@ -574,283 +574,278 @@ class _StudentActivityPageState extends State<StudentActivityPage> {
       //     },
       //   showBadgenotice: true,
       // ),
-CardItem(
-  imagePath: 'assets/calendar.png',
-  title: 'Exam/TimeTable',
-  onTap: (context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(24),
-          ),
-         // backgroundColor: Colors.pink.shade50,
-          contentPadding: EdgeInsets.zero,
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Header
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: const BoxDecoration(
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-                  gradient: LinearGradient(
-                  colors: [Colors.pink, Colors.deepPurple],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
+
+      CardItem(
+        imagePath: 'assets/calendar.png',
+        title: 'Exam/TimeTable',
+        onTap: (context) {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(24),
                 ),
-                child: Row(
+                // backgroundColor: Colors.pink.shade50,
+                contentPadding: EdgeInsets.zero,
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(
-                      Icons.calendar_today,
-                      color: Colors.white,
+                    // Header
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: const BoxDecoration(
+                        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+                        gradient: LinearGradient(
+                          colors: [Colors.pink, Colors.deepPurple],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(
+                            Icons.calendar_today,
+                            color: Colors.white,
+                          ),
+                          const SizedBox(width: 8),
+                          const Text(
+                            'Exam/TimeTable',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                    const SizedBox(width: 8),
-                    const Text(
-                      'Exam/TimeTable',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                    const SizedBox(height: 16),
+                    // TimeTable Option
+                    ListTile(
+                      leading: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.pink.shade100,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: const Icon(
+                          Icons.schedule,
+                          color: Colors.pink,
+                        ),
+                      ),
+                      title: const Text(
+                        "TimeTable",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => TimeTablePage(
+                              studentId: widget.studentId,
+                              shortName: shortName,
+                              academic_yr: academic_yr,
+                              classId: widget.classId,
+                              secId: widget.secId,
+                              className: widget.className,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                    const Divider(height: 1),
+                    // ExamTimeTable Option
+                    ListTile(
+                      leading: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.purple.shade100,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: const Icon(
+                          Icons.assignment,
+                          color: Colors.purple,
+                        ),
+                      ),
+                      title: const Text(
+                        "ExamTimeTable",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ExamTimeTablePage(
+                              shortName: shortName,
+                              academic_yr: academic_yr,
+                              classId: widget.classId,
+                              secId: widget.secId,
+                              className: widget.className,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    // Close Button
+                    GestureDetector(
+                      onTap: () => Navigator.pop(context),
+                      child: Padding(
+                        padding: const EdgeInsets.only(bottom: 8.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: const [
+                            Icon(Icons.close, color: Colors.red),
+                            SizedBox(width: 8),
+                            Text(
+                              "CLOSE",
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.red,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ],
                 ),
-              ),
-              const SizedBox(height: 16),
-              // TimeTable Option
-              ListTile(
-                leading: Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Colors.pink.shade100,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const Icon(
-                    Icons.schedule,
-                    color: Colors.pink,
-                  ),
-                ),
-                title: const Text(
-                  "TimeTable",
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => TimeTablePage(
-                        studentId: widget.studentId,
-                        shortName: shortName,
-                        academic_yr: academic_yr,
-                        classId: widget.classId,
-                        secId: widget.secId,
-                        className: widget.className,
-                      ),
-                    ),
-                  );
-                },
-              ),
-              const Divider(height: 1),
-              // ExamTimeTable Option
-              ListTile(
-                leading: Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Colors.purple.shade100,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const Icon(
-                    Icons.assignment,
-                    color: Colors.purple,
-                  ),
-                ),
-                title: const Text(
-                  "ExamTimeTable",
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ExamTimeTablePage(
-                        shortName: shortName,
-                        academic_yr: academic_yr,
-                        classId: widget.classId,
-                        secId: widget.secId,
-                        className: widget.className,
-                      ),
-                    ),
-                  );
-                },
-              ),
-              const SizedBox(height: 16),
-              // Close Button
-              GestureDetector(
-                onTap: () => Navigator.pop(context),
-                child: Padding(
-                  padding: const EdgeInsets.only(bottom: 8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
-                      Icon(Icons.close, color: Colors.red),
-                      SizedBox(width: 8),
-                      Text(
-                        "CLOSE",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.red,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  },
-),
-
-
-//dimple
-CardItem(
-  imagePath: '',
-  title: 'Attendance',
-  onTap: (BuildContext context) async {
-    try {
-      // Make API call to get absent dates
-      final absentDates = await getAbsentDates(widget.studentId);
-
-  showDialog(
-  context: context,
-  builder: (BuildContext context) {
-    return AlertDialog(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(24), // More rounded corners
-      ),
-      titlePadding: const EdgeInsets.all(0), // Remove default padding
-      title: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Colors.pink, Colors.deepPurple],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ), // Gradient header background
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-        ),
-        child: Row(
-          children: [
-            const Icon(Icons.event_busy, color: Colors.white, size: 28), // Icon
-            const SizedBox(width: 12),
-            const Expanded(
-              child: Text(
-                'Absent Dates',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-      content: Container(
-        width: double.maxFinite,
-        padding: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: Colors.grey.shade50, // Light background for content
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: SizedBox(
-          height: 250, // Increased height for better visibility
-          child: ListView.separated(
-            itemCount: absentDates.length, // Ensure this is an int
-            separatorBuilder: (context, index) => Divider(
-              thickness: 1.5,
-              color: Colors.grey.shade300, // Thicker divider
-            ),
-            itemBuilder: (BuildContext context, int index) {
-              return ListTile(
-                onTap: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Clicked on: ${absentDates[index]}')),
-                  );
-                },
-                leading: CircleAvatar(
-                  backgroundColor: Colors.pinkAccent,
-                  child: Icon(Icons.calendar_today, color: Colors.white),
-                ),
-                title: Text(
-                  absentDates[index],
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                ),
               );
             },
-          ),
-        ),
+          );
+        },
       ),
-      actions: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              TextButton.icon(
-                onPressed: () {
-                  Navigator.of(context).pop(); // Close the dialog
-                },
-                icon: Icon(Icons.close, color: Colors.pink),
-                label: Text(
-                  'CLOSE',
-                  style: TextStyle(color: Colors.pink, fontWeight: FontWeight.bold),
-                ),
-              ),
-              // ElevatedButton(
-              //   style: ElevatedButton.styleFrom(
-              //     backgroundColor: Colors.pinkAccent,
-              //     shape: RoundedRectangleBorder(
-              //       borderRadius: BorderRadius.circular(8),
-              //     ),
-              //   ),
-              //   onPressed: () {
-              //     // Add any additional action here
-              //   },
-              //   child: const Text('ACTION'),
-              // ),
-            ],
-          ),
-        ),
-      ],
-    );
-  },
-);
 
+      CardItem(
+        imagePath: '',
+        title: 'Attendance',
+        onTap: (BuildContext context) async {
+          try {
+            // Make API call to get absent dates
+            final absentDates = await getAbsentDates(widget.studentId);
 
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(24), // More rounded corners
+                  ),
+                  titlePadding: const EdgeInsets.all(0), // Remove default padding
+                  title: Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [Colors.pink, Colors.deepPurple],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ), // Gradient header background
+                      borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.event_busy, color: Colors.white, size: 28), // Icon
+                        const SizedBox(width: 12),
+                        const Expanded(
+                          child: Text(
+                            'Absent Dates',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  content: Container(
+                    width: double.maxFinite,
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade50, // Light background for content
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: SizedBox(
+                      height: 250, // Increased height for better visibility
+                      child: ListView.separated(
+                        itemCount: absentDates.length, // Ensure this is an int
+                        separatorBuilder: (context, index) => Divider(
+                          thickness: 1.5,
+                          color: Colors.grey.shade300, // Thicker divider
+                        ),
+                        itemBuilder: (BuildContext context, int index) {
+                          return ListTile(
+                            onTap: () {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('Clicked on: ${absentDates[index]}')),
+                              );
+                            },
+                            leading: CircleAvatar(
+                              backgroundColor: Colors.pinkAccent,
+                              child: Icon(Icons.calendar_today, color: Colors.white),
+                            ),
+                            title: Text(
+                              absentDates[index],
+                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                  actions: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          TextButton.icon(
+                            onPressed: () {
+                              Navigator.of(context).pop(); // Close the dialog
+                            },
+                            icon: Icon(Icons.close, color: Colors.pink),
+                            label: Text(
+                              'CLOSE',
+                              style: TextStyle(color: Colors.pink, fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                          // ElevatedButton(
+                          //   style: ElevatedButton.styleFrom(
+                          //     backgroundColor: Colors.pinkAccent,
+                          //     shape: RoundedRectangleBorder(
+                          //       borderRadius: BorderRadius.circular(8),
+                          //     ),
+                          //   ),
+                          //   onPressed: () {
+                          //     // Add any additional action here
+                          //   },
+                          //   child: const Text('ACTION'),
+                          // ),
+                        ],
+                      ),
+                    ),
+                  ],
+                );
+              },
+            );
 
-
-    } catch (error) {
-      // Handle errors here (e.g., show a snackbar or error message)
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Absent date List is Empty...')),
-      );
-    }
-  },
-),
-
+          } catch (error) {
+            // Handle errors here (e.g., show a snackbar or error message)
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Absent date List is Empty...')),
+            );
+          }
+        },
+      ),
 
       if(smartchat == 1)
       CardItem(
@@ -895,20 +890,20 @@ CardItem(
         },
       ),
 
-      // if(online_fees_payment == 1)
-      // CardItem(
-      //   imagePath: 'assets/cashpayment.png',
-      //   title: 'Fees Payment',
-      //   onTap: (context) {
-      //     Navigator.push(
-      //       context,
-      //       MaterialPageRoute(
-      //         builder: (context) => PaymentWebview(
-      //             regId: widget.reg_id,paymentUrlShare:paymentUrlShare,receiptUrl:receiptUrl,shortName: shortName,academicYr: academic_yr,receipt_button:receipt_button),
-      //       ),
-      //     );
-      //   },
-      // ),
+      if(online_fees_payment == 1)
+      CardItem(
+        imagePath: 'assets/cashpayment.png',
+        title: 'Fees Payment',
+        onTap: (context) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => PaymentWebview(
+                  regId: widget.reg_id,paymentUrlShare:paymentUrlShare,receiptUrl:receiptUrl,shortName: shortName,academicYr: academic_yr,receipt_button:receipt_button),
+            ),
+          );
+        },
+      ),
       // CardItem(
       //   imagePath: 'assets/new_module.png', // Path to the new module image
       //   title: 'New Module',
@@ -919,12 +914,10 @@ CardItem(
     ];
 
     return WillPopScope(
-      
       onWillPop: () async {
         // Pop until reaching the HistoryTab route
         Navigator.pop(context, true);
         return false;
-
       },
       child: FutureBuilder(
         future: _getSchoolInfo(),
@@ -961,7 +954,7 @@ CardItem(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                          Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 0.h),
+                          padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 10.h),
 
                           child: Card(
                             elevation: 4, // Shadow depth for a floating effect
@@ -1044,6 +1037,13 @@ CardItem(
                                       ],
                                     ),
                                   ),
+
+                                  // SizedBox(width: 45.w),
+
+                                  // if (GET_URL == "https://api.aceventura.in/evolvuURL/get_url")
+                                  //   BlinkingBadge(text: 'LIVE', textColor: Colors.red)
+                                  // else
+                                  //   BlinkingBadge(text: 'TEST', textColor: Colors.green),
                                 ],
                               ),
                             ),
@@ -1219,8 +1219,8 @@ Container buildMyNavBar(BuildContext context) {
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
         _buildNavItem(icon: Icons.dashboard, label: 'Dashboard', index: 0),
-        _buildNavItem(icon: Icons.calendar_month, label: 'Calendar', index: 1),
-        _buildNavItem(icon: Icons.person, label: 'Profile',index: 3), // Center icon for Profile
+        _buildNavItem(icon: Icons.calendar_month, label: 'Events', index: 1),
+        _buildNavItem(icon: Icons.person, label: 'Profile',index: 2), // Center icon for Profile
         _buildNavItem(icon: Icons.qr_code, label: 'QR', index: 4),
       ],
     ),

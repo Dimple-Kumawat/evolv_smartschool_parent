@@ -56,7 +56,6 @@ Future<void> _getSchoolInfo() async {
   String? schoolInfoJson = prefs.getString('school_info');
   String? logUrls = prefs.getString('logUrls');
   print('logUrls====\\\\\: $schoolInfoJson');
-
   if (logUrls != null) {
     try {
       Map<String, dynamic> logUrlsparsed = json.decode(logUrls);
@@ -83,7 +82,7 @@ Future<void> _getSchoolInfo() async {
       url = parsedData['url'];
       durl = parsedData['project_url'];
 
-      // fetchDashboardData(url);
+      fetchDashboardData(url);
 
       print('Short Name: $shortName');
       print('URL: $url');
@@ -96,7 +95,7 @@ Future<void> _getSchoolInfo() async {
   }
 }
 
-  Future<void> fetchDashboardData(String url) async {
+Future<void> fetchDashboardData(String url) async {
   final url1 = Uri.parse(url + 'show_icons_parentdashboard_apk');
 
   try {
@@ -113,10 +112,10 @@ Future<void> _getSchoolInfo() async {
       final Map<String, dynamic> data = jsonDecode(response.body);
 
       // Extract the required fields with null safety
-      receipt_button = data['receipt_button'] ?? 0; 
-      receiptUrl = data['receipt_url'] ?? ''; 
-      paymentUrl = data['payment_url'] ?? ''; 
-      smartchat_url = data['smartchat_url'] ?? ''; 
+      receipt_button = data['receipt_button'] ?? 0;
+      receiptUrl = data['receipt_url'] ?? '';
+      paymentUrl = data['payment_url'] ?? '';
+      smartchat_url = data['smartchat_url'] ?? '';
 
       String ALLOWED_URI_CHARS = "@#&=*+-_.,:!?()/~'%";
 
@@ -156,7 +155,6 @@ Future<void> _getSchoolInfo() async {
   } catch (e) {
     print('Error: $e');
   }
-
 }
 
   String encryptUsername(String username, String secretKey) {
@@ -297,10 +295,10 @@ class _ParentDashBoardPageState extends State<ParentDashBoardPage> {
   Future<void> getVersion(BuildContext _context) async {
 
     String BaseURl = "";
-    //final apiService = ApiService();
+    final apiService = ApiService();
     try {
       // Call the API and get the cleaned response
-     // BaseURl = await apiService.fetchUrl();
+      BaseURl = await apiService.fetchUrl();
       print('BaseURl Cleaned URL: $BaseURl');
     } catch (error) {
       // Handle any errors
@@ -447,8 +445,8 @@ class _ParentDashBoardPageState extends State<ParentDashBoardPage> {
         children: [
           _buildNavItem(icon: Icons.dashboard, label: 'Dashboard', index: 0),
           _buildNavItem(icon: Icons.calendar_month, label: 'Events', index: 1),
-          _buildCenterNavItem(icon: Icons.currency_rupee_sharp, index: 2), // Center icon
-          _buildNavItem(icon: Icons.person, label: 'Profile', index: 3),
+          _buildCenterNavItem(icon: Icons.currency_rupee_sharp, index: 5), // Center icon
+          _buildNavItem(icon: Icons.person, label: 'Profile', index: 2),
           _buildNavItem(icon: Icons.qr_code, label: 'QR', index: 4),
         ],
       ),
@@ -497,7 +495,7 @@ class _ParentDashBoardPageState extends State<ParentDashBoardPage> {
 
     return GestureDetector(
       onTap: () {
-        if (index == 2) {
+        if (index == 5) {
           // Navigate to the QR Code screen without modifying pageIndex
           Navigator.push(
             context,

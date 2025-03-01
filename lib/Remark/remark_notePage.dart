@@ -127,7 +127,7 @@ class _RemarkNotePage extends State<RemarkNotePage> {
       print('School info not found in SharedPreferences.');
     }
 
-    print('API URL: $url+get_premark');
+    print('API URL: $url get_premark');
     final response = await http.post(
       Uri.parse(url + 'get_premark'),
       body: {
@@ -153,7 +153,10 @@ class _RemarkNotePage extends State<RemarkNotePage> {
     }
   }
   Future<void> updateReadStatus(String remarkId,String ack) async {
-    setRemarkAck(remarkId,ack);
+
+    if(ack == 'N'){
+      setRemarkAck(remarkId,ack);
+    }
     final prefs = await SharedPreferences.getInstance();
     String? schoolInfoJson = prefs.getString('school_info');
     String? logUrls = prefs.getString('logUrls');
@@ -364,22 +367,25 @@ class _RemarkNotePage extends State<RemarkNotePage> {
                               acknowledge: remark.acknowledge,
                               onTap: () async {
                                 await updateReadStatus(remark.remarkId,remark.acknowledge);
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => RemarkDetailCard(
-                                      shortName: shortName,
-                                      academic_yr: academic_yr,
-                                      remarksubject: remark.remarkSubject,
-                                      imageList: remark.imageList,
-                                      description: remark.remarkDesc,
-                                      remarkId:remark.remarkId,
-                                      remarkDate: remark.remarkDate,
+                                if (mounted) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => RemarkDetailCard(
+                                        shortName: shortName,
+                                        academic_yr: academic_yr,
+                                        remarksubject: remark.remarkSubject,
+                                        imageList: remark.imageList,
+                                        description: remark.remarkDesc,
+                                        remarkId: remark.remarkId,
+                                        remarkDate: remark.remarkDate,
+                                      ),
                                     ),
-                                  ),
-                                );
-
-                                refreshRemarkNotes();
+                                  ).then((_) {
+                                    // Refresh the remarks after returning from the detail page
+                                    refreshRemarkNotes();
+                                  });
+                                }
                               },
                             ),
                           );

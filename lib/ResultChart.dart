@@ -220,7 +220,8 @@ class _ResultChartState extends State<ResultChart> {
         color: color,
         value: marks,
         title: '$subject\n${marks.toStringAsFixed(1)}%',
-        radius: touchedIndex == index ? 100 : 60,
+       // radius: 80,
+        radius: touchedIndex == index ? 100 : 80,
         titleStyle: TextStyle(
             fontSize: 8.sp,
             color: const Color.fromARGB(255, 20, 10, 10),
@@ -259,7 +260,7 @@ class _ResultChartState extends State<ResultChart> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(height: 80.h),
-                // SizedBox(height: 10.h),
+                
                 _buildResultChart(),
                 SizedBox(height: 30.h),
                 _buildThirdStackedBarChart(),// Bar chart widget below pie chart
@@ -411,6 +412,7 @@ class _ResultChartState extends State<ResultChart> {
 // Helper widget to build each colored bar segment with gradient, shadow, and 3D effect
   Widget _buildBarSegment(int currentScore, int? previousScore) {
     Gradient gradient;
+    // ignore: deprecated_member_use
     BoxShadow shadow = BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 6, offset: Offset(0, 3)); // Default shadow
 
     if (previousScore == null) {
@@ -430,6 +432,7 @@ class _ResultChartState extends State<ResultChart> {
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
         );
+        // ignore: deprecated_member_use
         shadow = BoxShadow(color: Colors.green.withOpacity(0.6), blurRadius: 6, offset: Offset(0, 3)); // Add shadow for improvement
       } else if (percentageChange > 0) {
         gradient = LinearGradient(
@@ -437,6 +440,7 @@ class _ResultChartState extends State<ResultChart> {
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
         );
+        // ignore: deprecated_member_use
         shadow = BoxShadow(color: Colors.green.withOpacity(0.3), blurRadius: 6, offset: Offset(0, 3));
       } else if (percentageChange < -25) {
         gradient = LinearGradient(
@@ -444,6 +448,7 @@ class _ResultChartState extends State<ResultChart> {
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
         );
+        // ignore: deprecated_member_use
         shadow = BoxShadow(color: Colors.red.withOpacity(0.6), blurRadius: 6, offset: Offset(0, 3));
       } else {
         gradient = LinearGradient(
@@ -451,6 +456,7 @@ class _ResultChartState extends State<ResultChart> {
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
         );
+        // ignore: deprecated_member_use
         shadow = BoxShadow(color: Colors.orange.withOpacity(0.6), blurRadius: 6, offset: Offset(0, 3));
       }
     }
@@ -499,6 +505,7 @@ class _ResultChartState extends State<ResultChart> {
         borderRadius: BorderRadius.circular(22),
       ),
       child: AspectRatio(
+       
         aspectRatio: 0.95,
         child: Stack(
           children: [
@@ -518,7 +525,8 @@ class _ResultChartState extends State<ResultChart> {
                     });
                   },
                 ),
-                centerSpaceRadius: 85,
+               
+                 centerSpaceRadius: 85,
                 sections: chartSections, // Dynamic data
               ),
             ),

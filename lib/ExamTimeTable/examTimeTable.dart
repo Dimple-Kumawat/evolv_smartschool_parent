@@ -248,7 +248,7 @@ class _ExamTimeTablePageState extends State<ExamTimeTablePage> {
                                     style: TextStyle(
                                       fontSize: 16.sp,
                                       fontWeight: FontWeight.bold,
-                                      color: Colors.white38, // Attractive bullet color
+                                       color: const Color.fromARGB(255, 216, 210, 210), // Attractive bullet color
                                     ),
                                   ),
                                   SizedBox(
@@ -265,21 +265,21 @@ class _ExamTimeTablePageState extends State<ExamTimeTablePage> {
                                           crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
 
-                                            Text(
-                                              '• ', // Bullet point
-                                              style: TextStyle(
-                                                fontSize: 16.sp,
-                                                fontWeight: FontWeight.bold,
-                                                color: Colors.white38, // Attractive bullet color
-                                              ),
-                                            ),
+                                            // Text(
+                                            //   '• ', // Bullet point
+                                            //   style: TextStyle(
+                                            //     fontSize: 16.sp,
+                                            //     fontWeight: FontWeight.bold,
+                                            //     color: Colors.white38, // Attractive bullet color
+                                            //   ),
+                                            // ),
                                             Expanded(
                                               child: Text(
                                                 line, // Text content
                                                 style: TextStyle(
                                                   fontSize: 14.sp,
                                                   fontWeight: FontWeight.w500,
-                                                  color: Colors.black87,
+                                                  color: const Color.fromARGB(255, 216, 210, 210),
                                                   height: 1.4, // Line spacing for better readability
                                                 ),
                                               ),

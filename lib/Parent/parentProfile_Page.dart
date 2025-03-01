@@ -198,7 +198,7 @@ class _ParentProfilePage extends State<ParentProfilePage> {
     print('ParentResponse status code: ${response.statusCode}');
     print('ParentResponse body: ${response.body}');
     if (response.statusCode == 200) {
-      print('Response ````````11111111111````````');
+      print('Response ``11111111111``');
 
       // Assuming 'response' contains the API response
       List<dynamic> ParentResponse = json.decode(response.body);
@@ -252,7 +252,7 @@ class _ParentProfilePage extends State<ParentProfilePage> {
 
 
 
-  Future<void> updateContactDetails(String mobileNumber, String shortname) async {
+  Future<void> updateContactDetails(String mobileNumber, String shortname,String val) async {
     final urll = Uri.parse(url+'update_ContactDetails'); // Replace with your API URL
     final response = await http.post(
       urll,
@@ -265,15 +265,29 @@ class _ParentProfilePage extends State<ParentProfilePage> {
 
     if (response.statusCode == 200) {
       print('Contact details updated successfully: ${response.body}');
-      Fluttertoast.showToast(
-        msg: "Parent Mobile no. Selected",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-        timeInSecForIosWeb: 1,
-        backgroundColor: Colors.white,
-        textColor: Colors.black,
-        fontSize: 16.0,
-      );
+
+      if(val == 'Father'){
+        Fluttertoast.showToast(
+          msg: "Father Mobile no. Selected",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.white,
+          textColor: Colors.black,
+          fontSize: 16.0,
+        );
+      } else {
+        Fluttertoast.showToast(
+          msg: "Mother Mobile no. Selected",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.white,
+          textColor: Colors.black,
+          fontSize: 16.0,
+        );
+      }
+
     } else {
       print('Failed to update contact details: ${response.body}');
     }
@@ -302,12 +316,14 @@ class _ParentProfilePage extends State<ParentProfilePage> {
 
           if (activePhoneNumber.isNotEmpty) {
             setState(() {
+              // Compare the active phone number with father's and mother's mobile numbers
               if (activePhoneNumber == ParentDetmod?.fMobile?.trim()) {
                 selectedSmsRecipient = 'Father';
               } else if (activePhoneNumber == ParentDetmod?.mMobile?.trim()) {
                 selectedSmsRecipient = 'Mother';
               } else {
                 print('No matching phone number found.');
+                selectedSmsRecipient = null; // Reset if no match is found
               }
             });
           }
@@ -564,12 +580,12 @@ class _ParentProfilePage extends State<ParentProfilePage> {
 
                       StuEditTextField(
                         labelText: 'Email id',
-                        initialValue: ParentDetmod?.fEmail ?? '',
+                        initialValue: ParentDetmod?.mEmailid ?? '',
                         keyboardType: TextInputType.name,
                         isRequired: true,
                         onChanged: (value) {
                           setState(() {
-                            ParentDetmod?.fEmail = value;
+                            ParentDetmod?.mEmailid = value;
                           });
                         },
                       ),
@@ -610,20 +626,15 @@ class _ParentProfilePage extends State<ParentProfilePage> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // Parent's Mobile Numbers Section
-                          // Text(
-                          //   'Parent\'s Mobile Numbers',
-                          //   style: TextStyle(
-                          //       fontSize: 16, fontWeight: FontWeight.bold),
-                          // ),
                           // Common Message
                           Center(
                             child: Text(
                               'Set to receive SMS at this number',
                               style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w400,
-                                  color: Colors.grey[600]),
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400,
+                                color: Colors.grey[600],
+                              ),
                             ),
                           ),
                           SizedBox(height: 10),
@@ -634,13 +645,11 @@ class _ParentProfilePage extends State<ParentProfilePage> {
                               Expanded(
                                 flex: 2,
                                 child: Column(
-                                  crossAxisAlignment:
-                                  CrossAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     StuEditTextField(
                                       labelText: 'Father\'s No.',
-                                      initialValue:
-                                      ParentDetmod?.fMobile ?? '',
+                                      initialValue: ParentDetmod?.fMobile ?? '',
                                       isRequired: true,
                                       keyboardType: TextInputType.number,
                                       onChanged: (value) {
@@ -661,17 +670,13 @@ class _ParentProfilePage extends State<ParentProfilePage> {
                                   });
 
                                   // Validate and make API call if selected
-                                  if (ParentDetmod?.fMobile?.isNotEmpty ==
-                                      true &&
+                                  if (ParentDetmod?.fMobile?.isNotEmpty == true &&
                                       ParentDetmod!.fMobile!.length >= 10) {
-                                    await updateContactDetails(
-                                        ParentDetmod!.fMobile!, shortName);
+                                    await updateContactDetails(ParentDetmod!.fMobile!, shortName,selectedSmsRecipient!);
                                   } else {
-                                    ScaffoldMessenger.of(context)
-                                        .showSnackBar(
+                                    ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
-                                        content: Text(
-                                            'Father\'s mobile number is empty or invalid.'),
+                                        content: Text('Father\'s mobile number is empty or invalid.'),
                                       ),
                                     );
                                   }
@@ -687,13 +692,11 @@ class _ParentProfilePage extends State<ParentProfilePage> {
                               Expanded(
                                 flex: 2,
                                 child: Column(
-                                  crossAxisAlignment:
-                                  CrossAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     StuEditTextField(
                                       labelText: 'Mother\'s No.',
-                                      initialValue:
-                                      ParentDetmod?.mMobile ?? '',
+                                      initialValue: ParentDetmod?.mMobile ?? '',
                                       isRequired: true,
                                       keyboardType: TextInputType.number,
                                       onChanged: (value) {
@@ -714,17 +717,13 @@ class _ParentProfilePage extends State<ParentProfilePage> {
                                   });
 
                                   // Validate and make API call if selected
-                                  if (ParentDetmod?.mMobile?.isNotEmpty ==
-                                      true &&
+                                  if (ParentDetmod?.mMobile?.isNotEmpty == true &&
                                       ParentDetmod!.mMobile!.length >= 10) {
-                                    await updateContactDetails(
-                                        ParentDetmod!.mMobile!, shortName);
+                                    await updateContactDetails(ParentDetmod!.mMobile!, shortName,selectedSmsRecipient!);
                                   } else {
-                                    ScaffoldMessenger.of(context)
-                                        .showSnackBar(
+                                    ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
-                                        content: Text(
-                                            'Mother\'s mobile number is empty or invalid.'),
+                                        content: Text('Mother\'s mobile number is empty or invalid.'),
                                       ),
                                     );
                                   }
@@ -733,7 +732,6 @@ class _ParentProfilePage extends State<ParentProfilePage> {
                             ],
                           ),
                           SizedBox(height: 10),
-
                         ],
                       ),
 
@@ -786,7 +784,7 @@ class _ParentProfilePage extends State<ParentProfilePage> {
 
                           String? memail = ParentDetmod?.mEmailid;
 
-                          if (memail == '') {
+                          if (ParentDetmod?.mEmailid == '') {
                             Fluttertoast.showToast(
                               msg: "Please enter Mother email address",
                               toastLength: Toast.LENGTH_SHORT,
@@ -867,10 +865,10 @@ class _ParentProfilePage extends State<ParentProfilePage> {
                                 'f_office_tel': ParentDetmod?.fOfficeTel ?? '',
                                 'f_mobile': ParentDetmod?.fMobile ?? '',
                                 'f_email': ParentDetmod?.fEmail ?? '',
-                                'parent_adhar_no': ParentDetmod?.parentAdharNo ?? '',
 
                                 'mother_occupation': ParentDetmod?.motherOccupation ?? '',
-                                'm_office_add': ParentDetmod?.mEmailid ?? '',
+                                'm_emailid': ParentDetmod?.mEmailid ?? '',
+                                'm_office_add': ParentDetmod?.mOfficeAdd ?? '',
                                 'm_office_tel': ParentDetmod?.mOfficeTel,
                                 'm_mobile': ParentDetmod?.mMobile,
                                 // 'academic_yr': academic_yrstr,
