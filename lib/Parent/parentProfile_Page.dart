@@ -177,7 +177,6 @@ class _ParentProfilePage extends State<ParentProfilePage> {
         String teacherApkUrl = parsedData['teacherapk_url'];
         projectUrl = parsedData['project_url'];
 
-        fetchActivePhoneNumber();
 
 
       } catch (e) {
@@ -305,6 +304,8 @@ class _ParentProfilePage extends State<ParentProfilePage> {
           'short_name': shortName,
         },
       );
+      print('Active Phone Number: $reg_id');
+      print('Active Phone Number: $shortName');
 
       if (response.statusCode == 200) {
         final List<dynamic> result = jsonDecode(response.body); // Decode as a list
@@ -346,11 +347,14 @@ class _ParentProfilePage extends State<ParentProfilePage> {
     super.initState();
     _getSchoolInfo();
 
+
   }
   late BuildContext _context; // Declare _context here
 
   @override
   Widget build(BuildContext context) {
+    fetchActivePhoneNumber();
+
     return WillPopScope(
       onWillPop: () async {
         final now = DateTime.now();

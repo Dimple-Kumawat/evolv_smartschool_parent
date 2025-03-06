@@ -175,7 +175,6 @@ class _DrawerParentProfilePage extends State<DrawerParentProfilePage> {
         String teacherApkUrl = parsedData['teacherapk_url'];
         projectUrl = parsedData['project_url'];
 
-        fetchActivePhoneNumber();
 
 
       } catch (e) {
@@ -351,6 +350,8 @@ class _DrawerParentProfilePage extends State<DrawerParentProfilePage> {
   late BuildContext _context; // Declare _context here
   @override
   Widget build(BuildContext context) {
+    fetchActivePhoneNumber();
+
     _context = context; // Set _context within build
 
     return Scaffold(
@@ -576,12 +577,12 @@ class _DrawerParentProfilePage extends State<DrawerParentProfilePage> {
 
                         StuEditTextField(
                           labelText: 'Email id',
-                          initialValue: ParentDetmod?.fEmail ?? '',
+                          initialValue: ParentDetmod?.mEmailid ?? '',
                           keyboardType: TextInputType.name,
                           isRequired: true,
                           onChanged: (value) {
                             setState(() {
-                              ParentDetmod?.fEmail = value;
+                              ParentDetmod?.mEmailid = value;
                             });
                           },
                         ),
@@ -777,7 +778,7 @@ class _DrawerParentProfilePage extends State<DrawerParentProfilePage> {
                               );
                               return; // Stop execution if validation fails
                             }
-                            if (ParentDetmod?.mEmailid == null) {
+                            if (ParentDetmod?.mEmailid == '') {
                               Fluttertoast.showToast(
                                 msg: "Please enter Mother email address",
                                 toastLength: Toast.LENGTH_SHORT,
@@ -789,7 +790,7 @@ class _DrawerParentProfilePage extends State<DrawerParentProfilePage> {
                               return; // Stop execution if validation fails
                             }
 
-                            if (ParentDetmod?.fEmail == null) {
+                            if (ParentDetmod?.fEmail == '') {
                               Fluttertoast.showToast(
                                 msg: "Please enter Father email address",
                                 toastLength: Toast.LENGTH_SHORT,
@@ -801,7 +802,7 @@ class _DrawerParentProfilePage extends State<DrawerParentProfilePage> {
                               return; // Stop execution if validation fails
                             }
 
-                            if (ParentDetmod?.fOfficeAdd == null) {
+                            if (ParentDetmod?.fOfficeAdd == '') {
                               Fluttertoast.showToast(
                                 msg: "Please enter Office address",
                                 toastLength: Toast.LENGTH_SHORT,
@@ -814,7 +815,7 @@ class _DrawerParentProfilePage extends State<DrawerParentProfilePage> {
                             }
 
 
-                            if (ParentDetmod?.fatherOccupation == null) {
+                            if (ParentDetmod?.fatherOccupation == '') {
                               Fluttertoast.showToast(
                                 msg: "Please enter Father Occupation",
                                 toastLength: Toast.LENGTH_SHORT,
@@ -851,14 +852,17 @@ class _DrawerParentProfilePage extends State<DrawerParentProfilePage> {
                                   'parent_adhar_no': ParentDetmod?.parentAdharNo ?? '',
                                   'm_adhar_no': ParentDetmod?.mAdharNo ?? '',
 
+                                  'f_dob': ParentDetmod?.fDob ?? '',
+                                  'm_dob': ParentDetmod?.mDob ?? '',
+
                                   'f_office_add': ParentDetmod?.fOfficeAdd ?? '',
                                   'f_office_tel': ParentDetmod?.fOfficeTel ?? '',
                                   'f_mobile': ParentDetmod?.fMobile ?? '',
                                   'f_email': ParentDetmod?.fEmail ?? '',
-                                  'parent_adhar_no': ParentDetmod?.parentAdharNo ?? '',
 
                                   'mother_occupation': ParentDetmod?.motherOccupation ?? '',
-                                  'm_office_add': ParentDetmod?.mEmailid ?? '',
+                                  'm_emailid': ParentDetmod?.mEmailid ?? '',
+                                  'm_office_add': ParentDetmod?.mOfficeAdd ?? '',
                                   'm_office_tel': ParentDetmod?.mOfficeTel,
                                   'm_mobile': ParentDetmod?.mMobile,
                                   // 'academic_yr': academic_yrstr,

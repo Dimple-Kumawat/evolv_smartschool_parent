@@ -25,7 +25,7 @@ pod install --repo-update
  FCM Token: eX0myMufRt2ShLUKeQw-kb:APA91bF_mHj1e4jzG7ZYb-NLX_vai5q3fqh6trcDYwnlXEoBuaE8-XbiXByu5nMOAa1es0dbSTxjfDhSO7HVmD0OCvdgqzlR7fu2lgKvog1numoG_5MqfZw
    
 
-   # delet the folder
+   # delet the folderq
      .symlinks
      
 

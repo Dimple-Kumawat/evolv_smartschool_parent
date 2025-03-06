@@ -217,7 +217,7 @@ class _ParentDashBoardPageState extends State<ParentDashBoardPage> {
           });
         },
       ),
-      CalendarPage(),
+      CalendarPage(regId: '',),
 
       // Dashboardonlinefeespayment(regId: reg_id, paymentUrlShare: paymentUrlShare, receiptUrl: receiptUrl, shortName: shortName, academicYr: academic_yr, receipt_button: receipt_button,),
       ParentProfilePage(),
@@ -679,6 +679,7 @@ class CustomPopup extends StatelessWidget {
         },
       ),
       // Add more CardItems here...
+      
     ];
 
     return Dialog(

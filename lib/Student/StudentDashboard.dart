@@ -911,6 +911,18 @@ class _StudentActivityPageState extends State<StudentActivityPage> {
       //     Navigator.pushNamed(context, '/newModulePage'); // New module page route
       //   },
       // ),
+      //dimple working on online exam 
+      
+// CardItem(imagePath: 'assets/onlineExam.png', title: 'Online Exam', onTap:  (context) {
+//           Navigator.push(
+//             context,
+//             MaterialPageRoute(
+//               builder: (context) => PaymentWebview(
+//                   regId: widget.reg_id,paymentUrlShare:paymentUrlShare,receiptUrl:receiptUrl,shortName: shortName,academicYr: academic_yr,receipt_button:receipt_button),
+//             ),
+//           );
+//         },)
+
     ];
 
     return WillPopScope(
