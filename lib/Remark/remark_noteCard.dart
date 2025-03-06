@@ -80,17 +80,22 @@ class RemarkNoteCard extends StatelessWidget {
   final String teacher;
   final String remarksubject;
   final String readStatus;
+  final String acknowledge;
   final VoidCallback onTap;
-
+  final List<Attachment> showDownloadIcon; // New parameter to control visibility
 
   const RemarkNoteCard({
     Key? key,
+    required this.acknowledge,
     required this.date,
     required this.teacher,
     required this.remarksubject,
     required this.readStatus,
     required this.onTap,
+    required this.showDownloadIcon, // Initialize it
   }) : super(key: key);
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -108,7 +113,7 @@ class RemarkNoteCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(10.0),
             ),
             child: Padding(
-              padding: const EdgeInsets.all(10.0),
+              padding: const EdgeInsets.all(18.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -119,56 +124,97 @@ class RemarkNoteCard extends StatelessWidget {
                         height: 50,
                       ),
                       SizedBox(width: 15),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text.rich(
-                            TextSpan(
-                              children: [
-                              const TextSpan(
-                              text: 'Date: ',style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                                // style: Commonstyle.lableBold,
-
-
-                            ),
-                            TextSpan(
-                              text: formattedDate,
-
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 5),
-                      Text.rich(
-                        TextSpan(
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const TextSpan(
-                              text: 'Teacher: ',style: TextStyle(
-                              fontWeight: FontWeight.bold,
+                            Text.rich(
+                              TextSpan(
+                                children: [
+                                  const TextSpan(
+                                    text: 'Date: ',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text: formattedDate,
+                                  ),
+                                ],
+                              ),
                             ),
-                               // style: Commonstyle.lableBold,
+                            const SizedBox(height: 5),
+                            Text.rich(
+                              TextSpan(
+                                children: [
+                                  const TextSpan(
+                                    text: 'Teacher: ',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text: '${trimTeacherName(teacher)}',
+                                  ),
+                                ],
+                              ),
                             ),
-                            TextSpan(
-                              text: teacher,
-
+                            const SizedBox(height: 5),
+                            
+                           /* Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Remark Subject: ',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14.0,
+                              ),
+                            ),
+                            Wrap( // Ensures text wraps instead of overflowing
+                              children: [
+                                Text(
+                                  remarksubject,
+                                  style: const TextStyle(
+                                    fontSize: 13.0,
+                                    color: Colors.black,
+                                  ),
+                                  
+                                ),
+                                
+                              ],
+                              
                             ),
                           ],
+                        ),*/
+                         Text.rich(
+                                        TextSpan(
+                                          children: [
+                                            const TextSpan(
+                        text:  'Remark Subject: ',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14.0,
                         ),
-                      ),
-                          const SizedBox(height: 5),
-                          Text(
-                            'Remark Subject: ',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          Text(
-                            remarksubject,
-                            overflow: TextOverflow.visible,
-                          ),
-                        ],
+                                            ),
+                                            TextSpan(
+                        text: remarksubject,
+                        style: const TextStyle(
+                          fontSize: 13.0,
+                          color: Colors.black,
+                        ),
+                                            ),
+                                          ],
+                                        ),
+                                        overflow: TextOverflow.ellipsis, // Truncate text with ellipsis if too long
+                                        maxLines: 2,
+                                      ),
+                        
+                        
+                                      
+                           
+                          ],
+                        ),
                       ),
                     ],
                   ),
@@ -176,16 +222,34 @@ class RemarkNoteCard extends StatelessWidget {
               ),
             ),
           ),
-          const Positioned(
+          Positioned(
             top: 10,
             right: 12,
             child: Icon(
-              Icons.remove_red_eye,
-              color: Color.fromARGB(255, 175, 49, 40),
+              acknowledge == 'N' ? Icons.thumb_up : Icons.remove_red_eye, // Show thumbs-up for 'N', eye for 'Y'
+              color: acknowledge == 'N' ? Colors.white : Colors.black, // Green for thumbs-up, black for eye
             ),
           ),
+
+
+          if (showDownloadIcon.isNotEmpty) // Conditional rendering of the download icon
+            const Positioned(
+              top: 70,
+              right: 12,
+              child: Icon(
+                Icons.download_for_offline,
+                color: Colors.black,
+              ),
+            ),
         ],
       ),
     );
+  }
+  String trimTeacherName(String name) {
+    List<String> parts = name.split(' ');
+    if (parts.length > 2) {
+      return '${parts[0]} ${parts[1]}'; // Return the first two parts
+    }
+    return name; // If there's no second space, return the original name
   }
 }

@@ -142,34 +142,23 @@ class _PaymentWebviewState extends State<PaymentWebview> {
       //     return NavigationDecision.navigate;
       //   },
       // ),
-      floatingActionButton: Stack(
-        alignment: Alignment.bottomCenter,
-        children: [
-          if(widget.receipt_button == 1)
-          FloatingActionButton(
-            onPressed: () {
-              // Navigator.pop(context);
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => ReceiptWebViewScreen(receiptUrl: widget.receiptUrl +'?reg_id=${widget.regId}&academic_yr=${widget.academicYr}&short_name=${widget.shortName}',)),
-              );
-            },
-            child: Padding(
-                padding: EdgeInsets.only( bottom:10),
-                child: Icon(Icons.arrow_downward)
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) =>
+                  ReceiptWebViewScreen(
+                    receiptUrl: widget.receiptUrl +
+                        '?reg_id=${widget.regId}&academic_yr=${widget
+                            .academicYr}&short_name=${widget.shortName}',
+                  ),
             ),
-          ),
-          Positioned(
-            bottom: 5,
-            child: Text(
-              'Receipt',
-              style: TextStyle(
-                fontSize: 12,
-                color: Colors.black,
-              ),
-            ),
-          ),
-        ],
+          );
+        },
+        icon: const Icon(Icons.receipt,color: Colors.black,),
+        label: const Text("Receipt"),
+        backgroundColor: Colors.blue.shade400,
       ),
     );
   }

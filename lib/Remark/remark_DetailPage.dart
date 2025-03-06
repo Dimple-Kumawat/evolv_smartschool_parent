@@ -211,7 +211,7 @@ class _RemarkDetailPageState extends State<RemarkDetailPage> {
 
   downloadFile(String url, BuildContext context, String name) async {
     var directory =
-    Directory("/storage/emulated/0/Download/Remarks");
+    Directory("/storage/emulated/0/Download/Evolvuschool/Parent/Remarks");
 
     if (!await directory.exists()) {
       await directory.create(recursive: true);
@@ -251,7 +251,7 @@ class _RemarkDetailPageState extends State<RemarkDetailPage> {
       final response = await http.get(Uri.parse(url));
       if (response.statusCode == 200) {
         await file.writeAsBytes(response.bodyBytes);
-        _showSnackBar('Find it in the Files/On My iPhone/EvolvU Smart School - Parent.');
+          _showSnackBar('Find it in the Files/On My iPhone/EvolvU Smart School - Parent.');
       } else {
         _showSnackBar('Failed to download file: ${response.statusCode}');
       }

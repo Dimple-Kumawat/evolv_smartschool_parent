@@ -1,8 +1,6 @@
-import 'package:evolvu/firebase_options.dart';
 import 'package:evolvu/login.dart';
 import 'package:evolvu/username_page.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -10,86 +8,67 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'Magpie.dart';
 import 'Utils&Config/all_routs.dart';
+import 'package:http/http.dart' as http;
 
-@pragma('vm:entry-point')
-Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-  //await setupFlutterNotifications();
-  // showFlutterNotification(message);
-  // If you're going to use other Firebase services in the background, such as Firestore,
-  // make sure you call `initializeApp` before using other Firebase services.
-  debugPrint('Handling a background message ${message.messageId}');
+import 'Utils&Config/api.dart';
+
+class ApiService {
+  static const String apiUrl = 'https://api.aceventura.in/demo/evolvuURL/get_url';
+
+  // Function to call the API and process the response
+  Future<String> fetchUrl() async {
+    try {
+      // Make the GET request
+      final response = await http.get(Uri.parse(GET_URL));
+
+      // Check if the request was successful (status code 200)
+      if (response.statusCode == 200) {
+        // Get the response body
+        String responseBody = response.body;
+
+        // Remove double quotes from the response
+        String baseUrl = responseBody.replaceAll('"', '');
+
+        // Unescape the JSON string (replace \/ with /)
+        baseUrl = baseUrl.replaceAll(r'\/', '/');
+
+        return baseUrl;
+      } else {
+        // Handle non-200 status codes
+        throw Exception('Failed to load data: ${response.statusCode}');
+      }
+    } catch (error) {
+      // Handle any errors that occur during the request
+      throw Exception('Error: $error');
+    }
+  }
 }
 
-bool isFlutterLocalNotificationsInitialized = false;
-
-final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-    FlutterLocalNotificationsPlugin();
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
 void main() async {
+
   WidgetsFlutterBinding.ensureInitialized();
 
   // Initialize Firebase
   try {
-    await Firebase.initializeApp(
-        options: DefaultFirebaseOptions.currentPlatform);
+    await Firebase.initializeApp();
     debugPrint("Firebase initialized successfully");
   } on FirebaseException catch (e) {
     debugPrint("Firebase initialization failed: ${e.message}");
   } catch (e) {
-    debugPrint(
-      "Firebase initialization failed: $e",
-    );
+    debugPrint("Firebase initialization failed: $e"); // Log the entire error for further debugging
   }
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+
   runApp(MyApp());
 }
+
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    Future requestPermission() async {
-      FirebaseMessaging messaging = FirebaseMessaging.instance;
-
-      NotificationSettings settings = await messaging.requestPermission(
-        alert: true,
-        announcement: true,
-        badge: true,
-        carPlay: true,
-        criticalAlert: false,
-        provisional: false,
-        sound: true,
-      );
-
-      if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-        debugPrint('User granted permission');
-      } else {
-        debugPrint('User declined or has not accepted permission');
-      }
-    }
-
-    Future<void> getToken() async {
-      try {
-        FirebaseMessaging messaging = FirebaseMessaging.instance;
-        var token = await messaging.getToken();
-
-        if (token != null) {
-          debugPrint("FCM Token: $token");
-        } else {
-          debugPrint("Failed to fetch FCM token.");
-        }
-      } catch (e) {
-        debugPrint("Error fetching FCM token: $e");
-      }
-    }
-
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await requestPermission();
-      await getToken();
-    });
     return ScreenUtilInit(
       designSize: const Size(368, 892),
       minTextAdapt: true,
@@ -107,11 +86,6 @@ class MyApp extends StatelessWidget {
               ),
             ),
             child: UserNamePage(),
-
-          //  child:SchoolInfo(schoolId: '', name: '', shortName: '', url: '', teacherApkUrl: '', projectUrl: '', defaultPassword: ''),
-           // child:StudentCard(onTap: (int index) {  },),
-          //  child: RemarkDetailCard(shortName: '', academic_yr: '', remarksubject: '', imageList: [], description: '', remarkId: '', remarkDate: '',),
-          //  child: RemarkNotePage(studentId: '', academic_yr: '', shortName: '', classId: '', secId: '',),
           ),
         );
       },

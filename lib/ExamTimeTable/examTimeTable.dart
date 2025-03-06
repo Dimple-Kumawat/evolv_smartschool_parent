@@ -7,7 +7,6 @@ import 'dart:convert';
 import 'package:intl/intl.dart';
 
 class ExamTimeTablePage extends StatefulWidget {
-
   final String academic_yr;
   final String shortName;
   final String classId;
@@ -15,12 +14,11 @@ class ExamTimeTablePage extends StatefulWidget {
   final String className;
 
   ExamTimeTablePage(
-      {
-        required this.academic_yr,
-        required this.shortName,
-        required this.classId,
-        required this.secId,
-        required this.className});
+      {required this.academic_yr,
+      required this.shortName,
+      required this.classId,
+      required this.secId,
+      required this.className});
 
   @override
   _ExamTimeTablePageState createState() => _ExamTimeTablePageState();
@@ -64,7 +62,10 @@ class _ExamTimeTablePageState extends State<ExamTimeTablePage> {
         toolbarHeight: 80.h,
         title: Text(
           "Exam TimeTable",
-          style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold, color: Colors.white),
+          style: TextStyle(
+              fontSize: 18.sp,
+              fontWeight: FontWeight.bold,
+              color: Colors.white),
         ),
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -91,6 +92,7 @@ class _ExamTimeTablePageState extends State<ExamTimeTablePage> {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return Center(child: CircularProgressIndicator());
                     } else if (snapshot.hasError) {
+                      // String examDescription = snapshot.data!.first.description;
                       return Center(
                         child: Container(
                           margin: const EdgeInsets.all(10),
@@ -114,13 +116,13 @@ class _ExamTimeTablePageState extends State<ExamTimeTablePage> {
                                 height: 150,
                                 width: 150,
                                 child: Image.asset(
-                    'assets/nodata.gif',
-                                  
+                                  'assets/nodata.gif',
                                   // Replace with your emoji or animation file
                                   fit: BoxFit.contain,
                                 ),
                               ),
-                              SizedBox(height: 10), // Add spacing between emoji and text
+                              SizedBox(height: 10),
+                              // Add spacing between emoji and text
                               Text(
                                 'Exam Timetable is not Assigned',
                                 style: TextStyle(
@@ -158,11 +160,13 @@ class _ExamTimeTablePageState extends State<ExamTimeTablePage> {
                                 height: 150,
                                 width: 150,
                                 child: Image.asset(
-                                  'assets/nodata.gif', // Replace with your emoji or animation file
+                                  'assets/nodata.gif',
+                                  // Replace with your emoji or animation file
                                   fit: BoxFit.contain,
                                 ),
                               ),
-                              SizedBox(height: 10), // Add spacing between emoji and text
+                              SizedBox(height: 10),
+                              // Add spacing between emoji and text
                               Text(
                                 'Exam Timetable is not Assigned',
                                 style: TextStyle(
@@ -209,15 +213,88 @@ class _ExamTimeTablePageState extends State<ExamTimeTablePage> {
                             child: Column(
                               children: snapshot.data!
                                   .map((period) => Column(
-                                children: [
-                                  PeriodRow(period: period),
-                                  if(period.subject.isNotEmpty)
-                                  Divider(color: Colors.grey),
-                                ],
-                              ))
+                                        children: [
+                                          PeriodRow(period: period),
+                                          if (period.subject.isNotEmpty)
+                                            Divider(color: Colors.grey),
+                                        ],
+                                      ))
                                   .toList(),
                             ),
                           ),
+                          SizedBox(
+                            height: 20.h,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
+                            child: Container(
+                              padding: EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                // color: Colors.white, // Light background
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: Colors.grey), // Subtle border
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black12,
+                                    blurRadius: 6,
+                                    offset: Offset(0, 3),
+                                  ),
+                                ],
+                              ),
+                              child: Column(
+                                children: [
+                                  Text(
+                                    'Description ', // Bullet point
+                                    style: TextStyle(
+                                      fontSize: 16.sp,
+                                      fontWeight: FontWeight.bold,
+                                       color: const Color.fromARGB(255, 216, 210, 210), // Attractive bullet color
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 10.h,
+                                  ),
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: snapshot.data!.first.description
+                                        .split('\n') // Split by new line
+                                        .map(
+                                          (line) => Padding(
+                                        padding: const EdgeInsets.only(bottom: 6.0), // Space between lines
+                                        child: Row(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+
+                                            // Text(
+                                            //   '• ', // Bullet point
+                                            //   style: TextStyle(
+                                            //     fontSize: 16.sp,
+                                            //     fontWeight: FontWeight.bold,
+                                            //     color: Colors.white38, // Attractive bullet color
+                                            //   ),
+                                            // ),
+                                            Expanded(
+                                              child: Text(
+                                                line, // Text content
+                                                style: TextStyle(
+                                                  fontSize: 14.sp,
+                                                  fontWeight: FontWeight.w500,
+                                                  color: const Color.fromARGB(255, 216, 210, 210),
+                                                  height: 1.4, // Line spacing for better readability
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    )
+                                        .toList(),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+
                         ],
                       );
                     }
@@ -237,23 +314,27 @@ class Period {
   final String date;
   final String name;
   final bool isStudyLeave;
+  final String description; // Add description field
 
-  Period(
-      {required this.subject,
-        required this.date,
-        required this.name,
-        this.isStudyLeave = false});
+  Period({
+    required this.subject,
+    required this.date,
+    required this.name,
+    this.isStudyLeave = false,
+    required this.description, // Initialize description
+  });
 
   factory Period.fromJson(Map<String, dynamic> json) {
-    // When 'study_leave' is 'Y', force the subject to "Study Leave"
     bool isStudyLeave = json['study_leave'] == 'Y';
-    String subject = isStudyLeave ? 'Study Leave' : (json['s_name'] ?? 'Unknown Subject');
+    String subject =
+        isStudyLeave ? 'Study Leave' : (json['s_name'] ?? 'Unknown Subject');
 
     return Period(
       subject: subject,
       date: _formatDate(json['date']),
       name: json['name'],
       isStudyLeave: isStudyLeave,
+      description: json['description'] ?? '', // Parse description
     );
   }
 
@@ -262,6 +343,7 @@ class Period {
     return DateFormat('dd-MM-yyyy').format(parsedDate);
   }
 }
+
 class PeriodRow extends StatelessWidget {
   final Period period;
 
@@ -295,8 +377,10 @@ class PeriodRow extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                       color: period.isStudyLeave ? Colors.red : Colors.black,
                     ),
-                    maxLines: 5, // Allow text to wrap to the next line if necessary
-                    overflow: TextOverflow.visible, // Ensure proper text wrapping
+                    maxLines: 5,
+                    // Allow text to wrap to the next line if necessary
+                    overflow:
+                        TextOverflow.visible, // Ensure proper text wrapping
                   ),
                 ),
               ],

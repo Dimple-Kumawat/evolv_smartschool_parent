@@ -133,12 +133,6 @@ class _NoticeDetailPageState extends State<NoticeDetailPage> {
                                   color: Colors.red,
                                 ),
                               )
-                            //   subtitle: Text(
-                            //   'File is not uploaded properly',
-                            //   style: TextStyle(
-                            //     fontSize: 14.sp,
-                            //   ),
-                            // )
                             : Text(
                                 attachment.imageName,
                                 style: TextStyle(fontSize: 14.sp),
@@ -147,50 +141,8 @@ class _NoticeDetailPageState extends State<NoticeDetailPage> {
                           '${(attachment.fileSize / 1024).toStringAsFixed(2)} KB',
                           style: TextStyle(fontSize: 14.sp),
                         ),
-                        onTap: () async {
-                          if (projectUrl.isNotEmpty) {
-                            try {
-                              if (attachment.fileSize == 0) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text('File not uploaded properly'),
-                                  ),
-                                );
-                              } else {
-                                String downloadUrl = projectUrl +
-                                    'uploads/notice/${widget.noticeInfo.date}/${widget.noticeInfo.noticeId}'
-                                        '/${attachment.imageName}';
-                                if (Platform.isAndroid) {
-                                  await downloadFile(downloadUrl, context, attachment.imageName);
-                                } else if (Platform.isIOS) {
-                                  await _downloadFileIOS(downloadUrl,context, attachment.imageName);
-                                } else {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text('Failed to download file'),
-                                    ),
-                                  );
-                                }
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text('File Download Successfully '),
-                                  ),
-                                );
-                              }
-                            } catch (e) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text('Failed to download file: $e'),
-                                ),
-                              );
-                            }
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text('Failed to retrieve project URL.'),
-                              ),
-                            );
-                          }
+                        onTap: () {
+                          _handleDownload(attachment);
                         },
                       );
                     }).toList(),
@@ -201,6 +153,50 @@ class _NoticeDetailPageState extends State<NoticeDetailPage> {
         ),
       ),
     );
+  }
+
+  Future<void> _handleDownload(Attachment attachment) async {
+
+    if (projectUrl.isNotEmpty) {
+      try {
+        if (attachment.fileSize == 0) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('File not uploaded properly'),
+            ),
+          );
+        } else {
+          String downloadUrl = projectUrl +
+              'uploads/notice/${widget.noticeInfo.noticeId}/${attachment.imageName}';
+          print("_downloadFileIOS $downloadUrl");
+
+          if (Platform.isAndroid) {
+            await downloadFile(downloadUrl, context, attachment.imageName);
+          } else if (Platform.isIOS) {
+            await _downloadFileIOS(downloadUrl,context, attachment.imageName);
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Failed to download file'),
+              ),
+            );
+          }
+
+        }
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to download file: $e'),
+          ),
+        );
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to retrieve project URL.'),
+        ),
+      );
+    }
   }
 
   Widget buildRow(String label, String value) {
@@ -258,7 +254,7 @@ class _NoticeDetailPageState extends State<NoticeDetailPage> {
     }
   }
 
-  Future<void> _downloadFileIOS(String url,BuildContext context, String fileName) async {
+  Future<void> _downloadFileIOS(String url,BuildContext fun, String fileName) async {
     // Get the documents directory on iOS
     final directory = await getApplicationDocumentsDirectory();
 
@@ -267,24 +263,30 @@ class _NoticeDetailPageState extends State<NoticeDetailPage> {
     final file = File(filePath);
 
     try {
+      print("Starting download...");
+      final directory = await getApplicationDocumentsDirectory();
+      final filePath = '${directory.path}/$fileName';
+      print("File will be saved at: $filePath");
+
       final response = await http.get(Uri.parse(url));
+      print("HTTP Response Status: ${response.statusCode}");
       if (response.statusCode == 200) {
-        await file.writeAsBytes(response.bodyBytes);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Find it in the Files/On My iPhone/EvolvU Smart School - Parent.'),
-          ),
+        print("Writing file...");
+        await File(filePath).writeAsBytes(response.bodyBytes);
+        print('Find it in the Files/On My iPhone/EvolvU Smart School - Parent.');
+        ScaffoldMessenger.of(fun).showSnackBar(
+          SnackBar(content: Text('Find it in the Files/On My iPhone/EvolvU Smart School - Parent.')),
         );
       } else {
-
+        throw Exception("Failed with status: ${response.statusCode}");
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Failed to download file: $e'),
-        ),
+      print("Error: $e");
+      ScaffoldMessenger.of(fun).showSnackBar(
+        SnackBar(content: Text('Failed to download file: $e')),
       );
     }
+
   }
 
 }

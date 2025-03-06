@@ -13,6 +13,7 @@ import 'dart:math' as math;
 
 import '../Attendance/circleAttendance.dart';
 import '../ExamTimeTable/examTimeTable.dart';
+import '../Utils&Config/api.dart';
 import '../common/rotatedDivider_Card.dart';
 import 'StudentDashboard.dart';
 
@@ -75,7 +76,6 @@ class _StudentCardState extends State<StudentCard> {
     getSchoolNews(url); //get_news
     get_important_links(url);
     getEvolvuUpdate(url); //get_evolvu_updates
-
 
     try {
       final response = await http.post(
@@ -209,10 +209,11 @@ class _StudentCardState extends State<StudentCard> {
   }
 
   Future<void> getEvolvuUpdate(String url) async {
-    final get_evolvu_updatesurl = Uri.parse(url+'get_evolvu_updates'); // Assuming Config.newLogin is your base URL
+    final get_evolvu_updatesurl = Uri.parse(url +
+        'get_evolvu_updates'); // Assuming Config.newLogin is your base URL
     final body = {'short_name': shortName};
     try {
-      final response = await http.post(get_evolvu_updatesurl,body: body);
+      final response = await http.post(get_evolvu_updatesurl, body: body);
       print('get_evolvu_updates => ${response.statusCode}');
 
       if (response.statusCode == 200) {
@@ -222,7 +223,6 @@ class _StudentCardState extends State<StudentCard> {
         setState(() {
           EvolvUData = jsonData;
         });
-
       } else {
         print('Error Response: ${response.statusCode}');
       }
@@ -232,8 +232,8 @@ class _StudentCardState extends State<StudentCard> {
   }
 
   Future<void> get_important_links(String url) async {
-    final importantLinksUrl = Uri.parse(
-        url + 'get_important_links'); // Assuming Config.newLogin is your base URL
+    final importantLinksUrl = Uri.parse(url +
+        'get_important_links'); // Assuming Config.newLogin is your base URL
     final body = {
       'short_name': shortName,
       'type_link': 'private'
@@ -245,7 +245,8 @@ class _StudentCardState extends State<StudentCard> {
       if (response.statusCode == 200) {
         final List<dynamic> jsonData = jsonDecode(response.body);
         setState(() {
-          importantLinks = jsonData.map((data) => data as Map<String, dynamic>).toList();
+          importantLinks =
+              jsonData.map((data) => data as Map<String, dynamic>).toList();
           isLoading = false;
         });
       } else {
@@ -261,7 +262,6 @@ class _StudentCardState extends State<StudentCard> {
       });
     }
   }
-
 
   @override
   void initState() {
@@ -281,17 +281,18 @@ class _StudentCardState extends State<StudentCard> {
       );
 
       if (response.statusCode == 200) {
-        print('response.body URL: ${response.body}');
+        print('Stu Card-show_icons_parentdashboard_apk  ${response.body}');
 
         final Map<String, dynamic> data = jsonDecode(response.body);
 
         // Extract the required fields
-        message1_url = data['message1_url'];
-        message2_url = data['message2_url'];
+        message1_url = data['message1_url']?? '';
+        message2_url = data['message2_url']?? '';
 
-        receiptUrl = data['receipt_url'];
-        paymentUrl = data['payment_url'];
-        smartchat_url = data['smartchat_url'];
+        receiptUrl = data['receipt_url'] ?? '';
+        paymentUrl = data['payment_url'] ?? '';
+        smartchat_url = data['smartchat_url'] ?? '';
+
         String ALLOWED_URI_CHARS = "@#&=*+-_.,:!?()/~'%";
 
         int msghide1 = data['message1'];
@@ -300,12 +301,11 @@ class _StudentCardState extends State<StudentCard> {
         print('msghide1: $msghide1');
         print('msghide2: $msghide2');
 
-
-        if(msghide1 == 1){
+        if (msghide1 == 1) {
           PostMsg1();
         }
 
-        if(msghide2 == 1){
+        if (msghide2 == 1) {
           PostMsg2();
         }
 
@@ -446,6 +446,8 @@ class _StudentCardState extends State<StudentCard> {
                         itemBuilder: (context, index) {
                           return StudentCardItem(
                             firstName: students[index]['first_name'] ?? '',
+                            midName: students[index]['mid_name'] ?? '',
+                            lastName: students[index]['last_name'] ?? '',
                             rollNo: students[index]['roll_no'] ?? '',
                             className: (students[index]['class_name'] ?? '') +
                                 (students[index]['section_name'] ?? ''),
@@ -474,16 +476,14 @@ class _StudentCardState extends State<StudentCard> {
 
                       SizedBox(height: 4),
 
-                      if (newsData.isNotEmpty)
-                      _buildNewsletterWidget(),
+                      if (newsData.isNotEmpty) _buildNewsletterWidget(),
 
                       SizedBox(height: 4),
                       if (importantLinks.isNotEmpty)
-                      _buildImportantLinksWidget(),
+                        _buildImportantLinksWidget(),
 
                       SizedBox(height: 4),
-                      if (EvolvUData.isNotEmpty)
-                      _buildEvolvuUpdatesWidget(),
+                      if (EvolvUData.isNotEmpty) _buildEvolvuUpdatesWidget(),
                     ],
                   ),
           ],
@@ -777,14 +777,16 @@ class _StudentCardState extends State<StudentCard> {
                     child: SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       child: Row(
-                        children: List.generate(allImagePaths.length, (imageIndex) {
+                        children:
+                            List.generate(allImagePaths.length, (imageIndex) {
                           return GestureDetector(
                             onTap: () {
                               // Show the full-screen image when tapped
                               _showFullScreenImage(allImagePaths[imageIndex]);
                             },
                             child: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 8.0),
                               child: SizedBox(
                                 width: 150, // Fixed width for all image boxes
                                 height: 150, // Fixed height for all image boxes
@@ -797,10 +799,13 @@ class _StudentCardState extends State<StudentCard> {
                                     borderRadius: BorderRadius.circular(10),
                                     child: Image.network(
                                       allImagePaths[imageIndex],
-                                      fit: BoxFit.contain, // Ensures the entire image fits in the box
-                                      errorBuilder: (context, error, stackTrace) {
+                                      fit: BoxFit.contain,
+                                      // Ensures the entire image fits in the box
+                                      errorBuilder:
+                                          (context, error, stackTrace) {
                                         return Center(
-                                          child: Icon(Icons.broken_image, size: 50, color: Colors.red),
+                                          child: Icon(Icons.broken_image,
+                                              size: 50, color: Colors.red),
                                         );
                                       },
                                     ),
@@ -829,8 +834,6 @@ class _StudentCardState extends State<StudentCard> {
       },
     );
   }
-
-
 
 // Helper Function to Show Full-Screen Image
   void _showFullScreenImage(String imagePath) {
@@ -868,69 +871,71 @@ class _StudentCardState extends State<StudentCard> {
     return isLoading
         ? Center(child: CircularProgressIndicator())
         : Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10.0),
-      child: GestureDetector(
-        onTap: () {
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                title: Center(
-                  child: Text(
-                    'Important Links',
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                  ),
-                ),
-                content: SizedBox(
-                  height: 200,
-                  width: double.maxFinite,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: importantLinks.length,
-                    itemBuilder: (context, index) {
-                      final link = importantLinks[index];
-                      return GestureDetector(
-                        onTap: () {
-                          _showDetailedLinkDialog(link);
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.only(right: 15.0),
-
-                          child: _buildLinkPreviewCard(
-                            title: link['title'] ?? 'No Title',
-                            description: link['description'] ?? 'No Description',
-                            date:  DateFormat('dd-MM-yy').format(DateTime.parse(link['create_date'] ?? 'No Date')),
-                            url: link['url'] ?? '',
-                            type: link['type_link'] ?? 'Unknown',
+            padding: const EdgeInsets.symmetric(horizontal: 10.0),
+            child: GestureDetector(
+              onTap: () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: Center(
+                        child: Text(
+                          'Important Links',
+                          style: TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
                           ),
                         ),
-                      );
-                    },
-                  ),
-                ),
-                actions: [
-                  TextButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: const Text('Close'),
-                  ),
-                ],
-              );
-            },
+                      ),
+                      content: SizedBox(
+                        height: 200,
+                        width: double.maxFinite,
+                        child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: importantLinks.length,
+                          itemBuilder: (context, index) {
+                            final link = importantLinks[index];
+                            return GestureDetector(
+                              onTap: () {
+                                _showDetailedLinkDialog(link);
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.only(right: 15.0),
+                                child: _buildLinkPreviewCard(
+                                  title: link['title'] ?? 'No Title',
+                                  description:
+                                      link['description'] ?? 'No Description',
+                                  date: DateFormat('dd-MM-yy').format(
+                                      DateTime.parse(
+                                          link['create_date'] ?? 'No Date')),
+                                  url: link['url'] ?? '',
+                                  type: link['type_link'] ?? 'Unknown',
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: const Text('Close'),
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
+              child: _buildInteractiveCard(
+                Icons.link,
+                'Important Links',
+                Colors.blue,
+              ),
+            ),
           );
-        },
-        child: _buildInteractiveCard(
-          Icons.link,
-          'Important Links',
-          Colors.blue,
-        ),
-      ),
-    );
   }
 
   Widget _buildLinkPreviewCard({
@@ -940,19 +945,19 @@ class _StudentCardState extends State<StudentCard> {
     required String url,
     required String type,
   }) {
-    return  SizedBox(
-        width: 250,
-        child: Card(
+    return SizedBox(
+      width: 250,
+      child: Card(
         shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(10),
         ),
         elevation: 2,
         margin: EdgeInsets.symmetric(vertical: 10, horizontal: 4),
         child: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+          padding: const EdgeInsets.all(12.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
               Text(
                 title,
                 style: TextStyle(
@@ -981,7 +986,6 @@ class _StudentCardState extends State<StudentCard> {
                 maxLines: 4,
                 overflow: TextOverflow.ellipsis,
               ),
-
             ],
           ),
         ),
@@ -1013,8 +1017,12 @@ class _StudentCardState extends State<StudentCard> {
                 },
                 children: [
                   _buildTableRow('Title', link['title'] ?? 'No Title'),
-                  _buildTableRow('Description', link['description'] ?? 'No Description'),
-                  _buildTableRow('Create Date',DateFormat('dd-MM-yy').format(DateTime.parse(link['create_date'] ?? 'No Date'))),
+                  _buildTableRow(
+                      'Description', link['description'] ?? 'No Description'),
+                  _buildTableRow(
+                      'Create Date',
+                      DateFormat('dd-MM-yy').format(
+                          DateTime.parse(link['create_date'] ?? 'No Date'))),
                   _buildTableRow('URL', link['url'] ?? '', isUrl: true),
                   _buildTableRow('Type', link['type_link'] ?? 'Unknown'),
                 ],
@@ -1048,25 +1056,25 @@ class _StudentCardState extends State<StudentCard> {
           padding: const EdgeInsets.only(bottom: 8.0),
           child: isUrl
               ? GestureDetector(
-            onTap: () async {
-              final Uri uri = Uri.parse(value);
-              if (await canLaunchUrl(uri)) {
-                await launchUrl(uri);
-              } else {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Could not launch $value')),
-                );
-              }
-            },
-            child: Text(
-              value,
-              style: const TextStyle(color: Colors.blue),
-            ),
-          )
+                  onTap: () async {
+                    final Uri uri = Uri.parse(value);
+                    if (await canLaunchUrl(uri)) {
+                      await launchUrl(uri);
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Could not launch $value')),
+                      );
+                    }
+                  },
+                  child: Text(
+                    value,
+                    style: const TextStyle(color: Colors.blue),
+                  ),
+                )
               : Text(
-            value,
-            style: const TextStyle(color: Colors.black54),
-          ),
+                  value,
+                  style: const TextStyle(color: Colors.black54),
+                ),
         ),
       ],
     );
@@ -1074,65 +1082,65 @@ class _StudentCardState extends State<StudentCard> {
 
   Widget _buildNewsletterWidget() {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(10.0,8,10,5),
+      padding: const EdgeInsets.fromLTRB(10.0, 8, 10, 5),
       child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-      GestureDetector(
-        onTap: () {
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                title: Center(
-                    child: Text(
-                  'Newsletter',
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
-                )),
-                content: SizedBox(
-                  height: 200,
-                  width: double.maxFinite,
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: List.generate(newsData.length, (index) {
-                        return GestureDetector(
-                          onTap: () {
-                            _showDetailedNewsDialog(index);
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.only(right: 15.0),
-                            child: _buildNewsPreviewCard(index),
-                          ),
-                        );
-                      }),
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          GestureDetector(
+            onTap: () {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Center(
+                        child: Text(
+                      'Newsletter',
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    )),
+                    content: SizedBox(
+                      height: 200,
+                      width: double.maxFinite,
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: List.generate(newsData.length, (index) {
+                            return GestureDetector(
+                              onTap: () {
+                                _showDetailedNewsDialog(index);
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.only(right: 15.0),
+                                child: _buildNewsPreviewCard(index),
+                              ),
+                            );
+                          }),
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-                actions: [
-                  TextButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: Text('Close'),
-                  ),
-                ],
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: Text('Close'),
+                      ),
+                    ],
+                  );
+                },
               );
             },
-          );
-        },
-        child: _buildInteractiveCard(
-          Icons.email,
-          'Open Newsletter',
-          Colors.red,
-        ),
+            child: _buildInteractiveCard(
+              Icons.email,
+              'Open Newsletter',
+              Colors.red,
+            ),
+          ),
+        ],
       ),
-    ],
-    ),
     );
   }
 
@@ -1157,10 +1165,9 @@ class _StudentCardState extends State<StudentCard> {
                     DateTime.parse(newsItem['date_posted'] ?? 'No Date')),
                 // Formatted date
                 style: const TextStyle(
-                  fontSize: 14,
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold
-                ),
+                    fontSize: 14,
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 5),
               Text(
@@ -1239,7 +1246,8 @@ class _StudentCardState extends State<StudentCard> {
                         padding: const EdgeInsets.only(bottom: 8.0, left: 5),
                         child: Text(
                           DateFormat('dd-MM-yyyy').format(
-                            DateTime.parse(newsItem['date_posted'] ?? 'No Date'),
+                            DateTime.parse(
+                                newsItem['date_posted'] ?? 'No Date'),
                           ),
                           style: const TextStyle(
                               fontSize: 14,
@@ -1265,56 +1273,68 @@ class _StudentCardState extends State<StudentCard> {
                       ),
                     ],
                   ),
-        if (url != null && url.isNotEmpty)
-                  TableRow(
-                    children: [
-                      const Padding(
-                        padding: EdgeInsets.only(bottom: 8.0),
-                        child: Text("URL:", style: TextStyle(fontWeight: FontWeight.bold)),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 8.0),
-                        child: GestureDetector(
-                          onTap: () async {
-                            final url = newsItem['url'];
-                            if (url != null && url.isNotEmpty) {
-                              final encodedUrl = Uri.encodeFull(url); // Encode the URL
-                              final uri = Uri.parse(encodedUrl);
-                              if (await canLaunchUrl(uri)) {
-                                await launchUrl(
-                                  uri,
-                                  mode: LaunchMode.externalApplication, // Explicitly set LaunchMode
-                                );
+                  if (url != null && url.isNotEmpty)
+                    TableRow(
+                      children: [
+                        const Padding(
+                          padding: EdgeInsets.only(bottom: 8.0),
+                          child: Text("URL:",
+                              style: TextStyle(fontWeight: FontWeight.bold)),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 8.0),
+                          child: GestureDetector(
+                            onTap: () async {
+                              final url = newsItem['url'];
+                              if (url != null && url.isNotEmpty) {
+                                final encodedUrl =
+                                    Uri.encodeFull(url); // Encode the URL
+                                final uri = Uri.parse(encodedUrl);
+                                if (await canLaunchUrl(uri)) {
+                                  await launchUrl(
+                                    uri,
+                                    mode: LaunchMode
+                                        .externalApplication, // Explicitly set LaunchMode
+                                  );
+                                } else {
+                                  // Handle the case where the URL cannot be launched
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                        content:
+                                            Text('Could not launch URL: $url')),
+                                  );
+                                }
                               } else {
-                                // Handle the case where the URL cannot be launched
+                                // Handle the case where no URL is provided
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text('Could not launch URL: $url')),
+                                  const SnackBar(
+                                      content: Text('No URL provided')),
                                 );
                               }
-                            } else {
-                              // Handle the case where no URL is provided
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('No URL provided')),
-                              );
-                            }
-                          },
-                          child: Text(
-                            newsItem['url'] ?? 'No URL',
-                            style: const TextStyle(color: Colors.blue,fontSize: 13),
+                            },
+                            child: Text(
+                              newsItem['url'] ?? 'No URL',
+                              style: const TextStyle(
+                                  color: Colors.blue, fontSize: 13),
+                            ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
+                      ],
+                    ),
                 ],
               ),
               // Add Image below the URL
-              if (newsItem['image_name'] != null && newsItem['image_name'].isNotEmpty)
+              if (newsItem['image_name'] != null &&
+                  newsItem['image_name'].isNotEmpty)
                 Padding(
                   padding: const EdgeInsets.only(top: 10.0),
                   child: Center(
                     child: Image.network(
-                     durl + "uploads/news/" + newsItem['news_id']+ "/" + newsItem['image_name'],
+                      durl +
+                          "uploads/news/" +
+                          newsItem['news_id'] +
+                          "/" +
+                          newsItem['image_name'],
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) {
                         return const Text(
@@ -1667,6 +1687,8 @@ class _StudentCardState extends State<StudentCard> {
 
 class StudentCardItem extends StatefulWidget {
   final String firstName;
+  final String midName;
+  final String lastName;
   final String rollNo;
   final String className;
   final String cname;
@@ -1683,6 +1705,8 @@ class StudentCardItem extends StatefulWidget {
 
   StudentCardItem({
     required this.firstName,
+    required this.midName,
+    required this.lastName,
     required this.rollNo,
     required this.className,
     required this.cname,
@@ -1797,12 +1821,25 @@ class _StudentCardItemState extends State<StudentCardItem> {
             padding: EdgeInsets.all(6.0), // Add padding inside the card
             child: Row(
               children: [
+
                 // Student Image Section
-                SizedBox.square(
-                  dimension: 60.w,
-                  child: Image.asset(
-                    widget.gender == 'M' ? 'assets/boy.png' : 'assets/girl.png',
-                  ),
+                Column(
+                  children: [
+                    // if (GET_URL == "https://api.aceventura.in/evolvuURL/get_url")
+                    //   BlinkingBadge(text: 'LIVE', textColor: Colors.red)
+                    // else
+                    //   BlinkingBadge(text: 'TEST', textColor: Colors.green),
+
+                    SizedBox(height: 3.h),
+
+                    SizedBox.square(
+                      dimension: 60.w,
+                      child: Image.asset(
+                        widget.gender == 'M' ? 'assets/boy.png' : 'assets/girl.png',
+                      ),
+                    ),
+
+                  ],
                 ),
                 SizedBox(width: 4.w), // Add space between image and details
 
@@ -1813,10 +1850,14 @@ class _StudentCardItemState extends State<StudentCardItem> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        widget.firstName,
+                        widget.firstName +
+                            " " +
+                            widget.midName +
+                            " " +
+                            widget.lastName,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          fontSize: 16.sp,
+                          fontSize: 14.sp,
                           color: Colors.black87,
                         ),
                       ),
@@ -1849,6 +1890,7 @@ class _StudentCardItemState extends State<StudentCardItem> {
                           ),
                         ],
                       ),
+
                       SizedBox(height: 5.h),
                       Row(
                         children: [
@@ -1885,15 +1927,15 @@ class _StudentCardItemState extends State<StudentCardItem> {
                               ),
                       ),
                       SizedBox(height: 4.h),
-                      if(attendance.isNotEmpty)
-                      Text(
-                        '$attendance%',
-                        style: TextStyle(
-                          fontSize: 14.sp,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.blue,
+                      if (attendance.isNotEmpty)
+                        Text(
+                          '$attendance%',
+                          style: TextStyle(
+                            fontSize: 14.sp,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.blue,
+                          ),
                         ),
-                      ),
                       Text(
                         'Attendance',
                         style: TextStyle(
@@ -1904,6 +1946,7 @@ class _StudentCardItemState extends State<StudentCardItem> {
                     ],
                   ),
                 ),
+
               ],
             ),
           ),
@@ -1934,5 +1977,60 @@ class _StudentCardItemState extends State<StudentCardItem> {
       return '${parts[0]}'; // Return the first two parts
     }
     return name; // If there's no second space, return the original name
+  }
+}
+class BlinkingBadge extends StatefulWidget {
+  final String text;
+  final Color textColor;
+
+  const BlinkingBadge({super.key, required this.text, required this.textColor});
+
+  @override
+  _BlinkingBadgeState createState() => _BlinkingBadgeState();
+}
+
+class _BlinkingBadgeState extends State<BlinkingBadge> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _opacityAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(seconds: 1), // Speed of blinking
+      vsync: this,
+    )..repeat(reverse: true); // Repeats animation continuously
+
+    _opacityAnimation = Tween<double>(begin: 1.0, end: 0.3).animate(_controller);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return Opacity(
+          opacity: _opacityAnimation.value,
+          child: Card(
+            color: Colors.white,
+            elevation: 5,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              child: Text(
+                widget.text,
+                style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.bold, color: widget.textColor),
+              ),
+            ),
+          ),
+        );
+      },
+    );
   }
 }

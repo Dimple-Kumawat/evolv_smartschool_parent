@@ -24,12 +24,12 @@ class LabeledDropdown extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           SizedBox(
-            width: 100,
+            width: 120,
             child: Text(
               label,
               style: const TextStyle(
-                fontWeight: FontWeight.w600,
-                fontSize: 14.0,
+                fontWeight: FontWeight.bold,
+                fontSize: 15.0,
                 color: Colors.black,
               ),
             ),
@@ -55,10 +55,9 @@ class LabeledDropdown extends StatelessWidget {
                       child: Text(
                         value,
                         style: const TextStyle(
-                          fontSize: 16.0,
-                          fontWeight: FontWeight.normal, // Ensure text is not bold
-                          color: Colors.black, // Set color explicitly if needed
-                        ),
+                fontSize: 14.0, // Input text size
+                color: Colors.black87,
+              ),
                       ),
                     );
                   }).toList(),

@@ -1,16 +1,10 @@
 import 'dart:async';
-import 'dart:io';
+
 import 'package:flutter/material.dart';
 // import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:webview_flutter/webview_flutter.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+import 'package:webview_flutter/webview_flutter.dart';
 
 import 'FeesReceiptWebViewScreen.dart';
 
@@ -74,7 +68,7 @@ class _PaymentWebviewState extends State<DrawerOnlineFeesPayment> {
         backgroundColor: Colors.transparent,
         extendBodyBehindAppBar: true,
         appBar: AppBar(
-          toolbarHeight: 80.h,
+          toolbarHeight: 60.h,
           title: Text(
             'Fees Payment',
             style: TextStyle(fontSize: 20.sp, color: Colors.white),
@@ -99,41 +93,24 @@ class _PaymentWebviewState extends State<DrawerOnlineFeesPayment> {
             ],
           ),
         ),
-        floatingActionButton: widget.receipt_button == 1 // Simplified conditional
-            ? Stack(
-          alignment: Alignment.bottomRight,
-          children: [
-            FloatingActionButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => ReceiptWebViewScreen(
+        floatingActionButton: FloatingActionButton.extended(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) =>
+                    ReceiptWebViewScreen(
                       receiptUrl: widget.receiptUrl +
-                          '?reg_id=${widget.regId}&academic_yr=${widget.academicYr}&short_name=${widget.shortName}',
+                          '?reg_id=${widget.regId}&academic_yr=${widget
+                              .academicYr}&short_name=${widget.shortName}',
                     ),
-                  ),
-                );
-              },
-              child: const Padding( // Use const for unchanging widgets
-                padding: EdgeInsets.only(bottom: 10),
-                child: Icon(Icons.arrow_downward),
               ),
-            ),
-            Positioned(
-              bottom: 5,
-              right: 0,
-              child: const Text( // Use const here as well
-                'Receipt',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.black,
-                ),
-              ),
-            ),
-          ],
-        )
-            : null, // Return null if the condition is false
+            );
+          },
+          icon: const Icon(Icons.receipt,color: Colors.black,),
+          label: const Text("Receipt"),
+          backgroundColor: Colors.blue.shade400,
+        ),
       );
     }
   }

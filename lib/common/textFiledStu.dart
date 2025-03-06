@@ -7,7 +7,7 @@ class StuTextField extends StatelessWidget {
   final bool readOnly;
   final String? initialValue;
   final ValueChanged<String>? onChanged;
-  final bool showRedAsterisk; // New parameter to control red asterisk
+  final bool showRedAsterisk;
 
   const StuTextField({
     Key? key,
@@ -16,41 +16,42 @@ class StuTextField extends StatelessWidget {
     this.readOnly = false,
     this.onChanged,
     required this.label,
-    this.showRedAsterisk = false, // Default value is false
+    this.showRedAsterisk = false,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0), // Adjust padding for space between fields
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // Label with optional red asterisk
+          // Fixed width for label with RichText
           SizedBox(
-            width: 100, // Adjust the width to align labels and fields properly
+            width: 120, // Ensures proper alignment
             child: RichText(
               text: TextSpan(
                 children: [
-                  if (showRedAsterisk)
-                    const TextSpan(
-                      text: '* ',
-                      style: TextStyle(
-                        
-                        color: Colors.red,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+
                   TextSpan(
                     text: label,
                     style: const TextStyle(
-                      fontWeight: FontWeight.w600,
+                      fontWeight: FontWeight.bold,
                       fontSize: 14.0,
                       color: Colors.black,
                     ),
                   ),
+                  if (showRedAsterisk)
+                    const TextSpan(
+                      text: ' *',
+                      style: TextStyle(
+                        color: Colors.red,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                 ],
               ),
+              // overflow: TextOverflow.ellipsis, // Prevents text overflow issues
             ),
           ),
           const SizedBox(width: 20), // Space between label and field
@@ -66,7 +67,7 @@ class StuTextField extends StatelessWidget {
                   horizontal: 12.0,
                 ),
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0), // Rounded border
+                  borderRadius: BorderRadius.circular(10.0),
                   borderSide: BorderSide(
                     color: Colors.grey.shade400,
                   ),
@@ -86,9 +87,8 @@ class StuTextField extends StatelessWidget {
                 ),
               ),
               style: const TextStyle(
-                fontSize: 14.0, // Input text size
+                fontSize: 14.0,
               ),
-             
             ),
           ),
         ],

@@ -111,42 +111,12 @@ class _TimeTablePageState extends State<TimeTablePage> {
           };
 
           for (var periodData in data) {
-            tempTimetable['Mon']?.add(Period(
-              time: "${periodData['time_in'] ?? ''} - ${periodData['time_out'] ?? ''}",
-              subject: periodData['monday'] ?? '',
-              icon: Icons.book,
-              teacher: subjectTeachers[periodData['monday']] ?? 'N/A',
-            ));
-            tempTimetable['Tue']?.add(Period(
-              time: "${periodData['time_in'] ?? ''} - ${periodData['time_out'] ?? ''}",
-              subject: periodData['tuesday'] ?? '',
-              icon: Icons.book,
-              teacher: subjectTeachers[periodData['tuesday']] ?? 'N/A',
-            ));
-            tempTimetable['Wed']?.add(Period(
-              time: "${periodData['time_in'] ?? ''} - ${periodData['time_out'] ?? ''}",
-              subject: periodData['wednesday'] ?? '',
-              icon: Icons.book,
-              teacher: subjectTeachers[periodData['wednesday']] ?? 'N/A',
-            ));
-            tempTimetable['Thu']?.add(Period(
-              time: "${periodData['time_in'] ?? ''} - ${periodData['time_out'] ?? ''}",
-              subject: periodData['thursday'] ?? '',
-              icon: Icons.book,
-              teacher: subjectTeachers[periodData['thursday']] ?? 'N/A',
-            ));
-            tempTimetable['Fri']?.add(Period(
-              time: "${periodData['time_in'] ?? ''} - ${periodData['time_out'] ?? ''}",
-              subject: periodData['friday'] ?? '',
-              icon: Icons.book,
-              teacher: subjectTeachers[periodData['friday']] ?? 'N/A',
-            ));
-            tempTimetable['Sat']?.add(Period(
-              time: "${periodData['sat_in'] ?? ''} - ${periodData['sat_out'] ?? ''}",
-              subject: periodData['saturday'] ?? '',
-              icon: Icons.book,
-              teacher: subjectTeachers[periodData['saturday']] ?? 'N/A',
-            ));
+            tempTimetable['Mon']?.add(_createPeriod(periodData, 'monday'));
+            tempTimetable['Tue']?.add(_createPeriod(periodData, 'tuesday'));
+            tempTimetable['Wed']?.add(_createPeriod(periodData, 'wednesday'));
+            tempTimetable['Thu']?.add(_createPeriod(periodData, 'thursday'));
+            tempTimetable['Fri']?.add(_createPeriod(periodData, 'friday'));
+            tempTimetable['Sat']?.add(_createPeriod(periodData, 'saturday', sat: true));
           }
 
           setState(() {
@@ -165,6 +135,47 @@ class _TimeTablePageState extends State<TimeTablePage> {
       });
     }
   }
+
+  Period _createPeriod(Map<String, dynamic> periodData, String day, {bool sat = false}) {
+    String timeIn = sat ? periodData['sat_in'] ?? '' : periodData['time_in'] ?? '';
+    String timeOut = sat ? periodData['sat_out'] ?? '' : periodData['time_out'] ?? '';
+    String subject = periodData[day] ?? '';
+
+    // Extract teacher names
+    String teacherNames = _getTeacherNames(subject);
+
+    return Period(
+      time: "$timeIn - $timeOut",
+      subject: subject,
+      icon: Icons.book,
+      teacher: teacherNames,
+    );
+  }
+
+
+  String _getTeacherNames(String subject) {
+    if (subject.isEmpty) return 'N/A';
+
+    // Split subjects if multiple exist
+    List<String> subjects = subject.split('/');
+
+    // Extract formatted teacher names
+    List<String> teacherNames = subjects.map((subj) {
+      String teacher = subjectTeachers[subj.trim()] ?? 'N/A';
+
+      List<String> nameParts = teacher.split(' ');
+      if (nameParts.length > 2) {
+        return '${nameParts.first} ${nameParts[2][0]}'; // First name + first letter of last name
+      } else if (nameParts.length > 1) {
+        return '${nameParts.first} ${nameParts[1][0]}'; // First name + first letter of last name
+      }
+      return teacher; // Return full name if no last name exists
+    }).toList();
+
+    return teacherNames.join(' / '); // Join multiple names with '/'
+  }
+
+
 
   @override
   Widget build(BuildContext context) {

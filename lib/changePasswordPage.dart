@@ -116,10 +116,18 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
   final TextEditingController _currentPwdController = TextEditingController();
   final TextEditingController _newPwdController = TextEditingController();
   final TextEditingController _renewPwdController = TextEditingController();
-
+  bool isProcessing = false;
   String flag="";
 
   Future<void> _changePassword() async {
+
+    if (isProcessing) return; // If already processing, return immediately
+
+    setState(() {
+      isProcessing = true; // Disable button while API is processing
+    });
+
+
     String motherName = _motherNameController.text;
     String currentPwd = _currentPwdController.text;
     String newPwd = _newPwdController.text;
@@ -127,23 +135,28 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
 
     if (motherName.isEmpty || currentPwd.isEmpty || newPwd.isEmpty || renewPwd.isEmpty) {
       _showToast("Please fill all fields");
+      setState(() => isProcessing = false);
       return;
     }
 
     if (newPwd.length < 8 || newPwd.length > 20 || !validatePwd(newPwd)) {
       _showToast("New Password must be 8-20 characters long and contain a number and a special character.");
+      setState(() => isProcessing = false);
       return;
     }
 
     if (currentPwd == newPwd) {
       _showToast("Old Password & New Password cannot be the same.");
+      setState(() => isProcessing = false);
       return;
     }
 
     if (newPwd != renewPwd) {
       _showToast("New Password & Re-enter Password must be the same.");
+      setState(() => isProcessing = false);
       return;
     }
+
 
     try {
       print('widget.userID:'+ widget.userID +motherName +currentPwd+newPwd);
@@ -173,6 +186,9 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
     } catch (error) {
       _showToast("Error: ${error.toString()}");
     }
+    setState(() {
+      isProcessing = false; // Enable button after request completes
+    });
   }
 
   bool validatePwd(String password) {
@@ -328,7 +344,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                         controller: _motherNameController,
                         decoration: InputDecoration(
                           contentPadding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 10.w),
-                          hintText: "What is your mother's maiden name?",
+                          hintText: "What is your mother's name?",
                           hintStyle: TextStyle(fontSize: 14.sp),
                           border: OutlineInputBorder(),
                         ),
@@ -446,24 +462,15 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                       SizedBox(height: 30.h),
                       Center(
                         child: ElevatedButton(
-                          onPressed: _changePassword,
+                          onPressed: isProcessing ? null : _changePassword, // Disable button while processing
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blue,
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 32.w,
-                              vertical: 12.h,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(24),
-                            ),
+                            backgroundColor: isProcessing ? Colors.grey : Colors.blue, // Grey out button while processing
+                            padding: EdgeInsets.symmetric(horizontal: 32.w, vertical: 12.h),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
                           ),
-                          child: Text(
-                            "Update",
-                            style: TextStyle(
-                              fontSize: 16.sp,
-                              color: Colors.white,
-                            ),
-                          ),
+                          child: isProcessing
+                              ? SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                              : Text("Update", style: TextStyle(fontSize: 16.sp, color: Colors.white)),
                         ),
                       ),
                     ],
@@ -477,4 +484,3 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
     );
   }
 }
-

@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:http/http.dart' as http;
+  import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -271,11 +271,6 @@ class TeacherDetailCard extends StatelessWidget {
                                                   ),
                                                 );
                                               }
-                                              ScaffoldMessenger.of(context).showSnackBar(
-                                                SnackBar(
-                                                  content: Text('File Download Successfully '),
-                                                ),
-                                              );
                                             }
                                           } catch (e) {
                                             ScaffoldMessenger.of(context).showSnackBar(
@@ -298,6 +293,8 @@ class TeacherDetailCard extends StatelessWidget {
                               ),
                           ],
                         ),
+
+                        
                       ),
                     ),
                   ),
@@ -357,7 +354,7 @@ class TeacherDetailCard extends StatelessWidget {
         await file.writeAsBytes(response.bodyBytes);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Find it in the Files/On My iPhone/EvolvU Smart School - Parent.'),
+            content: Text('File Download Successfully. \n Find it in the Files/On My iPhone/EvolvU Smart School - Parent.'),
           ),
         );
       } else {

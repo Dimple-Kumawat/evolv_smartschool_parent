@@ -16,12 +16,13 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import '../QR/QR_Code.dart';
 import '../Utils&Config/api.dart';
+import '../WebViewScreens/DashboardOnlineFeesPayment.dart';
+import '../WebViewScreens/DrawerOnlineFeesPayment.dart';
 import '../WebViewScreens/FeesReceiptWebViewScreen.dart';
 import '../WebViewScreens/OnlineFeesPayment.dart';
 import '../aboutUs.dart';
 import '../changePasswordPage.dart';
-import '../WebViewScreens/DashboardOnlineFeesPayment.dart';
-import '../WebViewScreens/DrawerOnlineFeesPayment.dart';
+import '../main.dart';
 import 'DrawerParentProfile.dart';
 
 class ParentDashBoardPage extends StatefulWidget {
@@ -54,7 +55,7 @@ Future<void> _getSchoolInfo() async {
   final prefs = await SharedPreferences.getInstance();
   String? schoolInfoJson = prefs.getString('school_info');
   String? logUrls = prefs.getString('logUrls');
-    print('logUrls====\\\\\: $schoolInfoJson');
+  print('logUrls====\\\\\: $schoolInfoJson');
   if (logUrls != null) {
     try {
       Map<String, dynamic> logUrlsparsed = json.decode(logUrls);
@@ -81,7 +82,7 @@ Future<void> _getSchoolInfo() async {
       url = parsedData['url'];
       durl = parsedData['project_url'];
 
-      // fetchDashboardData(url);
+      fetchDashboardData(url);
 
       print('Short Name: $shortName');
       print('URL: $url');
@@ -94,61 +95,67 @@ Future<void> _getSchoolInfo() async {
   }
 }
 
-  Future<void> fetchDashboardData(String url) async {
-    final url1 = Uri.parse(url +'show_icons_parentdashboard_apk');
-    // print('Receipt URL: $shortName');
+Future<void> fetchDashboardData(String url) async {
+  final url1 = Uri.parse(url + 'show_icons_parentdashboard_apk');
 
-    try {
-      final response = await http.post(url1,
-        body: {'short_name': shortName},
-      );
+  try {
+    final response = await http.post(
+      url1,
+      body: {'short_name': shortName},
+    );
 
-      if (response.statusCode == 200) {
-        print('response.body URL: ${response.body}');
+    if (response.statusCode == 200) {
+      print('response.body URL: 111111');
+      print('response.body URL: ${response.body}');
+      print('response.body URL: 222222');
 
-        final Map<String, dynamic> data = jsonDecode(response.body);
+      final Map<String, dynamic> data = jsonDecode(response.body);
 
-        // Extract the required fields
-        // message1_url = data['message1_url'];
-        // message2_url = data['message2_url'];
+      // Extract the required fields with null safety
+      receipt_button = data['receipt_button'] ?? 0;
+      receiptUrl = data['receipt_url'] ?? '';
+      paymentUrl = data['payment_url'] ?? '';
+      smartchat_url = data['smartchat_url'] ?? '';
 
-        receipt_button = data['receipt_button'];
-        receiptUrl = data['receipt_url'];
-        paymentUrl = data['payment_url'];
-        smartchat_url = data['smartchat_url'];
-        String ALLOWED_URI_CHARS = "@#&=*+-_.,:!?()/~'%";
+      String ALLOWED_URI_CHARS = "@#&=*+-_.,:!?()/~'%";
 
-        PostMsg1();
+      PostMsg1();
 
-        String URi_username = customUriEncode(username, ALLOWED_URI_CHARS);
-        username = username;
+      String URi_username = customUriEncode(username, ALLOWED_URI_CHARS);
+      username = username;
 
-        String secretKey = 'aceventura@services';
+      String secretKey = 'aceventura@services';
 
-        String encryptedUsername = encryptUsername(username, secretKey);
+      String encryptedUsername = encryptUsername(username, secretKey);
 
-        paymentUrlShare = paymentUrl + "?reg_id=" + reg_id +
-            "&academic_yr=" + academic_yr +  "&user_id=" + URi_username + "&encryptedUsername=" + encryptedUsername +"&short_name=" + shortName;
+      paymentUrlShare = paymentUrl +
+          "?reg_id=" +
+          reg_id +
+          "&academic_yr=" +
+          academic_yr +
+          "&user_id=" +
+          URi_username +
+          "&encryptedUsername=" +
+          encryptedUsername +
+          "&short_name=" +
+          shortName;
 
-        print('message1_url : ${data['message1_url']}');
-        print('message2_url : ${data['message2_url']}');
+      print('message1_url : ${data['message1_url']}');
+      print('message2_url : ${data['message2_url']}');
 
-        print('Encrypted Username: $paymentUrlShare');
-        print('Encrypted Username: $encryptedUsername');
-        // Use these values as needed
+      print('Encrypted Username: $paymentUrlShare');
+      print('Encrypted Username: $encryptedUsername');
 
-        print('Receipt URL: $receiptUrl');
-        print('Payment URL: $paymentUrl');
-        print('smartchat_url : $smartchat_url');
-
-        // You can store these values in variables or use them directly
-      } else {
-        print('Failed to load data: ${response.statusCode}');
-      }
-    } catch (e) {
-      print('Error: $e');
+      print('Receipt URL: $receiptUrl');
+      print('Payment URL: $paymentUrl');
+      print('smartchat_url : $smartchat_url');
+    } else {
+      print('Failed to load data: ${response.statusCode}');
     }
+  } catch (e) {
+    print('Error: $e');
   }
+}
 
   String encryptUsername(String username, String secretKey) {
     // Combine the username and secretKey
@@ -191,12 +198,12 @@ Future<void> PostMsg1() async {
 class _ParentDashBoardPageState extends State<ParentDashBoardPage> {
   int pageIndex = 0;
   late BuildContext _context;
-
+  DateTime? _lastPressedTime;
   @override
   void initState() {
     super.initState();
     _getSchoolInfo();
-    getVersion();
+    getVersion(context);
   }
 
   @override
@@ -212,113 +219,181 @@ class _ParentDashBoardPageState extends State<ParentDashBoardPage> {
       ),
       CalendarPage(),
 
-     // PaymentWebview(regId: reg_id, paymentUrlShare: paymentUrlShare, receiptUrl: receiptUrl, shortName: shortName, academicYr: academic_yr, receipt_button: receipt_button,),
-       Dashboardonlinefeespayment(regId: reg_id, paymentUrlShare: paymentUrlShare, receiptUrl: receiptUrl, shortName: shortName, academicYr: academic_yr, receipt_button: receipt_button,),
-     
+      // Dashboardonlinefeespayment(regId: reg_id, paymentUrlShare: paymentUrlShare, receiptUrl: receiptUrl, shortName: shortName, academicYr: academic_yr, receipt_button: receipt_button,),
       ParentProfilePage(),
     ];
 
-    return Scaffold(
-        backgroundColor: Colors.blue,
-        appBar: AppBar(
-          title: Text(
-            "${widget.shortName} EvolvU Smart Parent App(${widget.academic_yr})",
-            style: TextStyle(fontSize: 14.sp, color: Colors.white),
-          ),
-          backgroundColor: Colors.pink,
-          elevation: 0,
-          leading: IconButton(
-            icon: const CircleAvatar(
-              backgroundColor: Colors.white,
-              radius: 18,
-              child: Icon(Icons.menu, color: Colors.pink),
+    return WillPopScope(
+      onWillPop: () async {
+        final now = DateTime.now();
+        final bool isDoublePress = _lastPressedTime != null &&
+            now.difference(_lastPressedTime!) < Duration(seconds: 2);
+
+        if (isDoublePress) {
+          return true; // Exit the app
+        } else {
+          // Show a toast or snackbar to inform the user to press back again
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Press back again to exit'),
+              duration: Duration(seconds: 2),
             ),
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return CustomPopup();
-                },
-              );
-            },
+          );
+          _lastPressedTime = now;
+          return false; // Do not exit the app
+        }
+      },
+      child: Scaffold(
+          backgroundColor: Colors.blue,
+          appBar: AppBar(
+            title: Text(
+              "${widget.shortName} EvolvU Smart Parent App(${widget.academic_yr})",
+              style: TextStyle(fontSize: 14.sp, color: Colors.white),
+            ),
+            backgroundColor: Colors.pink,
+            elevation: 0,
+            leading: IconButton(
+              icon: const CircleAvatar(
+                backgroundColor: Colors.white,
+                radius: 18,
+                child: Icon(Icons.menu, color: Colors.pink),
+              ),
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return CustomPopup();
+                  },
+                );
+              },
+            ),
           ),
-        ),
-        body: Stack(
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Colors.pink, Colors.blue],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
+          body: Stack(
+            children: [
+              Container(
+                width: double.infinity, // Ensure it takes full width
+                height: double.infinity, // Ensure it takes full height
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [Colors.pink, Colors.blue],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                  ),
                 ),
               ),
-            ),
-            // Page content
-            pages[pageIndex],
-          ],
-        ),
-        bottomNavigationBar: buildMyNavBar(),
+              // Page content
+              pages[pageIndex],
+            ],
+          ),
+          bottomNavigationBar: buildMyNavBar(),
+      ),
     );
   }
 
 
 
-  Future<void> getVersion() async {
-    final url = Uri.parse('http://aceventura.in/demo/evolvuUserService/flutter_latest_version'); // Assuming Config.newLogin is your base URL
+  Future<void> getVersion(BuildContext _context) async {
+
+    String BaseURl = "";
+    final apiService = ApiService();
+    try {
+      // Call the API and get the cleaned response
+      BaseURl = await apiService.fetchUrl();
+      print('BaseURl Cleaned URL: $BaseURl');
+    } catch (error) {
+      // Handle any errors
+      print('BaseURl Error: $error');
+    }
+    print('lastest_version1122 => ${BaseURl + 'flutter_latest_version'}');
+
+
+    print('latest_version11 => ${BaseURl + 'flutter_latest_version'}');
+
+    final url = Uri.parse(BaseURl + 'flutter_latest_version'); // Assuming BaseURl is your base URL
 
     try {
       final response = await http.post(url);
-      print('lastest_version => ${response.statusCode}');
+      print('latest_version => ${response.statusCode}');
 
       if (response.statusCode == 200) {
         final jsonData = jsonDecode(response.body);
-        print('lastest_version => ${response.body}');
+        print('latest_version => ${response.body}');
 
         // Check if jsonData is a list and extract the first item if it is
         if (jsonData is List && jsonData.isNotEmpty) {
           final packageInfo = await PackageInfo.fromPlatform();
           print('Current_version => ${packageInfo.version}');
 
-          final androidVersion = jsonData[0]['latest_version'] as String;
+          final androidVersion = jsonData[0]['latest_version'] as String; // Ensure this is a String
           final releaseNotes = jsonData[0]['release_notes'] as String;
           final forcedUpdate = jsonData[0]['forced_update'] as String;
 
           if (androidVersion != null) {
             print('Current_version => 22222 ${packageInfo.version}');
 
-            final androidVersionNum = double.parse(androidVersion);
-            final localAndroidVersion = packageInfo.version; // Assuming local version
+            final localAndroidVersion = packageInfo.version;
 
-            // Uncomment the following if-statement for version comparison if needed
-            if (localAndroidVersion != androidVersionNum) {
+            // Compare versions
+            if (_isVersionGreater(androidVersion, localAndroidVersion)) {
               print('Current_version => 3333 ${packageInfo.version}');
 
-            showDialog(
-              context: _context,
-              builder: (BuildContext context) {
-                return AlertDialog(
-                  title: Text('V ${packageInfo.version}'), // Local version title
-                  content: Text(releaseNotes),
-                  actions: [
-                    TextButton(
-                      onPressed: () {
-                        launchUrl(Uri.parse('https://play.google.com/store/apps/details?id=in.aceventura.evolvuschool'));
-                      },
-                      child: Text('Update',
-                        style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      child: Text('Cancel'),
-                    ),
-                  ],
+              if (forcedUpdate == 'N') {
+                print('Current_version => NNNNN ${packageInfo.version}');
+
+                showDialog(
+                  context: _context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: Text('V ${packageInfo.version}'),
+                      content: Text(releaseNotes),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            launchUrl(Uri.parse(
+                                'https://play.google.com/store/apps/details?id=in.aceventura.evolvuschool'));
+                          },
+                          child: Text(
+                            'Update',
+                            style: TextStyle(
+                                color: Colors.green, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: Text('Cancel'),
+                        ),
+                      ],
+                    );
+                  },
                 );
-              },
-            );
+              } else if (forcedUpdate == 'Y') {
+                print('Current_version => 44444 ${packageInfo.version}');
+
+                showDialog(
+                  context: _context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: Text('V ${packageInfo.version}'),
+                      content: Text(releaseNotes),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            launchUrl(Uri.parse(
+                                'https://play.google.com/store/apps/details?id=in.aceventura.evolvuschool'));
+                          },
+                          child: Text(
+                            'Update',
+                            style: TextStyle(
+                                color: Colors.green, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                );
+              }
             }
           }
         } else {
@@ -331,6 +406,30 @@ class _ParentDashBoardPageState extends State<ParentDashBoardPage> {
       print('Error: $e');
     }
   }
+
+// Helper function to compare version strings
+  bool _isVersionGreater(String newVersion, String currentVersion) {
+    // Split version strings into parts
+    List<int> newParts = newVersion.split('.').map((e) => int.parse(e)).toList();
+    List<int> currentParts = currentVersion.split('.').map((e) => int.parse(e)).toList();
+
+    // Compare each part of the version
+    for (int i = 0; i < newParts.length; i++) {
+      if (i >= currentParts.length) {
+        // If current version has fewer parts, new version is greater
+        return true;
+      }
+      if (newParts[i] > currentParts[i]) {
+        return true;
+      } else if (newParts[i] < currentParts[i]) {
+        return false;
+      }
+    }
+
+    // If all parts are equal, new version is not greater
+    return false;
+  }
+
 
   Widget buildMyNavBar() {
     return Container(
@@ -346,8 +445,8 @@ class _ParentDashBoardPageState extends State<ParentDashBoardPage> {
         children: [
           _buildNavItem(icon: Icons.dashboard, label: 'Dashboard', index: 0),
           _buildNavItem(icon: Icons.calendar_month, label: 'Events', index: 1),
-          _buildCenterNavItem(icon: Icons.currency_rupee_sharp, index: 2), // Center icon
-          _buildNavItem(icon: Icons.person, label: 'Profile', index: 3),
+          _buildCenterNavItem(icon: Icons.currency_rupee_sharp, index: 5), // Center icon
+          _buildNavItem(icon: Icons.person, label: 'Profile', index: 2),
           _buildNavItem(icon: Icons.qr_code, label: 'QR', index: 4),
         ],
       ),
@@ -395,7 +494,20 @@ class _ParentDashBoardPageState extends State<ParentDashBoardPage> {
     bool isSelected = pageIndex == index;
 
     return GestureDetector(
-      onTap: () => setState(() => pageIndex = index),
+      onTap: () {
+        if (index == 5) {
+          // Navigate to the QR Code screen without modifying pageIndex
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) =>
+         Dashboardonlinefeespayment(regId: reg_id, paymentUrlShare: paymentUrlShare, receiptUrl: receiptUrl, shortName: shortName, academicYr: academic_yr, receipt_button: receipt_button,),)
+
+        );
+        } else {
+          // Change pageIndex for BottomNavigationBar screens
+          setState(() => pageIndex = index);
+        }
+      },
       child: Container(
         height: 45,
         width: 45,
@@ -526,7 +638,6 @@ class CustomPopup extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-            //  builder: (context) => PaymentWebview(
               builder: (context) => DrawerOnlineFeesPayment(
                   regId: reg_id,paymentUrlShare:paymentUrlShare,receiptUrl:receiptUrl,shortName: shortName,academicYr: academic_yr, receipt_button: receipt_button,),
             ),

@@ -195,7 +195,7 @@ class _NoticeNotePageState extends State<NoticeNotePage> {
                           height: 150,
                           width: 150,
                           child: Image.asset(
-                            'assets/nodata.gif',  // Replace with your emoji or animation file
+                            'assets/nodata.gif', // Replace with your emoji or animation file
                             fit: BoxFit.contain,
                           ),
                         ),
@@ -237,7 +237,7 @@ class _NoticeNotePageState extends State<NoticeNotePage> {
                           height: 150,
                           width: 150,
                           child: Image.asset(
-                           'assets/nodata.gif',  // Replace with your emoji or animation file
+                            'assets/nodata.gif', // Replace with your emoji or animation file
                             fit: BoxFit.contain,
                           ),
                         ),
@@ -259,7 +259,7 @@ class _NoticeNotePageState extends State<NoticeNotePage> {
                 final groupedNotes = groupByDate(filteredNotices);
                 return Column(
                   children: [
-                    SizedBox(height: 80.h),
+                    SizedBox(height: 120.h),
                     Text(
                       "Notice/SMS",
                       style: TextStyle(
@@ -269,7 +269,7 @@ class _NoticeNotePageState extends State<NoticeNotePage> {
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 30),
+                      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
                       child: Container(
                         decoration: BoxDecoration(
                           color: Colors.white.withOpacity(0.2),
@@ -280,7 +280,7 @@ class _NoticeNotePageState extends State<NoticeNotePage> {
                           maxLines: 1,
                           decoration: const InputDecoration(
                             prefixIcon: Icon(Icons.search, color: Colors.white),
-                            hintText: "Search",
+                            hintText: "Search Subject",
                             hintStyle: TextStyle(color: Colors.white),
                             border: InputBorder.none,
                             contentPadding: EdgeInsets.symmetric(vertical: 15.0),
@@ -298,88 +298,91 @@ class _NoticeNotePageState extends State<NoticeNotePage> {
                           final dateNotes = groupedNotes[date]!;
                           return Stack(
                             children: [
-                              Column(
-                                children: [
-                                  Row(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      SizedBox(
-                                        width: 30,
-                                        child: Column(
-                                          children: [
-                                            Container(
-                                              width: 10,
-                                              height: 18,
-                                              decoration: const BoxDecoration(
-                                                color: Colors.white,
-                                                shape: BoxShape.circle,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      Text(
-                                        date,
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 15.sp,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 30),
-                                    child: Column(
+                              Padding(
+                                padding: const EdgeInsets.only(left: 0.0),
+                                child: Column(
+                                  children: [
+                                    Row(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        const SizedBox(height: 10),
-                                        Column(
-                                          children: dateNotes.map((note) {
-                                            return Padding(
-                                              padding: const EdgeInsets.all(3.0),
-                                              child: NoticeNoteCard(
-                                                teacher: note.teacherName,
-                                                remarksubject: note.subject,
-                                                type: note.noticeType,
-                                                // attachments: note.imageList,
-                                                // date: note.noticeDate,
-                                                readStatus: note.readStatus,
-                                                onTap: () async {
-                                                  final result = await Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                      builder: (context) =>
-                                                            NoticeDetailCard(
-                                                                teacher: note.teacherName,
-                                                                remarksubject: note.subject,
-                                                                type: note.noticeType,
-                                                              date: note.noticeDate,
-                                                              noticeID: note.noticeId,
-                                                              academic_yr: note.academicYr,
-                                                              shortName: widget.shortName,
-                                                              classname: note.className,
-                                                              noticeDesc: note.noticeDesc,
-                                                              attachment: note.imageList,
-                                                              ),
-                                                            ),
-                                                      );
-                                                  // Check if the result was 'true', meaning the notice was read
-                                                  if (result == true) {
-                                                    // Refresh the list of notices
-                                                    refreshNotices();
-                                                  }
-                                                },
+                                        SizedBox(
+                                          width: 30,
+                                          child: Column(
+                                            children: [
+                                              Container(
+                                                width: 10,
+                                                height: 18,
+                                                decoration: const BoxDecoration(
+                                                  color: Colors.white,
+                                                  shape: BoxShape.circle,
+                                                ),
                                               ),
-                                            );
-                                          }).toList(),
+                                            ],
+                                          ),
                                         ),
-                                         SizedBox(height: 15),
+                                        Text(
+                                          date,
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 15.sp,
+                                          ),
+                                        ),
                                       ],
                                     ),
-                                  ),
-                                ],
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 30),
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          const SizedBox(height: 10),
+                                          Column(
+                                            children: dateNotes.map((note) {
+                                              return Padding(
+                                                padding: const EdgeInsets.all(3.0),
+                                                child: NoticeNoteCard(
+                                                  teacher: note.teacherName,
+                                                  remarksubject: note.subject,
+                                                  type: note.noticeType,
+                                                  imageList: note.imageList,
+                                                  // date: note.noticeDate,
+                                                  readStatus: note.readStatus,
+                                                  onTap: () async {
+                                                    final result = await Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                        builder: (context) =>
+                                                              NoticeDetailCard(
+                                                                  teacher: note.teacherName,
+                                                                  remarksubject: note.subject,
+                                                                  type: note.noticeType,
+                                                                date: note.noticeDate,
+                                                                noticeID: note.noticeId,
+                                                                academic_yr: note.academicYr,
+                                                                shortName: widget.shortName,
+                                                                classname: note.className,
+                                                                noticeDesc: note.noticeDesc,
+                                                                attachment: note.imageList,
+                                                                ),
+                                                              ),
+                                                        );
+                                                    // Check if the result was 'true', meaning the notice was read
+                                                    if (result == true) {
+                                                      // Refresh the list of notices
+                                                      refreshNotices();
+                                                    }
+                                                  },
+                                                ),
+                                              );
+                                            }).toList(),
+                                          ),
+                                           SizedBox(height: 15),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ],
                           );

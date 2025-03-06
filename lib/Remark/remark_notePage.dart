@@ -1,6 +1,7 @@
 import 'package:evolvu/Remark/remark_DeatilCard.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -25,12 +26,77 @@ class _RemarkNotePage extends State<RemarkNotePage> {
   String academic_yr = "";
   String reg_id = "";
   String url = "";
+  String Ack = "";
+
+
 
   @override
   void initState() {
     super.initState();
     futureRemarks = fetchRemarks();
   }
+
+  Future<void> setRemarkAck(String remarkId,String ack) async {
+    final prefs = await SharedPreferences.getInstance();
+    String? schoolInfoJson = prefs.getString('school_info');
+    String? logUrls = prefs.getString('logUrls');
+
+    String reg_id = "";
+    String url = "";
+
+    if (logUrls != null) {
+      try {
+        Map<String, dynamic> logUrlsparsed = json.decode(logUrls);
+        reg_id = logUrlsparsed['reg_id'];
+      } catch (e) {
+        print('Error parsing log URLs: $e');
+      }
+    }
+
+    if (schoolInfoJson != null) {
+      try {
+        Map<String, dynamic> parsedData = json.decode(schoolInfoJson);
+        url = parsedData['url'];
+      } catch (e) {
+        print('Error parsing school info: $e');
+      }
+    }
+
+    final response = await http.post(
+      Uri.parse(url + 'set_remarkAck'),
+      body: {
+        'remark_id': remarkId,
+        'short_name': shortName,
+      },
+    );
+
+    if (response.statusCode == 200) {
+      print('set_remarkAck Success: ${response.body}');
+
+      // Ack = response.body;
+      // print('set_remarkAck ACK : $Ack');
+
+      if(ack == 'N'){
+        Fluttertoast.showToast(
+          msg: "Acknowledge Successfully",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.grey,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+      }
+
+      setState(() {
+        futureRemarks = fetchRemarks();
+      });
+    } else {
+      print('Failed to acknowledge remark: ${response.statusCode}');
+      throw Exception('Failed to acknowledge remark: ${response.statusCode}');
+    }
+  }
+
 
   Future<List<Remark>> fetchRemarks() async {
     final prefs = await SharedPreferences.getInstance();
@@ -61,15 +127,7 @@ class _RemarkNotePage extends State<RemarkNotePage> {
       print('School info not found in SharedPreferences.');
     }
 
-    // print('API URL: $url+get_premark');
-    // print('Request Body:');
-    // print({
-    //   'student_id': widget.studentId,
-    //   'parent_id': reg_id,
-    //   'academic_yr': academic_yr,
-    //   'short_name': shortName,
-    // });
-
+    print('API URL: $url get_premark');
     final response = await http.post(
       Uri.parse(url + 'get_premark'),
       body: {
@@ -84,13 +142,21 @@ class _RemarkNotePage extends State<RemarkNotePage> {
       print('Response: ${response.body}');
 
       List jsonResponse = json.decode(response.body);
+      if (jsonResponse.isNotEmpty) {
+        Ack = jsonResponse.first['acknowledge']?.toString() ?? '';
+      }
+
       return jsonResponse.map((remark) => Remark.fromJson(remark)).toList();
     } else {
       print('Failed to load remarks: ${response.statusCode}');
       throw Exception('Failed to load remarks: ${response.statusCode}');
     }
   }
-  Future<void> updateReadStatus(String remarkId) async {
+  Future<void> updateReadStatus(String remarkId,String ack) async {
+
+    if(ack == 'N'){
+      setRemarkAck(remarkId,ack);
+    }
     final prefs = await SharedPreferences.getInstance();
     String? schoolInfoJson = prefs.getString('school_info');
     String? logUrls = prefs.getString('logUrls');
@@ -220,7 +286,7 @@ class _RemarkNotePage extends State<RemarkNotePage> {
                                 height: 150,
                                 width: 150,
                                 child: Image.asset(
-                                  'assets/animations/nodata.gif', // Replace with your emoji or animation file
+                                  'assets/nodata.gif', // Replace with your emoji or animation file
                                   fit: BoxFit.contain,
                                 ),
                               ),
@@ -237,7 +303,8 @@ class _RemarkNotePage extends State<RemarkNotePage> {
                             ],
                           ),
                         ),
-                      );                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      );
+                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
                       return Center(
                         child: Container(
                           margin: const EdgeInsets.all(10),
@@ -261,7 +328,7 @@ class _RemarkNotePage extends State<RemarkNotePage> {
                                 height: 150,
                                 width: 150,
                                 child: Image.asset(
-                                  'assets/animations/nodata.gif', // Replace with your emoji or animation file
+                                  'assets/nodata.gif', // Replace with your emoji or animation file
                                   fit: BoxFit.contain,
                                 ),
                               ),
@@ -278,7 +345,12 @@ class _RemarkNotePage extends State<RemarkNotePage> {
                             ],
                           ),
                         ),
-                      );                    } else {
+                      );
+                    } else {
+                      List<Remark> sortedRemarks = List.from(snapshot.data ?? []);
+                      sortedRemarks.sort((a, b) => DateTime.parse(b.remarkDate)
+                          .compareTo(DateTime.parse(a.remarkDate)));
+
                       return ListView.builder(
                         padding: EdgeInsets.only(top: 10.h),
                         itemCount: snapshot.data!.length,
@@ -291,23 +363,29 @@ class _RemarkNotePage extends State<RemarkNotePage> {
                               teacher: remark.teacherName,
                               remarksubject: remark.remarkSubject,
                               readStatus: remark.readStatus,
+                              showDownloadIcon: remark.imageList,
+                              acknowledge: remark.acknowledge,
                               onTap: () async {
-                                await updateReadStatus(remark.remarkId);
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => RemarkDetailCard(
-                                      shortName: shortName,
-                                      academic_yr: academic_yr,
-                                      remarksubject: remark.remarkSubject,
-                                      imageList: remark.imageList,
-                                      description: remark.remarkDesc,
-                                      remarkId:remark.remarkId,
-                                      remarkDate: remark.remarkDate,
+                                await updateReadStatus(remark.remarkId,remark.acknowledge);
+                                if (mounted) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => RemarkDetailCard(
+                                        shortName: shortName,
+                                        academic_yr: academic_yr,
+                                        remarksubject: remark.remarkSubject,
+                                        imageList: remark.imageList,
+                                        description: remark.remarkDesc,
+                                        remarkId: remark.remarkId,
+                                        remarkDate: remark.remarkDate,
+                                      ),
                                     ),
-                                  ),
-                                );
-                                refreshRemarkNotes();
+                                  ).then((_) {
+                                    // Refresh the remarks after returning from the detail page
+                                    refreshRemarkNotes();
+                                  });
+                                }
                               },
                             ),
                           );

@@ -246,6 +246,7 @@ class _HomeWorkNotePage extends State<HomeWorkNotePage> {
                               submissionDate: truncateEndDate(note.endDate),
                               status: note.homeworkStatus,
                               readStatus: note.readStatus,
+                              imageList: note.imageList,
                               onTap: () async {
                                 await Navigator.push(
                                   context,

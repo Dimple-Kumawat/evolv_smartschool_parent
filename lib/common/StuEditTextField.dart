@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+//dimple p
 class StuEditTextField extends StatelessWidget {
   final String labelText;
   final String? initialValue;
@@ -31,18 +31,11 @@ class StuEditTextField extends StatelessWidget {
         children: [
           // Label on the left
           SizedBox(
-            width: 100, // Adjust the width as needed
+            width: 120, // Adjust the width as needed
             child: RichText(
               text: TextSpan(
                 children: [
-                  if (isRequired) // Add the red asterisk first if required
-                    const TextSpan(
-                      text: '* ',
-                      style: TextStyle(
-                        color: Colors.red, // Asterisk color
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+                  
                   TextSpan(
                     text: labelText,
                     style: const TextStyle(
@@ -51,6 +44,14 @@ class StuEditTextField extends StatelessWidget {
                       color: Colors.black,
                     ),
                   ),
+                  if (isRequired) // Add the red asterisk first if required
+                    const TextSpan(
+                      text: '* ',
+                      style: TextStyle(
+                        color: Colors.red, // Asterisk color
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                 ],
               ),
             ),
