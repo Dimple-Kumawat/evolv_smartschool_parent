@@ -1,34 +1,35 @@
 import 'dart:convert';
 
 import 'package:crypto/crypto.dart';
-import 'package:evolvu/calender_Page.dart';
-import 'package:evolvu/common/drawerAppBar.dart';
 import 'package:evolvu/Parent/parentProfile_Page.dart';
 import 'package:evolvu/Student/student_card.dart';
+import 'package:evolvu/calender_Page.dart';
 import 'package:evolvu/username_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:http/http.dart' as http;
+import 'package:package_info_plus/package_info_plus.dart';
+import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
-import 'package:package_info_plus/package_info_plus.dart';
+
+import '../AcademicYearProvider.dart';
+import '../ChangeAcademicYear.dart';
 import '../QR/QR_Code.dart';
-import '../Utils&Config/api.dart';
 import '../WebViewScreens/DashboardOnlineFeesPayment.dart';
 import '../WebViewScreens/DrawerOnlineFeesPayment.dart';
-import '../WebViewScreens/FeesReceiptWebViewScreen.dart';
-import '../WebViewScreens/OnlineFeesPayment.dart';
 import '../aboutUs.dart';
 import '../changePasswordPage.dart';
 import '../main.dart';
 import 'DrawerParentProfile.dart';
+import '../ID_Card/Parent_IDCard.dart';
 
 class ParentDashBoardPage extends StatefulWidget {
   final String academic_yr;
   final String shortName;
-   ParentDashBoardPage({required this.academic_yr,required this.shortName});
+   const ParentDashBoardPage({super.key, required this.academic_yr,required this.shortName});
 
   @override
   // ignore: library_private_types_in_public_api
@@ -51,22 +52,31 @@ String smartchat_url="";
 String username = "";
 
 
-Future<void> _getSchoolInfo() async {
+Future<void> _getSchoolInfo(BuildContext context) async {
+  final academicYearProvider = Provider.of<AcademicYearProvider>(context, listen: false);
+
   final prefs = await SharedPreferences.getInstance();
   String? schoolInfoJson = prefs.getString('school_info');
   String? logUrls = prefs.getString('logUrls');
-  print('logUrls====\\\\\: $schoolInfoJson');
+  print('logUrls1111 $schoolInfoJson');
   if (logUrls != null) {
     try {
       Map<String, dynamic> logUrlsparsed = json.decode(logUrls);
-      print('logUrls====\\\\\11111: $logUrls');
+      print('logUrls====\\\\11111: $logUrls');
 
       user_id = logUrlsparsed['user_id'];
-      academic_yr = logUrlsparsed['academic_yr'];
+      // academic_yr = logUrlsparsed['academic_yr'];
       reg_id = logUrlsparsed['reg_id'];
 
+      academicYearProvider.setAcademicYear(logUrlsparsed['academic_yr']);
+
+      print('academic_yr ID: ${academicYearProvider.academic_yr}');
+      academic_yr = academicYearProvider.academic_yr;
+      if(academic_yr.isEmpty){
+        academic_yr = logUrlsparsed['academic_yr'];
+      }
       print('academic_yr ID: $academic_yr');
-      print('reg_id: $reg_id');
+      print('reg_id $reg_id');
     } catch (e) {
       print('Error parsing school info: $e');
     }
@@ -96,7 +106,7 @@ Future<void> _getSchoolInfo() async {
 }
 
 Future<void> fetchDashboardData(String url) async {
-  final url1 = Uri.parse(url + 'show_icons_parentdashboard_apk');
+  final url1 = Uri.parse('${url}show_icons_parentdashboard_apk');
 
   try {
     final response = await http.post(
@@ -117,28 +127,18 @@ Future<void> fetchDashboardData(String url) async {
       paymentUrl = data['payment_url'] ?? '';
       smartchat_url = data['smartchat_url'] ?? '';
 
-      String ALLOWED_URI_CHARS = "@#&=*+-_.,:!?()/~'%";
+      String allowedUriChars = "@#&=*+-_.,:!?()/~'%";
 
       PostMsg1();
 
-      String URi_username = customUriEncode(username, ALLOWED_URI_CHARS);
+      String uriUsername = customUriEncode(username, allowedUriChars);
       username = username;
 
       String secretKey = 'aceventura@services';
 
       String encryptedUsername = encryptUsername(username, secretKey);
 
-      paymentUrlShare = paymentUrl +
-          "?reg_id=" +
-          reg_id +
-          "&academic_yr=" +
-          academic_yr +
-          "&user_id=" +
-          URi_username +
-          "&encryptedUsername=" +
-          encryptedUsername +
-          "&short_name=" +
-          shortName;
+      paymentUrlShare = "$paymentUrl?reg_id=$reg_id&academic_yr=$academic_yr&user_id=$uriUsername&encryptedUsername=$encryptedUsername&short_name=$shortName";
 
       print('message1_url : ${data['message1_url']}');
       print('message2_url : ${data['message2_url']}');
@@ -202,7 +202,7 @@ class _ParentDashBoardPageState extends State<ParentDashBoardPage> {
   @override
   void initState() {
     super.initState();
-    _getSchoolInfo();
+    _getSchoolInfo(context);
     getVersion(context);
   }
 
@@ -210,14 +210,14 @@ class _ParentDashBoardPageState extends State<ParentDashBoardPage> {
   Widget build(BuildContext context) {
     _context = context;
     final pages = [
-      StudentCard(
+      StudentCard(acd:widget.academic_yr,
         onTap: (int index) {
           setState(() {
             pageIndex = index;
           });
         },
       ),
-      CalendarPage(),
+      CalendarPage(regId: reg_id),
 
       // Dashboardonlinefeespayment(regId: reg_id, paymentUrlShare: paymentUrlShare, receiptUrl: receiptUrl, shortName: shortName, academicYr: academic_yr, receipt_button: receipt_button,),
       ParentProfilePage(),
@@ -292,7 +292,7 @@ class _ParentDashBoardPageState extends State<ParentDashBoardPage> {
 
 
 
-  Future<void> getVersion(BuildContext _context) async {
+  Future<void> getVersion(BuildContext context) async {
 
     String BaseURl = "";
     final apiService = ApiService();
@@ -304,12 +304,12 @@ class _ParentDashBoardPageState extends State<ParentDashBoardPage> {
       // Handle any errors
       print('BaseURl Error: $error');
     }
-    print('lastest_version1122 => ${BaseURl + 'flutter_latest_version'}');
+    print('lastest_version1122 => ${'${BaseURl}flutter_latest_version'}');
 
 
-    print('latest_version11 => ${BaseURl + 'flutter_latest_version'}');
+    print('latest_version11 => ${'${BaseURl}flutter_latest_version'}');
 
-    final url = Uri.parse(BaseURl + 'flutter_latest_version'); // Assuming BaseURl is your base URL
+    final url = Uri.parse('${BaseURl}flutter_latest_version'); // Assuming BaseURl is your base URL
 
     try {
       final response = await http.post(url);
@@ -328,75 +328,73 @@ class _ParentDashBoardPageState extends State<ParentDashBoardPage> {
           final releaseNotes = jsonData[0]['release_notes'] as String;
           final forcedUpdate = jsonData[0]['forced_update'] as String;
 
-          if (androidVersion != null) {
-            print('Current_version => 22222 ${packageInfo.version}');
+          print('Current_version => 22222 ${packageInfo.version}');
 
-            final localAndroidVersion = packageInfo.version;
+          final localAndroidVersion = packageInfo.version;
 
-            // Compare versions
-            if (_isVersionGreater(androidVersion, localAndroidVersion)) {
-              print('Current_version => 3333 ${packageInfo.version}');
+          // Compare versions
+          if (_isVersionGreater(androidVersion, localAndroidVersion)) {
+            print('Current_version => 3333 ${packageInfo.version}');
 
-              if (forcedUpdate == 'N') {
-                print('Current_version => NNNNN ${packageInfo.version}');
+            if (forcedUpdate == 'N') {
+              print('Current_version => NNNNN ${packageInfo.version}');
 
-                showDialog(
-                  context: _context,
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                      title: Text('V ${packageInfo.version}'),
-                      content: Text(releaseNotes),
-                      actions: [
-                        TextButton(
-                          onPressed: () {
-                            launchUrl(Uri.parse(
-                                'https://play.google.com/store/apps/details?id=in.aceventura.evolvuschool'));
-                          },
-                          child: Text(
-                            'Update',
-                            style: TextStyle(
-                                color: Colors.green, fontWeight: FontWeight.bold),
-                          ),
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Text('V ${packageInfo.version}'),
+                    content: Text(releaseNotes),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          launchUrl(Uri.parse(
+                              'https://play.google.com/store/apps/details?id=in.aceventura.evolvuschool'));
+                        },
+                        child: Text(
+                          'Update',
+                          style: TextStyle(
+                              color: Colors.green, fontWeight: FontWeight.bold),
                         ),
-                        TextButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          child: Text('Cancel'),
-                        ),
-                      ],
-                    );
-                  },
-                );
-              } else if (forcedUpdate == 'Y') {
-                print('Current_version => 44444 ${packageInfo.version}');
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: Text('Cancel'),
+                      ),
+                    ],
+                  );
+                },
+              );
+            } else if (forcedUpdate == 'Y') {
+              print('Current_version => 44444 ${packageInfo.version}');
 
-                showDialog(
-                  context: _context,
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                      title: Text('V ${packageInfo.version}'),
-                      content: Text(releaseNotes),
-                      actions: [
-                        TextButton(
-                          onPressed: () {
-                            launchUrl(Uri.parse(
-                                'https://play.google.com/store/apps/details?id=in.aceventura.evolvuschool'));
-                          },
-                          child: Text(
-                            'Update',
-                            style: TextStyle(
-                                color: Colors.green, fontWeight: FontWeight.bold),
-                          ),
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Text('V ${packageInfo.version}'),
+                    content: Text(releaseNotes),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          launchUrl(Uri.parse(
+                              'https://play.google.com/store/apps/details?id=in.aceventura.evolvuschool'));
+                        },
+                        child: Text(
+                          'Update',
+                          style: TextStyle(
+                              color: Colors.green, fontWeight: FontWeight.bold),
                         ),
-                      ],
-                    );
-                  },
-                );
-              }
+                      ),
+                    ],
+                  );
+                },
+              );
             }
           }
-        } else {
+                } else {
           print("Unexpected JSON format");
         }
       } else {
@@ -608,6 +606,8 @@ Future<void> logout(BuildContext context) async {
 
 
 class CustomPopup extends StatelessWidget {
+  const CustomPopup({super.key});
+
   @override
   Widget build(BuildContext context) {
     List<CardItem> cardItems = [
@@ -644,6 +644,7 @@ class CustomPopup extends StatelessWidget {
           );
         },
       ),
+
       CardItem(
         imagePath: 'assets/password.png',
         title: 'Change Password',
@@ -655,13 +656,38 @@ class CustomPopup extends StatelessWidget {
         },
       ),
 
+
+
+      // CardItem(
+      //   imagePath: 'assets/idcard.png',
+      //   title: 'BUS',
+      //   onTap: () {
+      //     Navigator.push(
+      //       context,
+      //       MaterialPageRoute(builder: (_) => BusTrackingScreen(busId: 'SCHOOL-101'),),
+      //     );
+      //   },
+      // ),
+
       CardItem(
-        imagePath: 'assets/ace.png',
-        title: 'About Us',
+        imagePath: 'assets/idcard.png',
+        title: 'ID Card',
         onTap: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (_) => AboutUsPage(academic_yr:academic_yr,shortName: shortName)),
+            MaterialPageRoute(builder: (_) => StudentFormScreen(
+            )),
+          );
+        },
+      ),
+
+      CardItem(
+        imagePath: 'assets/almanac.png',
+        title: 'Change Academic Year',
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => ChangeAcademicYearScreen(academic_yr:academic_yr,shortName: shortName)),
           );
         },
       ),
@@ -675,6 +701,17 @@ class CustomPopup extends StatelessWidget {
           Share.share(
             'Download Evolvu: Smart Schooling App https://play.google.com/store/apps/details?id=in.aceventura.evolvuschool', // Replace with your app link
             subject: 'Parent App!',
+          );
+        },
+      ),
+
+      CardItem(
+        imagePath: 'assets/ace.png',
+        title: 'About Us',
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => AboutUsPage(academic_yr:academic_yr,shortName: shortName)),
           );
         },
       ),
@@ -692,7 +729,7 @@ class CustomPopup extends StatelessWidget {
             alignment: Alignment.topCenter,
             child: Container(
               width: MediaQuery.of(context).size.width * 0.9,
-              padding: EdgeInsets.all(20.0),
+              padding: EdgeInsets.all(12.0),
               decoration: BoxDecoration(
                 color: Color.fromARGB(255, 245, 241, 241),
                 borderRadius: BorderRadius.circular(8),
@@ -713,7 +750,7 @@ class CustomPopup extends StatelessWidget {
                         Text(
                           cardItem.title,
                           textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 14),
+                          style: TextStyle(fontSize: 13),
                         ),
                       ],
                     ),

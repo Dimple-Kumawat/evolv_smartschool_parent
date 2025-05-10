@@ -1,10 +1,8 @@
-import 'package:evolvu/Homework/homework_DetailCard.dart';
 import 'package:evolvu/Teacher/Attachment.dart';
 import 'package:evolvu/common/common_style.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import 'homeWork_notePage.dart';
 
 
 
@@ -98,7 +96,7 @@ class HomeWorkNoteCard extends StatelessWidget {
   final VoidCallback onTap;
   final List<Attachment> imageList;
   const HomeWorkNoteCard({
-    Key? key,
+    super.key,
     required this.subject,
     required this.assignedDate,
     required this.submissionDate,
@@ -106,14 +104,14 @@ class HomeWorkNoteCard extends StatelessWidget {
     required this.readStatus,
     required this.onTap,
     required this.imageList,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     DateTime parsedDate = DateTime.parse(assignedDate);
     DateTime parsedDate1 = DateTime.parse(submissionDate);
-    String formatted_assignedDate = DateFormat('dd-MM-yyyy').format(parsedDate);
-    String formatted_submissionDate = DateFormat('dd-MM-yyyy').format(parsedDate1);
+    String formattedAssigneddate = DateFormat('dd-MM-yyyy').format(parsedDate);
+    String formattedSubmissiondate = DateFormat('dd-MM-yyyy').format(parsedDate1);
 
     Color cardColor = readStatus == '0'
         ? Colors.grey
@@ -177,7 +175,7 @@ class HomeWorkNoteCard extends StatelessWidget {
                                  style: Commonstyle.lableBold,
                               ),
                               TextSpan(
-                                text: formatted_assignedDate,
+                                text: formattedAssigneddate,
                     
                               ),
                             ],
@@ -195,7 +193,7 @@ class HomeWorkNoteCard extends StatelessWidget {
                                 ),
                               ),
                               TextSpan(
-                                text: formatted_submissionDate,
+                                text: formattedSubmissiondate,
                                 style: const TextStyle(
                                   fontSize: 14.0,
                                   fontWeight: FontWeight.normal,

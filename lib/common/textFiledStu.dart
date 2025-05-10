@@ -10,14 +10,14 @@ class StuTextField extends StatelessWidget {
   final bool showRedAsterisk;
 
   const StuTextField({
-    Key? key,
+    super.key,
     required this.name,
     this.initialValue,
     this.readOnly = false,
     this.onChanged,
     required this.label,
     this.showRedAsterisk = false,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

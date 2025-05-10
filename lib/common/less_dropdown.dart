@@ -6,11 +6,11 @@ class SimpleDropdown extends StatelessWidget {
   final Function(String?) onChanged;
 
   const SimpleDropdown({
-    Key? key,
+    super.key,
     required this.options,
     required this.onChanged,
     this.selectedValue,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -2,24 +2,17 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:device_info/device_info.dart';
-import 'package:evolvu/Student/StudentDashboard.dart';
 import 'package:evolvu/Parent/parentDashBoard_Page.dart';
 import 'package:evolvu/username_page.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 // Update the import path accordingly
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'Login.dart';
-import 'Utils&Config/api.dart';
 import 'forgotPassword.dart';
-import 'main.dart';
 
 class LogUrls {
 
@@ -63,7 +56,7 @@ class LogUrls {
 class LoginPage extends StatefulWidget {
   final String emailstr;
 
-  LoginPage(this.emailstr);
+  const LoginPage(this.emailstr, {super.key});
 
   @override
   _LoginState createState() => _LoginState();
@@ -82,12 +75,13 @@ class _LoginState extends State<LoginPage> {
   bool _passwordVisible = false;
   bool shouldShowText = false; // Set this based on your condition
   bool _isLoading = false; // Add this line
-
+  String teacherApkUrl = "";
   String url = "";
   String? token;
   @override
   void initState() {
     super.initState();
+    _getSchoolInfo();
     requestPermission(); // Request notification permission
     getToken(); // Get FCM token
 
@@ -95,6 +89,35 @@ class _LoginState extends State<LoginPage> {
     email = TextEditingController(text: widget.emailstr);
     checkLoginStatus(); // Check login status when the login screen is initialized
   }
+
+  Future<void> _getSchoolInfo() async {
+    final prefs = await SharedPreferences.getInstance();
+    String? schoolInfoJson = prefs.getString('school_info');
+
+    if (schoolInfoJson != null) {
+      try {
+        Map<String, dynamic> parsedData = json.decode(schoolInfoJson);
+
+        setState(() {
+          shortName = parsedData['short_name'];
+          url = parsedData['url'];
+          durl = parsedData['project_url'];
+          teacherApkUrl = parsedData['teacherapk_url']; // Ensure this updates
+        });
+
+        print('Updated School Info:');
+        print('Short Name: $shortName');
+        print('URL: $url');
+        print('Project URL: $durl');
+        print('Teacher APK URL: $teacherApkUrl');
+      } catch (e) {
+        print('Error parsing school info: $e');
+      }
+    } else {
+      print('School info not found in SharedPreferences.');
+    }
+  }
+
 
   // Request Permission for Notifications
   void requestPermission() async {
@@ -162,9 +185,9 @@ class _LoginState extends State<LoginPage> {
 
           String schoolId = parsedData['school_id'];
           String name = parsedData['name'];
-           shortName = parsedData['short_name'];
+          shortName = parsedData['short_name'];
           schoolnamestr = parsedData['short_name'];
-           url = parsedData['url'];
+          url = parsedData['url'];
           String teacherApkUrl = parsedData['teacherapk_url'];
           String projectUrl = parsedData['project_url'];
           String defaultPassword = parsedData['default_password'];
@@ -189,8 +212,8 @@ class _LoginState extends State<LoginPage> {
       print('Device ID: $url');
 
       http.Response response = await http.post(
-        Uri.parse(url+"get_login"),
-        body: {'user_id': ema, 'password': pass,'short_name': shortName,'device_id':deviceId,'token': token},
+        Uri.parse("${url}get_login"),
+        body: {'user_id': ema, 'password': pass,'short_name': shortName,'device_id':deviceId},
       );
 
       print('Response status code: ${response.statusCode}');
@@ -226,26 +249,21 @@ class _LoginState extends State<LoginPage> {
           print('logDetJson===>  $logDetJson');
 
           // Store login status in SharedPreferences
-           storeLoginStatus(true);
+          storeLoginStatus(true);
           // Navigate to QRScannerPage after successful login
           //**dashboard push */
           //  ElevatedButton(
           //             onPressed: () {
           //               Navigator.of(context).pushNamed(loginPage);
           //             },
-          // Navigator.push(
-          //   context,
-          //   MaterialPageRoute(builder: (_) => ParentDashBoardPage(academic_yr:academicYr,shortName: shortName)),
-          // );
 
-          // After successful login, navigate to ParentDashBoardPage like this:
+
           Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(
               builder: (context) => ParentDashBoardPage(academic_yr:academicYr,shortName: shortName),
             ),
                 (Route<dynamic> route) => false, // This removes all previous routes
           );
-
         }
       } else {
         setState(() {
@@ -264,6 +282,9 @@ class _LoginState extends State<LoginPage> {
     }
   }
 
+
+
+  // Store login status in SharedP
   // Store login status in SharedPreferences
   Future<void> storeLoginStatus(bool isLoggedIn) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -308,7 +329,7 @@ class _LoginState extends State<LoginPage> {
     String logoPath ='' ;
     // if(schoolnamestr == 'SACS'){
 
-      logoPath = teacherApkUrl+'uploads/logo.jpg';
+      logoPath = '${teacherApkUrl}uploads/logo.jpg';
 
     // } else if (schoolnamestr == 'HSCS'){
     //   logoPath = teacherApkUrl+'uploads/logo.jpg';
@@ -601,3 +622,5 @@ class _LoginState extends State<LoginPage> {
     );
   }
 }
+
+

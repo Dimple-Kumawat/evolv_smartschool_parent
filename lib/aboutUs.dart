@@ -5,7 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 class AboutUsPage extends StatelessWidget {
   final String academic_yr;
   final String shortName;
-   AboutUsPage({required this.academic_yr, required this.shortName});
+   const AboutUsPage({super.key, required this.academic_yr, required this.shortName});
 
   Future<void> _launchUrl(String url) async {
     if (!await launchUrl(Uri.parse(url))) {

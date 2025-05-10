@@ -4,7 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 class CircularAttendanceIndicator extends StatelessWidget {
   final double percentage; // Attendance percentage (e.g., 0.87 for 87%)
 
-  CircularAttendanceIndicator({
+  const CircularAttendanceIndicator({super.key, 
     required this.percentage,
   });
 
@@ -50,7 +50,7 @@ class CircularAttendanceIndicator extends StatelessWidget {
 class CircularAttendanceIndicator2 extends StatelessWidget {
   final double percentage; // Attendance percentage (e.g., 0.87 for 87%)
 
-  CircularAttendanceIndicator2({
+  const CircularAttendanceIndicator2({super.key, 
     required this.percentage,
   });
 

@@ -1,4 +1,3 @@
-import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
@@ -10,13 +9,13 @@ class HashLabeledDropdown extends StatelessWidget {
   final bool isRequired; // New property to indicate if it's required
 
   const HashLabeledDropdown({
-    Key? key,
+    super.key,
     required this.label,
     required this.options,
     required this.onChanged,
     this.selectedValue,
     this.isRequired = true, // Default to not required
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -30,16 +29,16 @@ class HashLabeledDropdown extends StatelessWidget {
             child: RichText(
               text: TextSpan(
                 children: [
-                 
+
                   TextSpan(
                     text: label,
                     style: const TextStyle(
-                     fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.bold,
                       fontSize: 14.0,
                       color: Colors.black,
                     ),
                   ),
-                   if (isRequired) // Add red asterisk if required
+                  if (isRequired) // Add red asterisk if required
                     const TextSpan(
                       text: '* ',
                       style: TextStyle(
@@ -72,7 +71,7 @@ class HashLabeledDropdown extends StatelessWidget {
                       child: Text(
                         value,
                         style: const TextStyle(
-                          fontSize: 16.0,
+                          fontSize: 14.0,
                           fontWeight: FontWeight.normal, // Ensure text is not bold
                           color: Colors.black, // Set color explicitly if needed
                         ),

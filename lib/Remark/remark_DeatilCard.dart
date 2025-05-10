@@ -16,7 +16,7 @@ class RemarkDetailCard extends StatelessWidget {
   final String remarkDate;
 
   const RemarkDetailCard({
-    Key? key,
+    super.key,
     required this.shortName,
     required this.academic_yr,
     required this.remarksubject,
@@ -24,7 +24,7 @@ class RemarkDetailCard extends StatelessWidget {
     required this.description,
     required this.remarkId,
     required this.remarkDate,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

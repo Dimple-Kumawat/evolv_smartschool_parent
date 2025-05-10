@@ -13,7 +13,7 @@ class TimeTablePage extends StatefulWidget {
   final String secId;
   final String className;
 
-  TimeTablePage({
+  const TimeTablePage({super.key, 
     required this.studentId,
     required this.academic_yr,
     required this.shortName,
@@ -52,7 +52,7 @@ class _TimeTablePageState extends State<TimeTablePage> {
 
   Future<void> _fetchSubjects() async {
     try {
-      final response = await http.post(Uri.parse(url + "get_all_subjects"),
+      final response = await http.post(Uri.parse("${url}get_all_subjects"),
         body: {
           'short_name': widget.shortName,
           'section_id': widget.secId,
@@ -83,7 +83,7 @@ class _TimeTablePageState extends State<TimeTablePage> {
 
   Future<void> _fetchTimetable() async {
     try {
-      final response = await http.post(Uri.parse(url + "get_timetable"),
+      final response = await http.post(Uri.parse("${url}get_timetable"),
         body: {
           'short_name': widget.shortName,
           'section_id': widget.secId,

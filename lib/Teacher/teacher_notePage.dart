@@ -4,8 +4,6 @@ import 'package:evolvu/Teacher/teacher_DeatilCard.dart';
 import 'package:evolvu/Teacher/teacher_noteCard.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:intl/intl.dart';
-import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
@@ -16,7 +14,7 @@ class TeacherNotePage extends StatefulWidget {
   final String classId;
   final String secId;
 
-  TeacherNotePage({
+  const TeacherNotePage({super.key, 
     required this.studentId,
     required this.academic_yr,
     required this.shortName,
@@ -60,7 +58,7 @@ class _TeacherNotePageState extends State<TeacherNotePage> {
     }
 
     final response = await http.post(
-      Uri.parse(url + "get_teachernote_with_multiple_attachment"),
+      Uri.parse("${url}get_teachernote_with_multiple_attachment"),
       body: {
         'class_id': widget.classId,
         'section_id': widget.secId,
@@ -162,7 +160,7 @@ class _TeacherNotePageState extends State<TeacherNotePage> {
                                 height: 150,
                                 width: 150,
                                 child: Image.asset(
-                                  'assets/nodata.gif', // Replace with your emoji or animation file
+                                  'assets/animations/nodata.gif', // Replace with your emoji or animation file
                                   fit: BoxFit.contain,
                                 ),
                               ),
@@ -204,7 +202,7 @@ class _TeacherNotePageState extends State<TeacherNotePage> {
                                 height: 150,
                                 width: 150,
                                 child: Image.asset(
-                                   'assets/nodata.gif', // Replace with your emoji or animation file
+                                  'assets/animations/nodata.gif', // Replace with your emoji or animation file
                                   fit: BoxFit.contain,
                                 ),
                               ),

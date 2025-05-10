@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:http/http.dart' as http;
@@ -10,7 +9,7 @@ import 'Parent/parentDashBoard_Page.dart';
 class TermsDialog extends StatefulWidget {
   final String terms;
 
-  TermsDialog({required this.terms});
+  const TermsDialog({super.key, required this.terms});
 
   @override
   _TermsDialog createState() => _TermsDialog();
@@ -74,10 +73,10 @@ class _TermsDialog extends State<TermsDialog> {
 }
 
 void save_sms_concern() async {
-  print('widget.reg:'+reg_id);
+  print('widget.reg:$reg_id');
   try{
     http.Response response = await  post(
-      Uri.parse(url+"save_sms_consent"),
+      Uri.parse("${url}save_sms_consent"),
       body: {
         'parent_id': reg_id,
         "short_name": shortName,
@@ -105,7 +104,7 @@ class ChangePasswordPage extends StatefulWidget {
   final String userID;
   final String url;
 
-  ChangePasswordPage({required this.academicYear, required this.shortName, required this.userID, required this.url});
+  const ChangePasswordPage({super.key, required this.academicYear, required this.shortName, required this.userID, required this.url});
 
   @override
   _ChangePasswordPageState createState() => _ChangePasswordPageState();
@@ -159,9 +158,9 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
 
 
     try {
-      print('widget.userID:'+ widget.userID +motherName +currentPwd+newPwd);
+      print('widget.userID:${widget.userID}$motherName$currentPwd$newPwd');
       var response = await http.post(
-        Uri.parse(widget.url + "change_password"),
+        Uri.parse("${widget.url}change_password"),
         body: {
           "short_name": widget.shortName,
           "user_id": widget.userID, // Replace with actual user_id
@@ -209,10 +208,10 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
   Program Description: Without limiting the scope of the Program, users that opt into the Program can expect to receive messages concerning the attendance, remarks, notices, events, general information and invite or to register or to subscribe''';
 
   void check_sms_consent_status() async {
-    print('widget.reg:'+reg_id);
+    print('widget.reg:$reg_id');
     try{
       http.Response response = await  post(
-        Uri.parse(url+"check_sms_consent_status"),
+        Uri.parse("${url}check_sms_consent_status"),
         body: {
           'parent_id': reg_id,
           "short_name": widget.shortName,
@@ -239,10 +238,10 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
   }
 
   void save_sms_concern() async {
-    print('widget.reg:'+reg_id);
+    print('widget.reg:$reg_id');
     try{
       http.Response response = await  post(
-        Uri.parse(url+"save_sms_consent"),
+        Uri.parse("${url}save_sms_consent"),
         body: {
           'parent_id': reg_id,
           "short_name": widget.shortName,
@@ -344,7 +343,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                         controller: _motherNameController,
                         decoration: InputDecoration(
                           contentPadding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 10.w),
-                          hintText: "What is your mother's name?",
+                          hintText: "What is your mother's maiden name?",
                           hintStyle: TextStyle(fontSize: 14.sp),
                           border: OutlineInputBorder(),
                         ),
@@ -484,3 +483,4 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
     );
   }
 }
+

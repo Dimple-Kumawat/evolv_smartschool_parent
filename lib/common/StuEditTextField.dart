@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 //dimple p
 class StuEditTextField extends StatelessWidget {
   final String labelText;
@@ -11,7 +12,7 @@ class StuEditTextField extends StatelessWidget {
   final bool isRequired; // Flag for mandatory field
 
   const StuEditTextField({
-    Key? key,
+    super.key,
     required this.labelText,
     this.initialValue,
     this.keyboardType = TextInputType.text,
@@ -20,12 +21,13 @@ class StuEditTextField extends StatelessWidget {
     this.onTap,
     this.suffixIcon,
     this.isRequired = false, // Default to not required
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0), // Space between fields
+      padding:
+          const EdgeInsets.symmetric(vertical: 8.0), // Space between fields
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center, // Align label and field
         children: [
@@ -35,7 +37,6 @@ class StuEditTextField extends StatelessWidget {
             child: RichText(
               text: TextSpan(
                 children: [
-                  
                   TextSpan(
                     text: labelText,
                     style: const TextStyle(
@@ -65,11 +66,14 @@ class StuEditTextField extends StatelessWidget {
               readOnly: readOnly,
               onTap: onTap,
               onChanged: onChanged,
+              minLines: 1,
+              maxLines: 4,
+              // Or leave this if single line is enough
               decoration: InputDecoration(
                 contentPadding: const EdgeInsets.symmetric(
-                  vertical: 14.0,
-                  horizontal: 12.0,
-                ), // Adjust inner padding
+                  vertical: 15.0, // Increased padding
+                  horizontal: 10.0,
+                ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10.0),
                   borderSide: BorderSide(
@@ -89,10 +93,10 @@ class StuEditTextField extends StatelessWidget {
                     width: 2.0,
                   ),
                 ),
-                suffixIcon: suffixIcon, // Add any suffix icon if needed
+                suffixIcon: suffixIcon,
               ),
               style: const TextStyle(
-                fontSize: 14.0, // Input text size
+                fontSize: 14.0,
                 color: Colors.black87,
               ),
             ),

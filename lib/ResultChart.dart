@@ -13,7 +13,7 @@ class ResultChart extends StatefulWidget {
   final String secId;
   final String className;
 
-  ResultChart({
+  const ResultChart({super.key, 
     required this.className,
     required this.studentId,
     required this.academicYr,
@@ -45,7 +45,7 @@ class _ResultChartState extends State<ResultChart> {
   }
 
   Future<void> fetchLineChart() async {
-    final url3 = url + 'student_marks_details_for_line_chart';
+    final url3 = '${url}student_marks_details_for_line_chart';
     final body = {
       'short_name': widget.shortName,
       'class_id': widget.classId,
@@ -89,7 +89,7 @@ class _ResultChartState extends State<ResultChart> {
   }
 
   Future<void> fetchBarData() async {
-    final url2 = url + 'student_marks_for_bar_chart';
+    final url2 = '${url}student_marks_for_bar_chart';
     final body = {
       'student_id': widget.studentId,
       'short_name': widget.shortName,
@@ -142,7 +142,7 @@ class _ResultChartState extends State<ResultChart> {
   }
 
   Future<void> fetchChartData() async {
-    final url1 = url + 'student_marks_details_for_pie_chart';
+    final url1 = '${url}student_marks_details_for_pie_chart';
     final body = {
       'class_id': widget.classId,
       'student_id': widget.studentId,
@@ -176,7 +176,7 @@ class _ResultChartState extends State<ResultChart> {
         }
 
         List<Map<String, dynamic>> subjectMarks =
-            details.map<Map<String, dynamic>>((detail) {
+        details.map<Map<String, dynamic>>((detail) {
           return json.decode(detail) as Map<String, dynamic>;
         }).toList();
 
@@ -220,7 +220,7 @@ class _ResultChartState extends State<ResultChart> {
         color: color,
         value: marks,
         title: '$subject\n${marks.toStringAsFixed(1)}%',
-       // radius: 80,
+        // radius: 80,
         radius: touchedIndex == index ? 100 : 80,
         titleStyle: TextStyle(
             fontSize: 8.sp,
@@ -236,7 +236,7 @@ class _ResultChartState extends State<ResultChart> {
       backgroundColor: Colors.transparent,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        toolbarHeight: 50.h,
+        toolbarHeight: 60.h,
         title: Text(
           "Result Chart",
           style: TextStyle(fontSize: 20.sp, color: Colors.white),
@@ -259,8 +259,8 @@ class _ResultChartState extends State<ResultChart> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(height: 80.h),
-                
+                SizedBox(height: 90.h),
+
                 _buildResultChart(),
                 SizedBox(height: 30.h),
                 _buildThirdStackedBarChart(),// Bar chart widget below pie chart
@@ -505,7 +505,7 @@ class _ResultChartState extends State<ResultChart> {
         borderRadius: BorderRadius.circular(22),
       ),
       child: AspectRatio(
-       
+
         aspectRatio: 0.95,
         child: Stack(
           children: [
@@ -525,8 +525,8 @@ class _ResultChartState extends State<ResultChart> {
                     });
                   },
                 ),
-               
-                 centerSpaceRadius: 85,
+
+                centerSpaceRadius: 85,
                 sections: chartSections, // Dynamic data
               ),
             ),

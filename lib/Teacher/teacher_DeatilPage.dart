@@ -19,7 +19,7 @@ class TeacherDetailPage extends StatelessWidget {
   
   final Info info;
 
-  TeacherDetailPage({required this.info});
+  const TeacherDetailPage({super.key, required this.info});
 
   @override
   

@@ -1,16 +1,12 @@
 import 'dart:async';
-import 'dart:io';
+import 'package:evolvu/AcademicYearProvider.dart';
+import 'package:evolvu/Parent/parentDashBoard_Page.dart';
 import 'package:flutter/material.dart';
 // import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
+import 'package:provider/provider.dart';
 import 'package:webview_flutter/webview_flutter.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 
 import 'FeesReceiptWebViewScreen.dart';
 
@@ -23,7 +19,7 @@ class Dashboardonlinefeespayment extends StatefulWidget {
   final String academicYr;
   final int receipt_button;
 
-  Dashboardonlinefeespayment({super.key,
+  const Dashboardonlinefeespayment({super.key,
     required this.regId,
     required this.paymentUrlShare,
     required this.receiptUrl,
@@ -60,7 +56,7 @@ class _PaymentWebviewState extends State<Dashboardonlinefeespayment> {
 
     // paymentUrl = "http://holyspiritconvent.evolvu.in/test/hscs_test/index.php/worldline/WL_online_payment_req_apk/?reg_id=1039&academic_yr=2024-2025&user_id=8421853656&encryptedUsername=a34dca3f54ec276c214d5a423c537af101cc67b7&short_name=HSCS";
 
-
+    print('Loading URL: ${widget.paymentUrlShare}');
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..loadRequest(Uri.parse(widget.paymentUrlShare));
@@ -69,15 +65,19 @@ class _PaymentWebviewState extends State<Dashboardonlinefeespayment> {
   }
 
 
+  @override
   Widget build(BuildContext context) {
+    final academicYearProvider = Provider.of<AcademicYearProvider>(context);
+    bool isAcademicYearMatch = academicYearProvider.academic_yr == widget.academicYr;
+
     return Scaffold( // Use Scaffold here
       backgroundColor: Colors.transparent,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         toolbarHeight: 70.h,
         title: Text(
-          'Fees Payment',
-          style: TextStyle(fontSize: 20.sp, color: Colors.white),
+          'Fees Payment $academic_yr',
+          style: TextStyle(fontSize: 18.sp, color: Colors.white),
         ),
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -93,30 +93,34 @@ class _PaymentWebviewState extends State<Dashboardonlinefeespayment> {
         child: Column(
           children: [
             SizedBox(height: 110.h),
+            if(academicYearProvider.academic_yr == academic_yr)
             Expanded(
               child: WebViewWidget(controller: _controller),
+            ) else Expanded(
+            child: ReceiptWebViewScreenVali(
+            receiptUrl: '${widget.receiptUrl}?reg_id=${widget.regId}&academic_yr=${widget.academicYr}&short_name=${widget.shortName}',
+            ),
             ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton.extended(
+      floatingActionButton: isAcademicYearMatch
+          ? FloatingActionButton.extended(
         onPressed: () {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (_) =>
-                  ReceiptWebViewScreen(
-                    receiptUrl: widget.receiptUrl +
-                        '?reg_id=${widget.regId}&academic_yr=${widget
-                            .academicYr}&short_name=${widget.shortName}',
-                  ),
+              builder: (_) => ReceiptWebViewScreen(
+                receiptUrl: '${widget.receiptUrl}?reg_id=${widget.regId}&academic_yr=${widget.academicYr}&short_name=${widget.shortName}',
+              ),
             ),
           );
         },
-        icon: const Icon(Icons.receipt,color: Colors.black,),
+        icon: const Icon(Icons.receipt, color: Colors.black),
         label: const Text("Receipt"),
         backgroundColor: Colors.blue.shade400,
-      ),
+      )
+          : null, // Hide the button when the condition is false
     );
   }
 }

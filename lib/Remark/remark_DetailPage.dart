@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
@@ -10,7 +11,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Teacher/Attachment.dart';
-import '../Utils&Config/DownloadHelper.dart';
+import '../main.dart';
 
 class RemarkInfo {
   final String description;
@@ -29,8 +30,7 @@ class RemarkInfo {
 class RemarkDetailPage extends StatefulWidget {
   final RemarkInfo remarkInfo;
 
-  const RemarkDetailPage({Key? key, required this.remarkInfo})
-      : super(key: key);
+  const RemarkDetailPage({super.key, required this.remarkInfo});
 
   @override
   _RemarkDetailPageState createState() => _RemarkDetailPageState();
@@ -42,6 +42,7 @@ class _RemarkDetailPageState extends State<RemarkDetailPage> {
   late String regId;
   late String projectUrl;
   late String url;
+  bool _isDownloading = false;
 
   @override
   void initState() {
@@ -165,7 +166,7 @@ class _RemarkDetailPageState extends State<RemarkDetailPage> {
             ),
             onTap: () => _handleDownload(attachment),
           );
-        }).toList(),
+        }),
       ],
     );
   }
@@ -190,8 +191,7 @@ class _RemarkDetailPageState extends State<RemarkDetailPage> {
         if (attachment.fileSize == 0) {
           _showSnackBar('File not uploaded properly');
         } else {
-          String downloadUrl =
-              '$projectUrl/uploads/remark/${widget.remarkInfo.remarkDate}/${widget.remarkInfo.remarkId}/${attachment.imageName}';
+          String downloadUrl = '$projectUrl/uploads/remark/${widget.remarkInfo.remarkDate}/${widget.remarkInfo.remarkId}/${attachment.imageName}';
           if (Platform.isAndroid) {
             await downloadFile(downloadUrl, context, attachment.imageName);
           } else if (Platform.isIOS) {
@@ -210,8 +210,26 @@ class _RemarkDetailPageState extends State<RemarkDetailPage> {
   }
 
   downloadFile(String url, BuildContext context, String name) async {
-    var directory =
-    Directory("/storage/emulated/0/Download/Evolvuschool/Parent/Remarks");
+
+    setState(() {
+      _isDownloading = true; // Show loader
+    });
+
+    const AndroidNotificationDetails androidPlatformChannelSpecifics =
+    AndroidNotificationDetails(
+      'download_channel',
+      'Download Channel',
+      channelDescription: 'Notifications for file downloads',
+      importance: Importance.high,
+      priority: Priority.high,
+      showProgress: true,
+      onlyAlertOnce: true,
+    );
+
+    const NotificationDetails platformChannelSpecifics =
+    NotificationDetails(android: androidPlatformChannelSpecifics);
+
+    var directory = Directory("/storage/emulated/0/Download/Evolvuschool/Parent/Remarks");
 
     if (!await directory.exists()) {
       await directory.create(recursive: true);
@@ -220,26 +238,53 @@ class _RemarkDetailPageState extends State<RemarkDetailPage> {
     var path = "${directory.path}/$name";
     var file = File(path);
 
+    // await flutterLocalNotificationsPlugin.show(
+    //   0,
+    //   'Downloading Receipt',
+    //   'Downloading $name...',
+    //   platformChannelSpecifics,
+    // );
+
     try {
       var res = await http.get(Uri.parse(url));
       await file.writeAsBytes(res.bodyBytes);
 
+      await flutterLocalNotificationsPlugin.show(
+        0,
+        'Download Complete',
+        'File saved to Download/Evolvuschool/Parent/Remarks/$name',
+        platformChannelSpecifics,
+        payload: path, // Pass the file path as payload
+      );
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-              'File downloaded successfully: Download/Remarks'),
+              'File downloaded successfully: Download/Evolvuschool/Parent/Remarks'),
         ),
       );
     } catch (e) {
+      await flutterLocalNotificationsPlugin.show(
+        0,
+        'Download Failed',
+        'Failed to download file',
+        platformChannelSpecifics,
+      );
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Failed to download file: $e'),
         ),
       );
+    } finally {
+      setState(() {
+        _isDownloading = false; // Hide loader after completion
+      });
     }
   }
 
   Future<void> _downloadFileIOS(String url, String fileName) async {
+
     // Get the documents directory on iOS
     final directory = await getApplicationDocumentsDirectory();
 
@@ -247,21 +292,49 @@ class _RemarkDetailPageState extends State<RemarkDetailPage> {
     final filePath = '${directory.path}/$fileName';
     final file = File(filePath);
 
+    const AndroidNotificationDetails androidPlatformChannelSpecifics =
+    AndroidNotificationDetails(
+      'download_channel',
+      'Download Channel',
+      channelDescription: 'Notifications for file downloads',
+      importance: Importance.high,
+      priority: Priority.high,
+      showProgress: true,
+      onlyAlertOnce: true,
+    );
+
+    const NotificationDetails platformChannelSpecifics =
+    NotificationDetails(android: androidPlatformChannelSpecifics);
+
     try {
+
+
       final response = await http.get(Uri.parse(url));
       if (response.statusCode == 200) {
         await file.writeAsBytes(response.bodyBytes);
+        await flutterLocalNotificationsPlugin.show(
+          0,
+          'Download Complete',
+          'File saved to $filePath',
+          platformChannelSpecifics,
+          payload: filePath, // Pass the file path as payload
+        );
+
+
           _showSnackBar('Find it in the Files/On My iPhone/EvolvU Smart School - Parent.');
       } else {
         _showSnackBar('Failed to download file: ${response.statusCode}');
       }
     } catch (e) {
+      await flutterLocalNotificationsPlugin.show(
+        0,
+        'Download Failed',
+        'Failed to download file',
+        platformChannelSpecifics,
+      );
       _showSnackBar('Failed to download file: $e');
     }
   }
-
-
-
 
 
   void _showSnackBar(String message) {
@@ -269,3 +342,5 @@ class _RemarkDetailPageState extends State<RemarkDetailPage> {
         .showSnackBar(SnackBar(content: Text(message)));
   }
 }
+
+

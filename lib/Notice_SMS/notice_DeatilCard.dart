@@ -22,7 +22,7 @@ class NoticeDetailCard extends StatelessWidget {
   final List<Attachment> attachment;
 
 
-  const NoticeDetailCard({
+  const NoticeDetailCard({super.key, 
     required this.teacher,
     required this.remarksubject,
     required this.type,
@@ -38,23 +38,23 @@ class NoticeDetailCard extends StatelessWidget {
 
   Future<void> updateReadStatus() async {
     String url = "";
-    String academic_yr = "";
-    String reg_id = "";
+    String academicYr = "";
+    String regId = "";
     String shortName = "";
     final prefs = await SharedPreferences.getInstance();
     String? schoolInfoJson = prefs.getString('school_info');
     String? logUrls = prefs.getString('logUrls');
-    print('logUrls====\\\\\: $logUrls');
+    print('logUrls====\\\\: $logUrls');
     if (logUrls != null) {
       try {
         Map<String, dynamic> logUrlsparsed = json.decode(logUrls);
-        print('logUrls====\\\\\11111: $logUrls');
+        print('logUrls====\\\\11111: $logUrls');
 
-        academic_yr = logUrlsparsed['academic_yr'];
-        reg_id = logUrlsparsed['reg_id'];
+        academicYr = logUrlsparsed['academic_yr'];
+        regId = logUrlsparsed['reg_id'];
 
-        print('academic_yr ID: $academic_yr');
-        print('reg_id: $reg_id');
+        print('academic_yr ID: $academicYr');
+        print('reg_id: $regId');
       } catch (e) {
         print('Error parsing school info: $e');
       }
@@ -80,10 +80,10 @@ class NoticeDetailCard extends StatelessWidget {
     DateTime parsedDate = DateTime.parse(DateTime.now().toIso8601String());
     String formattedDate = DateFormat("yyyy-MM-dd").format(parsedDate);
     final response = await http.post(
-      Uri.parse(url + "notice_read_log_create"),
+      Uri.parse("${url}notice_read_log_create"),
       body: {
         'notice_id': noticeID,
-        'parent_id': reg_id,
+        'parent_id': regId,
         'read_date': formattedDate,
         'short_name': shortName
       },

@@ -9,7 +9,7 @@ import 'package:intl/intl.dart';
 class QRCodeScreen extends StatefulWidget {
   final String regId;
 
-  QRCodeScreen({required this.regId});
+  const QRCodeScreen({super.key, required this.regId});
 
   @override
   _QRCodeScreenState createState() => _QRCodeScreenState();
@@ -31,7 +31,7 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
 
   /// Fetch confirmation status from API
   Future<void> fetchConfirmationStatus() async {
-    final String apiUrl = durl+"index.php/IdcardApi/get_confirmation_status";
+    final String apiUrl = "${durl}index.php/IdcardApi/get_confirmation_status";
 
     try {
       // Prepare the parameters
@@ -135,7 +135,7 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text('Verify Parents by QR Code', style: TextStyle(color: Colors.white),),
+          title: Text('Verify Parents by QR Code'),
           backgroundColor: Colors.pink,
           actions: [
             if(errorMessage.isEmpty)

@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -11,7 +10,7 @@ class WebViewPage extends StatefulWidget {
   final String secId;
   final String smartchat_url;
 
-  WebViewPage({
+  const WebViewPage({super.key, 
     required this.studentId,
     required this.academicYr,
     required this.shortName,
@@ -37,7 +36,7 @@ class _WebViewPageState extends State<WebViewPage> {
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..loadRequest(Uri.parse(
-          widget.smartchat_url+'?student_id=${widget.studentId}&academic_yr=${widget.academicYr}'));
+          '${widget.smartchat_url}?student_id=${widget.studentId}&academic_yr=${widget.academicYr}'));
 
   }
 
@@ -47,7 +46,7 @@ class _WebViewPageState extends State<WebViewPage> {
       backgroundColor: Colors.transparent,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        toolbarHeight: 46.h,
+        toolbarHeight: 80.h,
         title: Text(
           'Smart Chat',
           style: TextStyle(fontSize: 20.sp, color: Colors.white),

@@ -1,14 +1,7 @@
-import 'dart:ui';
 
 import 'package:evolvu/common/common_style.dart';
 import 'package:evolvu/common/rotatedDivider_Card.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
-import 'dart:math' as math;
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 // ignore: must_be_immutable

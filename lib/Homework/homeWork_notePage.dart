@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:evolvu/Homework/homework_DetailCard.dart';
+import 'package:evolvu/Parent/parentDashBoard_Page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:evolvu/Homework/homeWork_noteCard.dart';
@@ -13,7 +14,7 @@ class HomeWorkNotePage extends StatefulWidget {
   final String classId;
   final String secId;
 
-  HomeWorkNotePage({
+  const HomeWorkNotePage({super.key, 
     required this.studentId,
     required this.academic_yr,
     required this.shortName,
@@ -28,7 +29,7 @@ class HomeWorkNotePage extends StatefulWidget {
 class _HomeWorkNotePage extends State<HomeWorkNotePage> {
   late Future<List<Homework>> futureNotes;
   String shortName = "";
-  String academic_yr = "";
+  // String academic_yr = "";
   String reg_id = "";
   String url = "";
 
@@ -46,7 +47,7 @@ class _HomeWorkNotePage extends State<HomeWorkNotePage> {
     if (logUrls != null) {
       try {
         Map<String, dynamic> logUrlsparsed = json.decode(logUrls);
-        academic_yr = logUrlsparsed['academic_yr'];
+        // academic_yr = logUrlsparsed['academic_yr'];
         reg_id = logUrlsparsed['reg_id'];
       } catch (e) {
         print('Error parsing logUrls: $e');
@@ -68,7 +69,7 @@ class _HomeWorkNotePage extends State<HomeWorkNotePage> {
     }
 
     final response = await http.post(
-      Uri.parse(url + 'get_homework'),
+      Uri.parse('${url}get_homework'),
       body: {
         'student_id': widget.studentId,
         'class_id': widget.classId,
@@ -172,7 +173,7 @@ class _HomeWorkNotePage extends State<HomeWorkNotePage> {
                                 height: 150,
                                 width: 150,
                                 child: Image.asset(
-                                  'assets/nodata.gif', // Replace with your emoji or animation file
+                                  'assets/animations/nodata.gif', // Replace with your emoji or animation file
                                   fit: BoxFit.contain,
                                 ),
                               ),
@@ -214,7 +215,7 @@ class _HomeWorkNotePage extends State<HomeWorkNotePage> {
                                 height: 150,
                                 width: 150,
                                 child: Image.asset(
-                                  'assets/nodata.gif', // Replace with your emoji or animation file
+                                  'assets/animations/nodata.gif', // Replace with your emoji or animation file
                                   fit: BoxFit.contain,
                                 ),
                               ),

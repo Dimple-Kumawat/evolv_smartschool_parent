@@ -1,10 +1,3 @@
-import 'dart:convert';
-import 'package:evolvu/Teacher/teacher_DeatilCard.dart';
-import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:intl/intl.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:evolvu/Teacher/teacher_DeatilCard.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -80,7 +73,7 @@ class NoteCard extends StatelessWidget {
   final List<Attachment> showDownloadIcon;
 
   const NoteCard({
-    Key? key,
+    super.key,
     required this.name,
     required this.date,
     required this.note,
@@ -90,7 +83,7 @@ class NoteCard extends StatelessWidget {
     required this.readStatus,
     required this.onTap,
     required this.showDownloadIcon,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -8,11 +8,11 @@ class RotatedDivider extends StatelessWidget {
   final Color color;
 
   const RotatedDivider({
-    Key? key,
+    super.key,
     this.width = 2,
     this.height = 70,
     this.color = const Color.fromARGB(255, 175, 167, 167),
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

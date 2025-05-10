@@ -1,4 +1,3 @@
-import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
@@ -9,12 +8,12 @@ class LabeledDropdown extends StatelessWidget {
   final Function(String?) onChanged;
 
   const LabeledDropdown({
-    Key? key,
+    super.key,
     required this.label,
     required this.options,
     required this.onChanged,
     this.selectedValue,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +28,7 @@ class LabeledDropdown extends StatelessWidget {
               label,
               style: const TextStyle(
                 fontWeight: FontWeight.bold,
-                fontSize: 15.0,
+                fontSize: 14.0,
                 color: Colors.black,
               ),
             ),
@@ -55,9 +54,10 @@ class LabeledDropdown extends StatelessWidget {
                       child: Text(
                         value,
                         style: const TextStyle(
-                fontSize: 14.0, // Input text size
-                color: Colors.black87,
-              ),
+                          fontSize: 16.0,
+                          fontWeight: FontWeight.normal, // Ensure text is not bold
+                          color: Colors.black, // Set color explicitly if needed
+                        ),
                       ),
                     );
                   }).toList(),

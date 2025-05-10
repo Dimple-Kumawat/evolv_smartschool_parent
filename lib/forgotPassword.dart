@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:evolvu/Parent/parentDashBoard_Page.dart';
 import 'package:evolvu/username_page.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -13,8 +12,8 @@ class ForgotPasswordPage extends StatefulWidget {
   final String shortName;
   final String emailstr;
 
-  ForgotPasswordPage(this.emailstr,
-      { required this.shortName, required this.academic_yr});
+  const ForgotPasswordPage(this.emailstr,
+      {super.key,  required this.shortName, required this.academic_yr});
 
   @override
   _ForgotPasswordPageState createState() => _ForgotPasswordPageState();
@@ -45,11 +44,11 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   }
 
   _launchURL() async {
-    Uri _url = Uri.parse('https://aceventura.in/');
-    if (await launchUrl(_url)) {
-      await launchUrl(_url);
+    Uri url = Uri.parse('https://aceventura.in/');
+    if (await launchUrl(url)) {
+      await launchUrl(url);
     } else {
-      throw 'Could not launch $_url';
+      throw 'Could not launch $url';
     }
   }
 
@@ -79,14 +78,14 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
     print(projectUrl);
 
     final http.Response response = await http.post(
-      Uri.parse(projectUrl + 'index.php/LoginApi/receive_new_password'),
+      Uri.parse('${projectUrl}index.php/LoginApi/receive_new_password'),
 
       body: {
         'short_name': shortName1,
         'user_id': _userIdController.text.trim(),
       },
     );
-    print("receive_new_password" + response.body);
+    print("receive_new_password${response.body}");
 
     if (response.statusCode == 200) {
       // Fluttertoast.showToast(msg: "Password reset successfully.");
@@ -130,13 +129,13 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   }
 
   Future<void> resetPassword() async {
-    print(url + "reset_password");
+    print("${url}reset_password");
     print(shortName1);
     print(_motherNameController.text.trim());
     print(_dobController.text.trim());
 
     final http.Response response = await http.post(
-      Uri.parse(url + 'reset_password'),
+      Uri.parse('${url}reset_password'),
 
       body: {
         'short_name': shortName1,
@@ -146,7 +145,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
         'role_id': 'P', // Assuming the role_id is 'parent'
       },
     );
-    print("www" + response.body);
+    print("www${response.body}");
 
     if (response.statusCode == 200) {
 
@@ -234,7 +233,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                 ),
               ),
               Text(
-                '${widget.academic_yr}',
+                widget.academic_yr,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 24.0,

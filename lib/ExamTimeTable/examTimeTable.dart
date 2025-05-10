@@ -13,8 +13,8 @@ class ExamTimeTablePage extends StatefulWidget {
   final String secId;
   final String className;
 
-  ExamTimeTablePage(
-      {required this.academic_yr,
+  const ExamTimeTablePage(
+      {super.key, required this.academic_yr,
       required this.shortName,
       required this.classId,
       required this.secId,
@@ -35,7 +35,7 @@ class _ExamTimeTablePageState extends State<ExamTimeTablePage> {
 
   Future<List<Period>> fetchExamTimeTable() async {
     final response = await http.post(
-      Uri.parse(url + 'display_exam_timetable'), // Replace with your actual URL
+      Uri.parse('${url}display_exam_timetable'), // Replace with your actual URL
       body: {
         'short_name': widget.shortName, // Replace with actual short name
         'academic_yr': widget.academic_yr, // Replace with actual academic year
@@ -43,7 +43,7 @@ class _ExamTimeTablePageState extends State<ExamTimeTablePage> {
       },
     );
 
-    if (!response.body.isEmpty) {
+    if (response.body.isNotEmpty) {
       print('display_exam_timetable Response body: ${response.body}');
       print('display_exam_timetable Response body: ${response.statusCode}');
       List<dynamic> jsonResponse = json.decode(response.body);
@@ -116,7 +116,7 @@ class _ExamTimeTablePageState extends State<ExamTimeTablePage> {
                                 height: 150,
                                 width: 150,
                                 child: Image.asset(
-                                  'assets/nodata.gif',
+                                  'assets/animations/nodata.gif',
                                   // Replace with your emoji or animation file
                                   fit: BoxFit.contain,
                                 ),
@@ -160,7 +160,7 @@ class _ExamTimeTablePageState extends State<ExamTimeTablePage> {
                                 height: 150,
                                 width: 150,
                                 child: Image.asset(
-                                  'assets/nodata.gif',
+                                  'assets/animations/nodata.gif',
                                   // Replace with your emoji or animation file
                                   fit: BoxFit.contain,
                                 ),
@@ -225,72 +225,66 @@ class _ExamTimeTablePageState extends State<ExamTimeTablePage> {
                           SizedBox(
                             height: 20.h,
                           ),
+
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
-                            child: Container(
-                              padding: EdgeInsets.all(16),
-                              decoration: BoxDecoration(
-                                // color: Colors.white, // Light background
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(color: Colors.grey), // Subtle border
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black12,
-                                    blurRadius: 6,
-                                    offset: Offset(0, 3),
-                                  ),
-                                ],
-                              ),
-                              child: Column(
-                                children: [
-                                  Text(
-                                    'Description ', // Bullet point
-                                    style: TextStyle(
-                                      fontSize: 16.sp,
-                                      fontWeight: FontWeight.bold,
-                                       color: const Color.fromARGB(255, 216, 210, 210), // Attractive bullet color
+                            child: Visibility(
+                              visible: snapshot.data!.first.description.isNotEmpty, // Condition to check if description is not empty
+                              child: Container(
+                                padding: EdgeInsets.all(16),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(color: Colors.grey),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black12,
+                                      blurRadius: 6,
+                                      offset: Offset(0, 3),
                                     ),
-                                  ),
-                                  SizedBox(
-                                    height: 10.h,
-                                  ),
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: snapshot.data!.first.description
-                                        .split('\n') // Split by new line
-                                        .map(
-                                          (line) => Padding(
-                                        padding: const EdgeInsets.only(bottom: 6.0), // Space between lines
-                                        child: Row(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-
-                                            // Text(
-                                            //   '• ', // Bullet point
-                                            //   style: TextStyle(
-                                            //     fontSize: 16.sp,
-                                            //     fontWeight: FontWeight.bold,
-                                            //     color: Colors.white38, // Attractive bullet color
-                                            //   ),
-                                            // ),
-                                            Expanded(
-                                              child: Text(
-                                                line, // Text content
-                                                style: TextStyle(
-                                                  fontSize: 14.sp,
-                                                  fontWeight: FontWeight.w500,
-                                                  color: const Color.fromARGB(255, 216, 210, 210),
-                                                  height: 1.4, // Line spacing for better readability
+                                  ],
+                                ),
+                                child: Column(
+                                  children: [
+                                    Text(
+                                      'Description ',
+                                      style: TextStyle(
+                                        fontSize: 16.sp,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white38,
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      height: 10.h,
+                                    ),
+                                    Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: snapshot.data!.first.description
+                                          .split('\n')
+                                          .map(
+                                            (line) => Padding(
+                                          padding: const EdgeInsets.only(bottom: 6.0),
+                                          child: Row(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Expanded(
+                                                child: Text(
+                                                  line,
+                                                  style: TextStyle(
+                                                    fontSize: 14.sp,
+                                                    fontWeight: FontWeight.w500,
+                                                    color: Colors.white38,
+                                                    height: 1.4,
+                                                  ),
                                                 ),
                                               ),
-                                            ),
-                                          ],
+                                            ],
+                                          ),
                                         ),
-                                      ),
-                                    )
-                                        .toList(),
-                                  ),
-                                ],
+                                      )
+                                          .toList(),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                           ),
@@ -347,7 +341,7 @@ class Period {
 class PeriodRow extends StatelessWidget {
   final Period period;
 
-  const PeriodRow({required this.period});
+  const PeriodRow({super.key, required this.period});
 
   @override
   Widget build(BuildContext context) {

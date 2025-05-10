@@ -96,7 +96,7 @@ class NoticeNoteCard extends StatelessWidget {
   final VoidCallback onTap;
   final List<Attachment> imageList;
 
-  const NoticeNoteCard({
+  const NoticeNoteCard({super.key, 
     required this.teacher,
     required this.remarksubject,
     required this.type,

@@ -61,7 +61,7 @@ Future<void> downloadImage(String imageUrl, String imageName) async {
     );
   } catch (e) {
     String errorMessage = 'Failed to download image';
-    if (e is DioError) {
+    if (e is DioException) {
       // Handle specific DioError types here (e.g., network error, server error)
       errorMessage = 'Download error: ${e.type}';
     }

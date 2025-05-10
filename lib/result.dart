@@ -76,7 +76,7 @@ class ResultPage extends StatefulWidget {
   final String Fname;
   final String className;
 
-  ResultPage({
+  const ResultPage({super.key, 
     required this.className,
     required this.Fname,
     required this.studentId,
@@ -99,10 +99,10 @@ class _ResultPageState extends State<ResultPage> {
   int viewReportCardVisible = 0; // 1 means visible, 0 means hidden
   int resultChartVisible = 0; // 1 means visible, 0 means hidden
 
-  String ShowResult = 'Y';
+  String ShowResult = 'N';
   String CBSE_URL = '';
   bool isLoading = true;
-  bool showCBSE = false;
+  String showCBSE = 'N';
   String error_msg = "";
   bool error_msg_flag = false;
 
@@ -114,7 +114,7 @@ class _ResultPageState extends State<ResultPage> {
   }
 
   Future<void> check_report_card() async {
-    final url1 = Uri.parse(url + 'check_report_card');
+    final url1 = Uri.parse('${url}check_report_card');
     // print('Receipt URL: $shortName');
 
     try {
@@ -137,7 +137,7 @@ class _ResultPageState extends State<ResultPage> {
         int flag = data['flag'];
         print('check_report_card response: ${response.body}');
         print('check_report_card response: ${response.statusCode}');
-        print('check_report_card response111: ${error_msg}');
+        print('check_report_card response111: $error_msg');
 
         setState(() {
           // Update viewReportCardVisible based on the API flag
@@ -172,7 +172,7 @@ class _ResultPageState extends State<ResultPage> {
   }
 
   Future<void> Show_icon() async {
-    final url1 = Uri.parse(url + 'show_icons_parentdashboard_apk');
+    final url1 = Uri.parse('${url}show_icons_parentdashboard_apk');
 
     try {
       final response = await http.post(
@@ -186,7 +186,7 @@ class _ResultPageState extends State<ResultPage> {
         // Safely decode JSON response
         final Map<String, dynamic> data = jsonDecode(response.body);
 
-        if (data == null || data.isEmpty) {
+        if (data.isEmpty) {
           print('Response is empty.');
         } else {
           try {
@@ -211,18 +211,19 @@ class _ResultPageState extends State<ResultPage> {
             if (data['cbse_reportcard'] == 1) {
               setState(() {
                 cbseCardVisible = 1;
+                showCBSE = "Y";
               });
               print('CBSE Report Card is visible');
             } else {
               setState(() {
                 cbseCardVisible = 0;
+                showCBSE = 'N';
               });
               print('CBSE Report Card is hidden');
             }
 
             // Check if there are other fields like 'message1_url' and 'message2_url'
-            String message1Url =
-                data['message1_url'] ?? ''; // Default to empty if null
+            String message1Url = data['message1_url'] ?? ''; // Default to empty if null
             String message2Url = data['message2_url'] ?? '';
 
             print('message1 URL: $message1Url');
@@ -283,9 +284,14 @@ class _ResultPageState extends State<ResultPage> {
           if (examName == "Final exam" ||
               examName == "Term 1" ||
               examName == "Term 2") {
-            if (cbseCardVisible == 1 && widget.className == 9 ||
-                widget.className == 11) {
+            if (cbseCardVisible == 'Y' && widget.className == 9 || widget.className == 11) {
               CBSE_ReportCard();
+
+              if(CBSE_ReportCard() == 1){
+
+              } else {
+
+              }
             }
           }
         }
@@ -307,7 +313,7 @@ class _ResultPageState extends State<ResultPage> {
   }
 
   Future<void> CBSE_ReportCard() async {
-    final url1 = Uri.parse(url + 'check_cbseformat_report_card');
+    final url1 = Uri.parse('${url}check_cbseformat_report_card');
 
     try {
       final response = await http.post(url1, body: {
@@ -415,7 +421,7 @@ class _ResultPageState extends State<ResultPage> {
                                 height: 150,
                                 width: 150,
                                 child: Image.asset(
-                                  'assets/nodata.gif',
+                                  'assets/animations/nodata.gif',
                                   // Replace with your emoji or animation file
                                   fit: BoxFit.contain,
                                 ),
@@ -470,14 +476,10 @@ class _ResultPageState extends State<ResultPage> {
 
                                     switch (widget.className) {
                                       case "9":
-                                        url = durl +
-                                            "index.php/assessment/pdf_download_class9_cbseformat"
-                                                "?student_id=${widget.studentId}&class_id=${widget.classId}&login_type=P&acd_yr=${widget.academicYr}&short_name=${widget.shortName}";
+                                        url = "${durl}index.php/assessment/pdf_download_class9_cbseformat?student_id=${widget.studentId}&class_id=${widget.classId}&login_type=P&acd_yr=${widget.academicYr}&short_name=${widget.shortName}";
                                         break;
                                       case "11":
-                                        url = durl +
-                                            "index.php/HSC/pdf_download_class11_cbseformat"
-                                                "?student_id=${widget.studentId}&class_id=${widget.classId}&login_type=P&acd_yr=${widget.academicYr}&short_name=${widget.shortName}";
+                                        url = "${durl}index.php/HSC/pdf_download_class11_cbseformat?student_id=${widget.studentId}&class_id=${widget.classId}&login_type=P&acd_yr=${widget.academicYr}&short_name=${widget.shortName}";
                                         break;
                                     }
 
@@ -486,7 +488,7 @@ class _ResultPageState extends State<ResultPage> {
                                         DateFormat('yyyy-MM-dd').format(now);
 
                                     downloadFile(url, context,
-                                        'CBSE_RC_${widget.Fname + '-' + date}.pdf');
+                                        'CBSE_RC_${'${widget.Fname}-$date'}.pdf');
                                     print(' resultUrl downloadUrl $url');
                                   }),
                                 if (viewReportCardVisible == 1)
@@ -499,18 +501,14 @@ class _ResultPageState extends State<ResultPage> {
                                     // resultUrl = durl + "index.php/assessment/pdf_download" +
                                     //     "?student_id=" + '2444' + "&class_id=" + '25' + "&login_type=P&" + "acd_yr=" + '2023-2024' + "&short_name=" + shortName;
 
-                                    resultUrl = durl +
-                                        "index.php/assessment/pdf_download" +
-                                        "?student_id=${widget.studentId}&class_id=${widget.classId}&login_type=P&" +
-                                        "acd_yr=${widget.academicYr}&short_name=" +
-                                        shortName;
+                                    resultUrl = "${durl}index.php/assessment/pdf_download?student_id=${widget.studentId}&class_id=${widget.classId}&login_type=P&acd_yr=${widget.academicYr}&short_name=$shortName";
 
                                     DateTime now = DateTime.now();
                                     String date =
                                         DateFormat('yyyy-MM-dd').format(now);
 
                                     downloadFile(resultUrl, context,
-                                        'RC_${widget.Fname + '-' + date}.pdf');
+                                        'RC_${'${widget.Fname}-$date'}.pdf');
                                     print('downloadUrl $resultUrl');
 
                                     print('cbseCardVisible: $cbseCardVisible');

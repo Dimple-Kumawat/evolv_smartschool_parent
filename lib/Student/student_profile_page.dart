@@ -1,11 +1,5 @@
-import 'package:evolvu/Parent/parentDashBoard_Page.dart';
-
-import 'package:evolvu/common/common_textFiled.dart';
 import 'package:evolvu/Student/stu_form.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart';
-import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class StudentProfilePage extends StatelessWidget {
@@ -14,7 +8,7 @@ class StudentProfilePage extends StatelessWidget {
   final String shortName;
   final String cname;
   final String secname;
-  StudentProfilePage({
+  const StudentProfilePage({super.key, 
   required this.studentId,required this.academic_yr,required this.shortName,required this.cname,required this.secname,
   });
   @override
@@ -55,7 +49,7 @@ class StudentProfilePage extends StatelessWidget {
               // mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 SizedBox(
-                  height: 60.h,
+                  height: 80.h,
                 ),
                 Text(
                   "Student Profile ",
@@ -66,10 +60,10 @@ class StudentProfilePage extends StatelessWidget {
                   ),
                 ),
                 SizedBox(
-                  height: 5.h,
+                  height: 10.h,
                 ),
                 SizedBox(
-                  height: 700.h,
+                  height: 720.h,
                   child:  Padding(
                     padding: EdgeInsets.all(4.0),
                     child: StudentForm(studentId,cname,shortName,secname),

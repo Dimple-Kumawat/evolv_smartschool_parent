@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:evolvu/common/Common_dropDownFiled.dart';
-import 'package:evolvu/common/common_textFiled.dart';
 import 'package:evolvu/Parent/parentDashBoard_Page.dart';
 import 'package:evolvu/common/textFiledStu.dart';
 import 'package:flutter/material.dart';
@@ -10,13 +9,10 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart';
-import 'package:http/http.dart';
-import 'package:http/http.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../common/StuEditTextField.dart';
-import '../main.dart';
 import 'package:http/http.dart' as http;
 
 TextEditingController _dobController = TextEditingController();
@@ -98,35 +94,37 @@ class ParentDet {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['parent_id'] = this.parentId;
-    data['father_name'] = this.fatherName;
-    data['father_occupation'] = this.fatherOccupation;
-    data['f_office_add'] = this.fOfficeAdd;
-    data['f_office_tel'] = this.fOfficeTel;
-    data['f_mobile'] = this.fMobile;
-    data['f_email'] = this.fEmail;
-    data['mother_occupation'] = this.motherOccupation;
-    data['m_office_add'] = this.mOfficeAdd;
-    data['m_office_tel'] = this.mOfficeTel;
-    data['mother_name'] = this.motherName;
-    data['m_mobile'] = this.mMobile;
-    data['m_emailid'] = this.mEmailid;
-    data['parent_adhar_no'] = this.parentAdharNo;
-    data['m_adhar_no'] = this.mAdharNo;
-    data['f_dob'] = this.fDob;
-    data['m_dob'] = this.mDob;
-    data['f_blood_group'] = this.fBloodGroup;
-    data['m_blood_group'] = this.mBloodGroup;
-    data['IsDelete'] = this.isDelete;
-    data['father_image_name'] = this.fatherImageName;
-    data['mother_image_name'] = this.motherImageName;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['parent_id'] = parentId;
+    data['father_name'] = fatherName;
+    data['father_occupation'] = fatherOccupation;
+    data['f_office_add'] = fOfficeAdd;
+    data['f_office_tel'] = fOfficeTel;
+    data['f_mobile'] = fMobile;
+    data['f_email'] = fEmail;
+    data['mother_occupation'] = motherOccupation;
+    data['m_office_add'] = mOfficeAdd;
+    data['m_office_tel'] = mOfficeTel;
+    data['mother_name'] = motherName;
+    data['m_mobile'] = mMobile;
+    data['m_emailid'] = mEmailid;
+    data['parent_adhar_no'] = parentAdharNo;
+    data['m_adhar_no'] = mAdharNo;
+    data['f_dob'] = fDob;
+    data['m_dob'] = mDob;
+    data['f_blood_group'] = fBloodGroup;
+    data['m_blood_group'] = mBloodGroup;
+    data['IsDelete'] = isDelete;
+    data['father_image_name'] = fatherImageName;
+    data['mother_image_name'] = motherImageName;
     return data;
   }
 }
 
 
 class ParentProfilePage extends StatefulWidget {
+  const ParentProfilePage({super.key});
+
 
   @override
   _ParentProfilePage createState() => _ParentProfilePage();
@@ -141,7 +139,7 @@ class _ParentProfilePage extends State<ParentProfilePage> {
   bool isLoading = true; // Add a loading state
   String? f_selectedOption; // State variable to keep track of selected option
   String? m_selectedOption; // State variable to keep track of selected option
-  bool _radioEnabled = true; // State variable to control radio button interactivity
+  final bool _radioEnabled = true; // State variable to control radio button interactivity
   String? selectedSmsRecipientFather; // Tracks the currently selected parent (Father/Mother)
   String? selectedSmsRecipient; // Tracks the currently selected parent (Father/Mother)
 
@@ -150,11 +148,11 @@ class _ParentProfilePage extends State<ParentProfilePage> {
     final prefs = await SharedPreferences.getInstance();
     String? schoolInfoJson = prefs.getString('school_info');
     String? logUrls = prefs.getString('logUrls');
-    print('logUrls====\\\\\: $logUrls');
+    print('logUrls====\\\\: $logUrls');
     if (logUrls != null) {
       try {
         Map<String, dynamic> logUrlsparsed = json.decode(logUrls);
-        print('logUrls====\\\\\11111: $logUrls');
+        print('logUrls====\\\\11111: $logUrls');
 
         academic_yrstr = logUrlsparsed['academic_yr'];
         reg_idstr = logUrlsparsed['reg_id'];
@@ -177,7 +175,6 @@ class _ParentProfilePage extends State<ParentProfilePage> {
         String teacherApkUrl = parsedData['teacherapk_url'];
         projectUrl = parsedData['project_url'];
 
-        fetchActivePhoneNumber();
 
 
       } catch (e) {
@@ -188,7 +185,7 @@ class _ParentProfilePage extends State<ParentProfilePage> {
     }
 
     Response response = await post(
-      Uri.parse(url + "get_parent"),
+      Uri.parse("${url}get_parent"),
       body: {
         'reg_id': reg_idstr,
         // 'academic_yr': academic_yrstr,
@@ -198,7 +195,7 @@ class _ParentProfilePage extends State<ParentProfilePage> {
     print('ParentResponse status code: ${response.statusCode}');
     print('ParentResponse body: ${response.body}');
     if (response.statusCode == 200) {
-      print('Response ``11111111111``');
+      print('Response ````````11111111111````````');
 
       // Assuming 'response' contains the API response
       List<dynamic> ParentResponse = json.decode(response.body);
@@ -253,7 +250,7 @@ class _ParentProfilePage extends State<ParentProfilePage> {
 
 
   Future<void> updateContactDetails(String mobileNumber, String shortname,String val) async {
-    final urll = Uri.parse(url+'update_ContactDetails'); // Replace with your API URL
+    final urll = Uri.parse('${url}update_ContactDetails'); // Replace with your API URL
     final response = await http.post(
       urll,
       body: {
@@ -299,19 +296,21 @@ class _ParentProfilePage extends State<ParentProfilePage> {
   Future<void> fetchActivePhoneNumber() async {
     try {
       final response = await http.post(
-        Uri.parse(url + 'get_active_phone_no'),
+        Uri.parse('${url}get_active_phone_no'),
         body: {
           'reg_id': reg_id,
           'short_name': shortName,
         },
       );
+      print('Active Phone Number: $reg_id');
+      print('Active Phone Number: $shortName');
 
       if (response.statusCode == 200) {
         final List<dynamic> result = jsonDecode(response.body); // Decode as a list
         print('get_active_phone_no response: ${response.body}');
 
         if (result.isNotEmpty && result[0] is Map<String, dynamic>) {
-          final activePhoneNumber = result[0]['active_phone_no']?.toString()?.trim() ?? '';
+          final activePhoneNumber = result[0]['active_phone_no']?.toString().trim() ?? '';
           print('Active Phone Number: $activePhoneNumber');
 
           if (activePhoneNumber.isNotEmpty) {
@@ -346,11 +345,14 @@ class _ParentProfilePage extends State<ParentProfilePage> {
     super.initState();
     _getSchoolInfo();
 
+
   }
   late BuildContext _context; // Declare _context here
 
   @override
   Widget build(BuildContext context) {
+    fetchActivePhoneNumber();
+
     return WillPopScope(
       onWillPop: () async {
         final now = DateTime.now();
@@ -973,7 +975,7 @@ class BirthdatTextField extends StatelessWidget {
   final TextEditingController controller; // Accept controller as parameter
 
   const BirthdatTextField({
-    Key? key,
+    super.key,
     required this.labelText,
     this.initialValue,
     this.keyboardType = TextInputType.text,
@@ -982,7 +984,7 @@ class BirthdatTextField extends StatelessWidget {
     this.onTap,
     this.suffixIcon,
     required this.controller, // Receive controller here
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

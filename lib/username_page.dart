@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:evolvu/login.dart';
 import 'package:evolvu/Parent/parentDashBoard_Page.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:fluttertoast/fluttertoast.dart';
@@ -11,7 +10,6 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import 'Utils&Config/api.dart';
 import 'package:http/http.dart' as http;
 
 import 'main.dart';
@@ -63,6 +61,8 @@ class SchoolInfo {
 }
 
 class UserNamePage extends StatefulWidget {
+  const UserNamePage({super.key});
+
   @override
   _LoginDemoState createState() => _LoginDemoState();
 }
@@ -113,7 +113,7 @@ class _LoginDemoState extends State<UserNamePage> {
         print('Success');
 
         List<dynamic> responseData = jsonDecode(response.body);
-        if (responseData.isNotEmpty && responseData.length > 0) {
+        if (responseData.isNotEmpty && responseData.isNotEmpty) {
           // Assuming responseData contains the required data
           // Convert the first item in the list to a SchoolInfo object
           Map<String, dynamic> data = responseData[0];
@@ -126,7 +126,7 @@ class _LoginDemoState extends State<UserNamePage> {
           // Store JSON string in shared preferences
           SharedPreferences prefs = await SharedPreferences.getInstance();
           await prefs.setString('school_info', schoolInfoJson);
-
+          await _getSchoolInfo();
           // Navigate to the login screen
           Navigator.push(
             context,
@@ -168,11 +168,11 @@ class _LoginDemoState extends State<UserNamePage> {
     final prefs = await SharedPreferences.getInstance();
     String? schoolInfoJson = prefs.getString('school_info');
     String? logUrls = prefs.getString('logUrls');
-    print('logUrls====\\\\\: $logUrls');
+    print('logUrls====\\\\: $logUrls');
     if (logUrls != null) {
       try {
         Map<String, dynamic> logUrlsparsed = json.decode(logUrls);
-        print('logUrls====\\\\\11111: $logUrls');
+        print('logUrls====\\\\11111: $logUrls');
 
         user_id = logUrlsparsed['user_id'];
         academic_yr = logUrlsparsed['academic_yr'];
@@ -536,10 +536,10 @@ class _LoginDemoState extends State<UserNamePage> {
   //     print('Error: $e');
   //   }
   // }
-  Future<void> getVersion(BuildContext _context) async {
-    print('latest_version11 => ${BaseURl + 'flutter_latest_version'}');
+  Future<void> getVersion(BuildContext context) async {
+    print('latest_version11 => ${'${BaseURl}flutter_latest_version'}');
 
-    final url = Uri.parse(BaseURl + 'flutter_latest_version'); // Assuming BaseURl is your base URL
+    final url = Uri.parse('${BaseURl}flutter_latest_version'); // Assuming BaseURl is your base URL
 
     try {
       final response = await http.post(url);
@@ -558,75 +558,73 @@ class _LoginDemoState extends State<UserNamePage> {
           final releaseNotes = jsonData[0]['release_notes'] as String;
           final forcedUpdate = jsonData[0]['forced_update'] as String;
 
-          if (androidVersion != null) {
-            print('Current_version => 22222 ${packageInfo.version}');
+          print('Current_version => 22222 ${packageInfo.version}');
 
-            final localAndroidVersion = packageInfo.version;
+          final localAndroidVersion = packageInfo.version;
 
-            // Compare versions
-            if (_isVersionGreater(androidVersion, localAndroidVersion)) {
-              print('Current_version => 3333 ${packageInfo.version}');
+          // Compare versions
+          if (_isVersionGreater(androidVersion, localAndroidVersion)) {
+            print('Current_version => 3333 ${packageInfo.version}');
 
-              if (forcedUpdate == 'N') {
-                print('Current_version => NNNNN ${packageInfo.version}');
+            if (forcedUpdate == 'N') {
+              print('Current_version => NNNNN ${packageInfo.version}');
 
-                showDialog(
-                  context: _context,
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                      title: Text('V ${packageInfo.version}'),
-                      content: Text(releaseNotes),
-                      actions: [
-                        TextButton(
-                          onPressed: () {
-                            launchUrl(Uri.parse(
-                                'https://play.google.com/store/apps/details?id=in.aceventura.evolvuschool'));
-                          },
-                          child: Text(
-                            'Update',
-                            style: TextStyle(
-                                color: Colors.green, fontWeight: FontWeight.bold),
-                          ),
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Text('V ${packageInfo.version}'),
+                    content: Text(releaseNotes),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          launchUrl(Uri.parse(
+                              'https://play.google.com/store/apps/details?id=in.aceventura.evolvuschool'));
+                        },
+                        child: Text(
+                          'Update',
+                          style: TextStyle(
+                              color: Colors.green, fontWeight: FontWeight.bold),
                         ),
-                        TextButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          child: Text('Cancel'),
-                        ),
-                      ],
-                    );
-                  },
-                );
-              } else if (forcedUpdate == 'Y') {
-                print('Current_version => 44444 ${packageInfo.version}');
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: Text('Cancel'),
+                      ),
+                    ],
+                  );
+                },
+              );
+            } else if (forcedUpdate == 'Y') {
+              print('Current_version => 44444 ${packageInfo.version}');
 
-                showDialog(
-                  context: _context,
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                      title: Text('V ${packageInfo.version}'),
-                      content: Text(releaseNotes),
-                      actions: [
-                        TextButton(
-                          onPressed: () {
-                            launchUrl(Uri.parse(
-                                'https://play.google.com/store/apps/details?id=in.aceventura.evolvuschool'));
-                          },
-                          child: Text(
-                            'Update',
-                            style: TextStyle(
-                                color: Colors.green, fontWeight: FontWeight.bold),
-                          ),
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Text('V ${packageInfo.version}'),
+                    content: Text(releaseNotes),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          launchUrl(Uri.parse(
+                              'https://play.google.com/store/apps/details?id=in.aceventura.evolvuschool'));
+                        },
+                        child: Text(
+                          'Update',
+                          style: TextStyle(
+                              color: Colors.green, fontWeight: FontWeight.bold),
                         ),
-                      ],
-                    );
-                  },
-                );
-              }
+                      ),
+                    ],
+                  );
+                },
+              );
             }
           }
-        } else {
+                } else {
           print("Unexpected JSON format");
         }
       } else {

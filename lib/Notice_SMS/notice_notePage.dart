@@ -1,13 +1,12 @@
 import 'dart:convert';
 
+import 'package:evolvu/Parent/parentDashBoard_Page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:evolvu/common/common_style.dart';
 import 'package:evolvu/Notice_SMS/notice_noteCard.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../Teacher/Attachment.dart';
 import 'notice_DeatilCard.dart';
 
 
@@ -19,8 +18,8 @@ class NoticeNotePage extends StatefulWidget {
   final String classId;
   final String secId;
 
-  NoticeNotePage(
-      {required this.studentId, required this.academic_yr, required this.shortName, required this.classId, required this.secId});
+  const NoticeNotePage(
+      {super.key, required this.studentId, required this.academic_yr, required this.shortName, required this.classId, required this.secId});
 
   @override
   _NoticeNotePageState createState() => _NoticeNotePageState();
@@ -31,9 +30,9 @@ class _NoticeNotePageState extends State<NoticeNotePage> {
   List<Notice> allNotices = [];
   List<Notice> filteredNotices = [];
 
-  TextEditingController _searchController = TextEditingController();
+  final TextEditingController _searchController = TextEditingController();
   String shortName = "";
-  String academic_yr = "";
+  // String academic_yr = "";
   String reg_id = "";
   String url = "";
 
@@ -60,7 +59,7 @@ class _NoticeNotePageState extends State<NoticeNotePage> {
     if (logUrls != null) {
       try {
         Map<String, dynamic> logUrlsparsed = json.decode(logUrls);
-        academic_yr = logUrlsparsed['academic_yr'];
+        // academic_yr = logUrlsparsed['academic_yr'];
         reg_id = logUrlsparsed['reg_id'];
       } catch (e) {
         print('Error parsing log URLs: $e');
@@ -82,7 +81,7 @@ class _NoticeNotePageState extends State<NoticeNotePage> {
     }
 
     final response = await http.post(
-      Uri.parse(url + 'get_notice_with_multiple_attachment'),
+      Uri.parse('${url}get_notice_with_multiple_attachment'),
       body: {
         'parent_id': reg_id,
         'academic_yr': academic_yr,
@@ -195,7 +194,7 @@ class _NoticeNotePageState extends State<NoticeNotePage> {
                           height: 150,
                           width: 150,
                           child: Image.asset(
-                            'assets/nodata.gif', // Replace with your emoji or animation file
+                            'assets/animations/nodata.gif', // Replace with your emoji or animation file
                             fit: BoxFit.contain,
                           ),
                         ),
@@ -237,7 +236,7 @@ class _NoticeNotePageState extends State<NoticeNotePage> {
                           height: 150,
                           width: 150,
                           child: Image.asset(
-                            'assets/nodata.gif', // Replace with your emoji or animation file
+                            'assets/animations/nodata.gif', // Replace with your emoji or animation file
                             fit: BoxFit.contain,
                           ),
                         ),
@@ -259,7 +258,7 @@ class _NoticeNotePageState extends State<NoticeNotePage> {
                 final groupedNotes = groupByDate(filteredNotices);
                 return Column(
                   children: [
-                    SizedBox(height: 120.h),
+                    SizedBox(height: 100.h),
                     Text(
                       "Notice/SMS",
                       style: TextStyle(

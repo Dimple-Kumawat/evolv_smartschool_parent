@@ -6,11 +6,11 @@ class GradientContainer extends StatelessWidget {
   final double width;   // Optional width
 
   const GradientContainer({
-    Key? key,
+    super.key,
     this.child,
     this.height = double.infinity,  // Default to full height if not specified
     this.width = double.infinity,   // Default to full width if not specified
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

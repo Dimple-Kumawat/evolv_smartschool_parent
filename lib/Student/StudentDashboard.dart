@@ -2,19 +2,18 @@ import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:crypto/crypto.dart';
 import 'package:evolvu/Homework/homeWork_notePage.dart';
+import 'package:evolvu/Parent/parentDashBoard_Page.dart';
 import 'package:evolvu/Remark/remark_notePage.dart';
-import 'package:evolvu/login.dart';
 import 'package:evolvu/Student/student_profile_page.dart';
 import 'package:evolvu/Teacher/teacher_notePage.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:evolvu/Student/student_card.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:math' as math;
 
-import '../Attendance/attendance.dart';
+import '../AcademicYearProvider.dart';
 import '../Attendance/circleAttendance.dart';
 import '../ExamTimeTable/examTimeTable.dart';
 import '../ExamTimeTable/timeTable.dart';
@@ -24,7 +23,6 @@ import '../ResultChart.dart';
 import '../Utils&Config/api.dart';
 import '../WebViewScreens/OnlineFeesPayment.dart';
 import '../WebViewScreens/SmartChat_WebView.dart';
-import '../common/rotatedDivider_Card.dart';
 import '../result.dart';
 
 class CardItem {
@@ -66,7 +64,7 @@ class StudentActivityPage extends StatefulWidget {
   final String secId;
   final String attendance_perc;
 
-  StudentActivityPage({
+  const StudentActivityPage({super.key, 
     required this.reg_id,
     required this.shortName,
     required this.studentId,
@@ -94,7 +92,7 @@ class _StudentActivityPageState extends State<StudentActivityPage> {
   // ];
 
   String shortName = "";
-  String academic_yr = "";
+  // String academic_yr = "";
   String reg_id = "";
   String url = "";
   String imageUrl = "";
@@ -171,13 +169,13 @@ class _StudentActivityPageState extends State<StudentActivityPage> {
     final prefs = await SharedPreferences.getInstance();
     String? schoolInfoJson = prefs.getString('school_info');
     String? logUrls = prefs.getString('logUrls');
-    print('logUrls====\\\\\: $logUrls');
+    print('logUrls====\\\\: $logUrls');
     if (logUrls != null) {
       try {
         Map<String, dynamic> logUrlsparsed = json.decode(logUrls);
-        print('logUrls====\\\\\11111: $logUrls');
+        print('logUrls====\\\\11111: $logUrls');
 
-        academic_yr = logUrlsparsed['academic_yr'];
+        // academic_yr = logUrlsparsed['academic_yr'];
         reg_id = logUrlsparsed['reg_id'];
 
         print('academic_yr ID: $academic_yr');
@@ -206,7 +204,7 @@ class _StudentActivityPageState extends State<StudentActivityPage> {
     }
 
     http.Response response = await http.post(
-      Uri.parse(url + "get_student"),
+      Uri.parse("${url}get_student"),
       body: {
         'student_id': widget.studentId,
         'academic_yr': academic_yr,
@@ -231,8 +229,8 @@ class _StudentActivityPageState extends State<StudentActivityPage> {
     }
 
 
-    http.Response get_student_profile_images_details = await http.post(
-      Uri.parse(url + "get_student_profile_images_details"),
+    http.Response getStudentProfileImagesDetails = await http.post(
+      Uri.parse("${url}get_student_profile_images_details"),
       body: {
         'student_id': widget.studentId,
         'short_name': shortName
@@ -242,21 +240,21 @@ class _StudentActivityPageState extends State<StudentActivityPage> {
     // print('get_student_profile_images_details status code: ${get_student_profile_images_details.statusCode}');
     // print('get_student_profile_images_details Response body====:>  ${get_student_profile_images_details.body}');
 
-    if (get_student_profile_images_details.statusCode == 200) {
-      Map<String, dynamic> responseData = json.decode(get_student_profile_images_details.body);
+    if (getStudentProfileImagesDetails.statusCode == 200) {
+      Map<String, dynamic> responseData = json.decode(getStudentProfileImagesDetails.body);
       imageUrl = responseData['image_url'];
       print('Image URL: $imageUrl');
     if (imageUrl.hashCode == 404) {
       print('Image not found, using default image.');
       imageUrl = ""; // or set a default image URL if available
     } else {
-      print('Error fetching image details: ${get_student_profile_images_details.statusCode}');
+      print('Error fetching image details: ${getStudentProfileImagesDetails.statusCode}');
     }
   }
   }
 
   Future<void> fetchDashboardData() async {
-    final url = Uri.parse(widget.url +'show_icons_parentdashboard_apk');
+    final url = Uri.parse('${widget.url}show_icons_parentdashboard_apk');
     // print('Receipt URL: $shortName');
 
     try {
@@ -277,17 +275,16 @@ class _StudentActivityPageState extends State<StudentActivityPage> {
         online_fees_payment = data['online_fees_payment'];
         paymentUrl = data['payment_url'];
         smartchat_url = data['smartchat_url'];
-        String ALLOWED_URI_CHARS = "@#&=*+-_.,:!?()/~'%";
+        String allowedUriChars = "@#&=*+-_.,:!?()/~'%";
 
-        String URi_username = customUriEncode(username, ALLOWED_URI_CHARS);
+        String uriUsername = customUriEncode(username, allowedUriChars);
         username = username;
 
         String secretKey = 'aceventura@services';
 
         String encryptedUsername = encryptUsername(username, secretKey);
 
-        paymentUrlShare = paymentUrl + "?reg_id=" + widget.reg_id +
-            "&academic_yr=" + widget.academicYr +  "&user_id=" + URi_username + "&encryptedUsername=" + encryptedUsername +"&short_name=" + shortName;
+        paymentUrlShare = "$paymentUrl?reg_id=${widget.reg_id}&academic_yr=$academic_yr&user_id=$uriUsername&encryptedUsername=$encryptedUsername&short_name=$shortName";
 
         print('Encrypted Username: $paymentUrlShare');
         print('Encrypted Username: $encryptedUsername');
@@ -350,11 +347,11 @@ class _StudentActivityPageState extends State<StudentActivityPage> {
 
     try {
       final response = await http.post(
-        Uri.parse(widget.url + "get_count_of_unread_homeworks"),
+        Uri.parse("${widget.url}get_count_of_unread_homeworks"),
         body: {
           'student_id': widget.studentId,
           'parent_id': widget.reg_id,
-          'acd_yr': widget.academicYr,
+          'acd_yr': academic_yr,
           'short_name': widget.shortName
         },
       );
@@ -377,11 +374,11 @@ class _StudentActivityPageState extends State<StudentActivityPage> {
 
     try {
       final response = await http.post(
-        Uri.parse(widget.url + "get_count_of_unread_notices"),
+        Uri.parse("${widget.url}get_count_of_unread_notices"),
         body: {
           'student_id': widget.studentId,
           'parent_id': widget.reg_id,
-          'acd_yr': widget.academicYr,
+          'acd_yr': academic_yr,
           'short_name': widget.shortName
         },
       );
@@ -404,11 +401,11 @@ class _StudentActivityPageState extends State<StudentActivityPage> {
   Future<int> fetchUnreadTechetNotes() async {
     try {
       final response = await http.post(
-        Uri.parse(widget.url + "get_count_of_unread_notes"),
+        Uri.parse("${widget.url}get_count_of_unread_notes"),
         body: {
           'student_id': widget.studentId,
           'parent_id': widget.reg_id,
-          'acd_yr': widget.academicYr,
+          'acd_yr': academic_yr,
           'short_name': widget.shortName
         },
       );
@@ -433,11 +430,11 @@ class _StudentActivityPageState extends State<StudentActivityPage> {
 
     try {
       final response = await http.post(
-        Uri.parse(widget.url + "get_count_of_unread_remarks"),
+        Uri.parse("${widget.url}get_count_of_unread_remarks"),
         body: {
           'student_id': widget.studentId,
           'parent_id': widget.reg_id,
-          'acd_yr': widget.academicYr,
+          'acd_yr': academic_yr,
           'short_name': widget.shortName
         },
       );
@@ -462,9 +459,12 @@ class _StudentActivityPageState extends State<StudentActivityPage> {
   @override
   Widget build(BuildContext context) {
     _context = context;
+    final academicYearProvider = Provider.of<AcademicYearProvider>(context);
 
     refreshDash();
     final List<CardItem> cardItems = [
+
+      if(academicYearProvider.academic_yr == widget.academicYr)
       CardItem(
         imagePath: widget.gender == 'F' ? 'assets/girl.png' : 'assets/boy.png', // Local fallback image
         title: 'Student Profile',
@@ -890,20 +890,20 @@ class _StudentActivityPageState extends State<StudentActivityPage> {
         },
       ),
 
-      if(online_fees_payment == 1)
-      CardItem(
-        imagePath: 'assets/cashpayment.png',
-        title: 'Fees Payment',
-        onTap: (context) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => PaymentWebview(
-                  regId: widget.reg_id,paymentUrlShare:paymentUrlShare,receiptUrl:receiptUrl,shortName: shortName,academicYr: academic_yr,receipt_button:receipt_button),
-            ),
-          );
-        },
-      ),
+      // if(online_fees_payment == 1)
+      // CardItem(
+      //   imagePath: 'assets/cashpayment.png',
+      //   title: 'Fees Payment',
+      //   onTap: (context) {
+      //     Navigator.push(
+      //       context,
+      //       MaterialPageRoute(
+      //         builder: (context) => PaymentWebview(
+      //             regId: widget.reg_id,paymentUrlShare:paymentUrlShare,receiptUrl:receiptUrl,shortName: shortName,academicYr: academic_yr,receipt_button:receipt_button),
+      //       ),
+      //     );
+      //   },
+      // ),
       // CardItem(
       //   imagePath: 'assets/new_module.png', // Path to the new module image
       //   title: 'New Module',
@@ -954,7 +954,7 @@ class _StudentActivityPageState extends State<StudentActivityPage> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                          Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 10.h),
+                          padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 0.h),
 
                           child: Card(
                             elevation: 4, // Shadow depth for a floating effect
@@ -969,7 +969,7 @@ class _StudentActivityPageState extends State<StudentActivityPage> {
                                   SizedBox.square(
                                     dimension: 70.w,
                                     child: CachedNetworkImage(
-                                      imageUrl: imageUrl + '?timestamp=${DateTime.now().millisecondsSinceEpoch}',
+                                      imageUrl: '$imageUrl?timestamp=${DateTime.now().millisecondsSinceEpoch}',
                                       placeholder: (context, url) => Center(child: CircularProgressIndicator()),
                                       errorWidget: (context, url, error) => Image.asset(
                                         widget.gender == 'M' ? 'assets/boy.png' : 'assets/girl.png',
@@ -1117,7 +1117,7 @@ class _StudentActivityPageState extends State<StudentActivityPage> {
                                           '$unreadCount',
                                           style: TextStyle(
                                             color: Colors.white,
-                                            fontSize: 12.sp,
+                                            fontSize: 14.sp,
                                             fontWeight: FontWeight.bold,
                                           ),
                                         ),
@@ -1135,7 +1135,7 @@ class _StudentActivityPageState extends State<StudentActivityPage> {
                                           '$noticeunreadCount',
                                           style: TextStyle(
                                             color: Colors.white,
-                                            fontSize: 12.sp,
+                                            fontSize: 14.sp,
                                             fontWeight: FontWeight.bold,
                                           ),
                                         ),
@@ -1153,7 +1153,7 @@ class _StudentActivityPageState extends State<StudentActivityPage> {
                                           '$TnoteunreadCount',
                                           style: TextStyle(
                                             color: Colors.white,
-                                            fontSize: 12.sp,
+                                            fontSize: 14.sp,
                                             fontWeight: FontWeight.bold,
                                           ),
                                         ),
@@ -1170,7 +1170,7 @@ class _StudentActivityPageState extends State<StudentActivityPage> {
                                           '$ReamrkunreadCount',
                                           style: TextStyle(
                                             color: Colors.white,
-                                            fontSize: 12.sp,
+                                            fontSize: 14.sp,
                                             fontWeight: FontWeight.bold,
                                           ),
                                         ),

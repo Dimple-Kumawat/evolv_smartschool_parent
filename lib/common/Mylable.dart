@@ -5,7 +5,7 @@ class LabeledDropdown1 extends StatelessWidget {
   final List<String> options1;
   final void Function(String?) onChanged1;
 
-  LabeledDropdown1({
+  const LabeledDropdown1({super.key, 
     required this.label1,
     required this.options1,
     required this.onChanged1,
