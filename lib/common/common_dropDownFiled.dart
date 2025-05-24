@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 class LabeledDropdown extends StatelessWidget {
@@ -43,9 +42,10 @@ class LabeledDropdown extends StatelessWidget {
               ),
               child: DropdownButtonHideUnderline(
                 child: DropdownButton<String>(
-                  value: selectedValue != null && options.contains(selectedValue)
-                      ? selectedValue
-                      : options.first, // Ensure a valid default
+                  value:
+                      selectedValue != null && options.contains(selectedValue)
+                          ? selectedValue
+                          : options.first, // Ensure a valid default
                   icon: const Icon(Icons.arrow_drop_down),
                   isExpanded: true,
                   items: options.map<DropdownMenuItem<String>>((String value) {
@@ -55,7 +55,8 @@ class LabeledDropdown extends StatelessWidget {
                         value,
                         style: const TextStyle(
                           fontSize: 16.0,
-                          fontWeight: FontWeight.normal, // Ensure text is not bold
+                          fontWeight:
+                              FontWeight.normal, // Ensure text is not bold
                           color: Colors.black, // Set color explicitly if needed
                         ),
                       ),

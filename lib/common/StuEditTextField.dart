@@ -67,7 +67,7 @@ class StuEditTextField extends StatelessWidget {
               onTap: onTap,
               onChanged: onChanged,
               minLines: 1,
-              maxLines: 4,
+              maxLines: 9,
               // Or leave this if single line is enough
               decoration: InputDecoration(
                 contentPadding: const EdgeInsets.symmetric(

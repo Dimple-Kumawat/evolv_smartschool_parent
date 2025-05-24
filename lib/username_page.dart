@@ -70,6 +70,7 @@ class UserNamePage extends StatefulWidget {
 class _LoginDemoState extends State<UserNamePage> {
   late BuildContext _context;
   String BaseURl = "";
+  String packageInfoVar = "";
 
   @override
   void initState() {
@@ -413,7 +414,6 @@ class _LoginDemoState extends State<UserNamePage> {
   }
 
   Future<void> getURL() async {
-
     final apiService = ApiService();
 
     try {
@@ -421,210 +421,109 @@ class _LoginDemoState extends State<UserNamePage> {
       BaseURl = await apiService.fetchUrl();
       print('BaseURl Cleaned URL: $BaseURl');
       getVersion(context);
-
     } catch (error) {
       // Handle any errors
       print('BaseURl Error: $error');
     }
   }
 
-  // Future<void> getVersion() async {
-  //   print('lastest_version11 => ${BaseURl + 'flutter_latest_version'}');
-  //
-  //   final url = Uri.parse(BaseURl +
-  //       'flutter_latest_version'); // Assuming Config.newLogin is your base URL
-  //
-  //   try {
-  //     final response = await http.post(url);
-  //     print('lastest_version => ${response.statusCode}');
-  //
-  //     if (response.statusCode == 200) {
-  //       final jsonData = jsonDecode(response.body);
-  //       print('lastest_version => ${response.body}');
-  //
-  //       // Check if jsonData is a list and extract the first item if it is
-  //       if (jsonData is List && jsonData.isNotEmpty) {
-  //         final packageInfo = await PackageInfo.fromPlatform();
-  //         print('Current_version => ${packageInfo.version}');
-  //
-  //         final androidVersion = jsonData[0]['latest_version'] as String;
-  //         final releaseNotes = jsonData[0]['release_notes'] as String;
-  //         final forcedUpdate = jsonData[0]['forced_update'] as String;
-  //
-  //         if (androidVersion != null) {
-  //           print('Current_version => 22222 ${packageInfo.version}');
-  //
-  //           final androidVersionNum = double.parse(androidVersion);
-  //           final localAndroidVersion =
-  //               packageInfo.version; // Assuming local version
-  //
-  //           // Uncomment the following if-statement for version comparison if needed
-  //           if (localAndroidVersion != androidVersionNum) {
-  //             print('Current_version => 3333 ${packageInfo.version}');
-  //
-  //             if(forcedUpdate == 'N'){
-  //               showDialog(
-  //                 context: _context,
-  //                 builder: (BuildContext context) {
-  //                   return AlertDialog(
-  //                     title: Text('V ${packageInfo.version}'),
-  //                     // Local version title
-  //                     content: Text(releaseNotes),
-  //                     actions: [
-  //                       TextButton(
-  //                         onPressed: () {
-  //                           launchUrl(Uri.parse(
-  //                               'https://play.google.com/store/apps/details?id=in.aceventura.evolvuschool'));
-  //                         },
-  //                         child: Text(
-  //                           'Update',
-  //                           style: TextStyle(
-  //                               color: Colors.green, fontWeight: FontWeight.bold),
-  //                         ),
-  //                       ),
-  //                       TextButton(
-  //                         onPressed: () {
-  //                           Navigator.of(context).pop();
-  //                         },
-  //                         child: Text('Cancel'),
-  //                       ),
-  //                     ],
-  //                   );
-  //                 },
-  //               );
-  //             } else if (forcedUpdate == 'Y'){
-  //               showDialog(
-  //                 context: _context,
-  //                 builder: (BuildContext context) {
-  //                   return AlertDialog(
-  //                     title: Text('V ${packageInfo.version}'),
-  //                     // Local version title
-  //                     content: Text(releaseNotes),
-  //                     actions: [
-  //                       TextButton(
-  //                         onPressed: () {
-  //                           launchUrl(Uri.parse(
-  //                               'https://play.google.com/store/apps/details?id=in.aceventura.evolvuschool'));
-  //                         },
-  //                         child: Text(
-  //                           'Update',
-  //                           style: TextStyle(
-  //                               color: Colors.green, fontWeight: FontWeight.bold),
-  //                         ),
-  //                       ),
-  //                       // TextButton(
-  //                       //   onPressed: () {
-  //                       //     Navigator.of(context).pop();
-  //                       //   },
-  //                       //   child: Text('Cancel'),
-  //                       // ),
-  //                     ],
-  //                   );
-  //                 },
-  //               );
-  //             }
-  //
-  //           }
-  //         }
-  //       } else {
-  //         print("Unexpected JSON format");
-  //       }
-  //     } else {
-  //       print('Error Response: ${response.statusCode}');
-  //     }
-  //   } catch (e) {
-  //     print('Error: $e');
-  //   }
-  // }
-  Future<void> getVersion(BuildContext context) async {
-    print('latest_version11 => ${'${BaseURl}flutter_latest_version'}');
+  Future<void> getVersion(BuildContext _context) async {
+    print('latest_version11 => ${BaseURl + 'flutter_latest_version'}');
 
-    final url = Uri.parse('${BaseURl}flutter_latest_version'); // Assuming BaseURl is your base URL
+    final url = Uri.parse(BaseURl + 'flutter_latest_version');
 
     try {
-      final response = await http.post(url);
+      final response = await http.post(
+        url,
+        body: {'type': 'ios'},
+      );
       print('latest_version => ${response.statusCode}');
 
       if (response.statusCode == 200) {
         final jsonData = jsonDecode(response.body);
         print('latest_version => ${response.body}');
 
-        // Check if jsonData is a list and extract the first item if it is
         if (jsonData is List && jsonData.isNotEmpty) {
           final packageInfo = await PackageInfo.fromPlatform();
+          packageInfoVar = packageInfo.version;
           print('Current_version => ${packageInfo.version}');
+          print('Current_version packageInfoVar=> ${packageInfoVar}');
 
-          final androidVersion = jsonData[0]['latest_version'] as String; // Ensure this is a String
+          final androidVersion = jsonData[0]['lattest_version'] as String;
           final releaseNotes = jsonData[0]['release_notes'] as String;
           final forcedUpdate = jsonData[0]['forced_update'] as String;
 
-          print('Current_version => 22222 ${packageInfo.version}');
+          if (androidVersion != null) {
+            print('Current_version => 22222 ${packageInfo.version}');
 
-          final localAndroidVersion = packageInfo.version;
+            final localAndroidVersion = packageInfo.version;
 
-          // Compare versions
-          if (_isVersionGreater(androidVersion, localAndroidVersion)) {
-            print('Current_version => 3333 ${packageInfo.version}');
+            // Compare versions
+            if (_isVersionGreater(androidVersion, localAndroidVersion)) {
+              print('Current_version => 3333 ${packageInfo.version}');
 
-            if (forcedUpdate == 'N') {
-              print('Current_version => NNNNN ${packageInfo.version}');
+              if (forcedUpdate == 'N') {
+                print('Current_version => NNNNN ${packageInfo.version}');
 
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: Text('V ${packageInfo.version}'),
-                    content: Text(releaseNotes),
-                    actions: [
-                      TextButton(
-                        onPressed: () {
-                          launchUrl(Uri.parse(
-                              'https://play.google.com/store/apps/details?id=in.aceventura.evolvuschool'));
-                        },
-                        child: Text(
-                          'Update',
-                          style: TextStyle(
-                              color: Colors.green, fontWeight: FontWeight.bold),
+                showDialog(
+                  context: _context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: Text('V ${packageInfo.version}'),
+                      content: Text(releaseNotes),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            launchUrl(Uri.parse(
+                                'https://play.google.com/store/apps/details?id=in.aceventura.evolvuschool'));
+                          },
+                          child: Text(
+                            'Update',
+                            style: TextStyle(
+                                color: Colors.green,
+                                fontWeight: FontWeight.bold),
+                          ),
                         ),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                        child: Text('Cancel'),
-                      ),
-                    ],
-                  );
-                },
-              );
-            } else if (forcedUpdate == 'Y') {
-              print('Current_version => 44444 ${packageInfo.version}');
-
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: Text('V ${packageInfo.version}'),
-                    content: Text(releaseNotes),
-                    actions: [
-                      TextButton(
-                        onPressed: () {
-                          launchUrl(Uri.parse(
-                              'https://play.google.com/store/apps/details?id=in.aceventura.evolvuschool'));
-                        },
-                        child: Text(
-                          'Update',
-                          style: TextStyle(
-                              color: Colors.green, fontWeight: FontWeight.bold),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: Text('Cancel'),
                         ),
-                      ),
-                    ],
-                  );
-                },
-              );
+                      ],
+                    );
+                  },
+                );
+              } else if (forcedUpdate == 'Y') {
+                print('Current_version => 44444 ${packageInfo.version}');
+
+                showDialog(
+                  context: _context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: Text('V ${packageInfo.version}'),
+                      content: Text(releaseNotes),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            launchUrl(Uri.parse(
+                                'https://play.google.com/store/apps/details?id=in.aceventura.evolvuschool'));
+                          },
+                          child: Text(
+                            'Update',
+                            style: TextStyle(
+                                color: Colors.green,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                );
+              }
             }
           }
-                } else {
+        } else {
           print("Unexpected JSON format");
         }
       } else {
@@ -638,8 +537,10 @@ class _LoginDemoState extends State<UserNamePage> {
 // Helper function to compare version strings
   bool _isVersionGreater(String newVersion, String currentVersion) {
     // Split version strings into parts
-    List<int> newParts = newVersion.split('.').map((e) => int.parse(e)).toList();
-    List<int> currentParts = currentVersion.split('.').map((e) => int.parse(e)).toList();
+    List<int> newParts =
+        newVersion.split('.').map((e) => int.parse(e)).toList();
+    List<int> currentParts =
+        currentVersion.split('.').map((e) => int.parse(e)).toList();
 
     // Compare each part of the version
     for (int i = 0; i < newParts.length; i++) {

@@ -1,15 +1,13 @@
+//test
+//const String GET_URL = "https://api.aceventura.in/demo/evolvuURL/get_url";
 
 //live
-const String GET_URL = "https://api.aceventura.in/demo/evolvuURL/get_url";
+const String GET_URL = "https://api.aceventura.in/evolvuURL/get_url";
 
+//live
+const String ROOT = "http://aceventura.in/evolvuUserService/validate_user";
 //test
- //const String GET_URL = "https://api.aceventura.in/evolvuURL/get_url";
-
-
-//test
- //const String ROOT = "http://aceventura.in/evolvuUserService/validate_user";
- //live
-const String ROOT = "http://aceventura.in/demo/evolvuUserService/validate_user";
+//const String ROOT = "http://aceventura.in/demo/evolvuUserService/validate_user";
 
 // const String VERSION = ;
 const String LOGIN = "get_login";
