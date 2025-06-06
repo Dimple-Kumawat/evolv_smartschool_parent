@@ -42,7 +42,6 @@ class _CalendarPageState extends State<CalendarPage> {
       child: Scaffold(
         backgroundColor: Colors.transparent,
         extendBodyBehindAppBar: true,
-
         body: Column(
           children: [
             Card(
@@ -50,7 +49,7 @@ class _CalendarPageState extends State<CalendarPage> {
               child: TableCalendar(
                 // firstDay: _academicYearStart ?? DateTime.utc(2020, 1, 1),
                 // lastDay: _academicYearEnd ?? DateTime.utc(2030, 12, 31),
-              firstDay: DateTime.utc(2020, 1, 1),
+                firstDay: DateTime.utc(2020, 1, 1),
                 lastDay: DateTime.utc(2030, 12, 31),
                 focusedDay: _focusedDay,
                 calendarFormat: _calendarFormat,
@@ -59,7 +58,8 @@ class _CalendarPageState extends State<CalendarPage> {
                   setState(() {
                     _selectedDay = selectedDay;
                     _focusedDay = focusedDay;
-                    _selectedEvents = _events[_normalizeDate(selectedDay)] ?? [];
+                    _selectedEvents =
+                        _events[_normalizeDate(selectedDay)] ?? [];
                   });
                 },
                 onPageChanged: (focusedDay) {
@@ -69,7 +69,8 @@ class _CalendarPageState extends State<CalendarPage> {
                   _fetchEvents(focusedDay); // Fetch events for the new month
                 },
                 eventLoader: (day) {
-                  return _events[_normalizeDate(day)] ?? []; // Ensure correct date mapping
+                  return _events[_normalizeDate(day)] ??
+                      []; // Ensure correct date mapping
                 },
                 headerStyle: const HeaderStyle(
                   formatButtonVisible: false,
@@ -83,14 +84,18 @@ class _CalendarPageState extends State<CalendarPage> {
                 itemBuilder: (context, index) {
                   final event = _selectedEvents[index];
                   return Card(
-                    margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 10),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                    color: Color(int.parse(event.color.replaceAll("#", "0xFF"))),
+                    margin:
+                        const EdgeInsets.symmetric(vertical: 4, horizontal: 10),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)),
+                    color:
+                        Color(int.parse(event.color.replaceAll("#", "0xFF"))),
                     child: ListTile(
                       leading: const Icon(Icons.info, color: Colors.black54),
                       title: Text(
                         '${DateFormat('dd-MM-yyyy').format(event.date)}  ${event.title}', // Use event's actual date
-                        style: const TextStyle(color: Colors.black54, fontWeight: FontWeight.bold),
+                        style: const TextStyle(
+                            color: Colors.black54, fontWeight: FontWeight.bold),
                       ),
                     ),
                   );
@@ -155,7 +160,8 @@ class _CalendarPageState extends State<CalendarPage> {
 
   void _addEvents(List<dynamic> events, String color) {
     for (final event in events) {
-      final date = DateFormat('dd-MM-yyyy').parse(event['start_date']); // Parse event date
+      final date = DateFormat('dd-MM-yyyy')
+          .parse(event['start_date']); // Parse event date
       final eventData = Event(
         title: event['title'],
         description: event['event_desc'],
@@ -198,11 +204,16 @@ class _CalendarPageState extends State<CalendarPage> {
     );
   }
 }
+
 class Event {
   final String title;
   final String description;
   final String color;
   final DateTime date; // Store event date
 
-  Event({required this.title, required this.description, required this.color, required this.date});
+  Event(
+      {required this.title,
+      required this.description,
+      required this.color,
+      required this.date});
 }
