@@ -74,7 +74,6 @@ class _ReceiptWebViewScreenState extends State<ReceiptWebViewScreen> {
   }
 
   // import 'package:path_provider/path_provider.dart';
-
   Future<void> _downloadFile(String url) async {
     setState(() {
       _isDownloading = true; // Show loader
@@ -95,75 +94,105 @@ class _ReceiptWebViewScreenState extends State<ReceiptWebViewScreen> {
         NotificationDetails(android: androidPlatformChannelSpecifics);
 
     try {
-      var directory =
-          Directory("/storage/emulated/0/Download/Evolvuschool/Parent/receipt");
+      // First check if the URL is valid and file exists (HEAD request)
+      final headResponse = await http.head(Uri.parse(url));
+      if (headResponse.statusCode == 404) {
+        throw Exception('File not found (404)');
+      }
 
+      // Get the Downloads directory
+      Directory? directory;
+      if (Platform.isAndroid) {
+        // For Android, use getExternalStorageDirectory or Downloads folder
+        directory = Directory(
+            '/storage/emulated/0/Download/Evolvuschool/Parent/receipt');
+        if (Platform.version.contains('API level 29') ||
+            Platform.version.contains('API level 30')) {
+          // For Android 10 and above, use getExternalStoragePublicDirectory if needed
+          directory = await getExternalStorageDirectory();
+          directory =
+              Directory('${directory!.path}/Evolvuschool/Parent/receipt');
+        }
+      }
+
+      // Create the directory if it doesn't exist
+      if (!await directory!.exists()) {
+        await directory.create(recursive: true);
+      }
+
+      // Generate unique filename
       int fileNumber = 1;
       while (await File('${directory.path}/receipt_$fileNumber.pdf').exists()) {
         fileNumber++;
       }
-
-      var fileName = 'receipt_$fileNumber.pdf';
-      var path = '${directory.path}/$fileName';
-      var file = File(path);
+      final fileName = 'receipt_$fileNumber.pdf';
+      final path = '${directory.path}/$fileName';
+      final file = File(path);
 
       // Show downloading notification
-      // await flutterLocalNotificationsPlugin.show(
-      //   0,
-      //   'Downloading Receipt',
-      //   'Downloading $fileName...',
-      //   platformChannelSpecifics,
-      // );
+      await flutterLocalNotificationsPlugin.show(
+        0,
+        'Downloading Receipt',
+        'Downloading $fileName...',
+        platformChannelSpecifics,
+      );
 
-      try {
-        var res = await http.get(Uri.parse(url));
-        await file.writeAsBytes(res.bodyBytes);
+      // Download the file
+      final response = await http.get(Uri.parse(url));
 
-        // Update notification to show download complete
-        await flutterLocalNotificationsPlugin.show(
-          0,
-          'Download Complete',
-          'File saved to Download/Evolvuschool/Parent/receipt',
-          platformChannelSpecifics,
-          payload: path, // Pass the file path as payload
-        );
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-                'File downloaded successfully: Download/Evolvuschool/Parent/receipt/$fileName'),
-          ),
-        );
-      } catch (e) {
-        await flutterLocalNotificationsPlugin.show(
-          0,
-          'Download Failed',
-          'Failed to download file',
-          platformChannelSpecifics,
-        );
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Failed to download file'),
-          ),
-        );
+      // Validate the downloaded content
+      if (response.statusCode != 200) {
+        throw Exception('Failed to download (${response.statusCode})');
       }
+
+      // Check if it's a valid PDF (basic check)
+      if (response.bodyBytes.length < 4 ||
+          !List.from(response.bodyBytes.take(4)).equals('%PDF'.codeUnits)) {
+        throw Exception('Invalid PDF file');
+      }
+
+      // Save the file
+      await file.writeAsBytes(response.bodyBytes);
+
+      // Verify the saved file
+      if (!await file.exists() || await file.length() == 0) {
+        throw Exception('File save failed');
+      }
+
+      // Show success notification
+      await flutterLocalNotificationsPlugin.show(
+        0,
+        'Download Complete',
+        'File saved to Downloads/Evolvuschool/Parent/receipt/$fileName',
+        platformChannelSpecifics,
+        payload: path,
+      );
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+              'File downloaded successfully to Downloads/Evolvuschool/Parent/receipt/$fileName'),
+        ),
+      );
     } catch (e) {
+      // Show error notification
       await flutterLocalNotificationsPlugin.show(
         0,
         'Download Failed',
-        'Failed to download file',
+        'Failed to download: ${e.toString().replaceAll('Exception: ', '')}',
         platformChannelSpecifics,
       );
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Failed to download file'),
+          content: Text(
+              'Download failed: ${e.toString().replaceAll('Exception: ', '')}'),
+          backgroundColor: Colors.red,
         ),
       );
     } finally {
       setState(() {
-        _isDownloading = false; // Hide loader after completion
+        _isDownloading = false; // Hide loader
       });
     }
   }
