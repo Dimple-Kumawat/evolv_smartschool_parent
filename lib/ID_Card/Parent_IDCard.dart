@@ -74,26 +74,32 @@ class _StudentFormScreenState extends State<StudentFormScreen> {
     File imageFile = File(image.path);
     final croppedFile = await ImageCropper().cropImage(
       sourcePath: imageFile.path,
-      aspectRatioPresets: [
-        CropAspectRatioPreset.square,
-        CropAspectRatioPreset.ratio3x2,
-        CropAspectRatioPreset.original,
-        CropAspectRatioPreset.ratio4x3,
-        CropAspectRatioPreset.ratio16x9,
-      ],
       compressFormat: ImageCompressFormat.jpg,
       compressQuality: 90,
-      androidUiSettings: const AndroidUiSettings(
-        toolbarTitle: 'Crop Image',
-        toolbarColor: Colors.blue,
-        toolbarWidgetColor: Colors.white,
-        statusBarColor: Colors.blue,
-        backgroundColor: Colors.white,
-      ),
-      iosUiSettings: const IOSUiSettings(
-        cancelButtonTitle: 'Cancel',
-        doneButtonTitle: 'Done',
-      ),
+      uiSettings: [
+        AndroidUiSettings(
+          toolbarTitle: 'Crop Image',
+          toolbarColor: Colors.blue,
+          toolbarWidgetColor: Colors.white,
+          statusBarColor: Colors.blue,
+          backgroundColor: Colors.white,
+          aspectRatioPresets: [
+            CropAspectRatioPreset.square,
+            CropAspectRatioPreset.ratio3x2,
+            CropAspectRatioPreset.original,
+            CropAspectRatioPreset.ratio4x3,
+            CropAspectRatioPreset.ratio16x9,
+          ],
+        ),
+        IOSUiSettings(
+          cancelButtonTitle: 'Cancel',
+          doneButtonTitle: 'Done',
+          aspectRatioPresets: [
+            CropAspectRatioPreset.original,
+            CropAspectRatioPreset.square,
+          ],
+        ),
+      ],
     );
 
     if (croppedFile != null) {

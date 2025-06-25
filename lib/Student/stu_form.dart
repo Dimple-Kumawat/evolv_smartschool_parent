@@ -534,30 +534,36 @@ class _StudentFormState extends State<StudentForm> {
         sourcePath: pickedFile.path,
         compressFormat: ImageCompressFormat.jpg,
         compressQuality: 100,
-        aspectRatioPresets: [
-          CropAspectRatioPreset.square,
-          CropAspectRatioPreset.ratio3x2,
-          CropAspectRatioPreset.original,
-          CropAspectRatioPreset.ratio4x3,
-          CropAspectRatioPreset.ratio16x9
+        uiSettings: [
+          AndroidUiSettings(
+            toolbarTitle: 'Crop Image',
+            toolbarColor: Colors.blue,
+            toolbarWidgetColor: Colors.white,
+            statusBarColor: Colors.blue,
+            backgroundColor: Colors.white,
+            // Add these settings for better discard handling
+            initAspectRatio: CropAspectRatioPreset.original,
+            lockAspectRatio: false,
+            hideBottomControls: false,
+            aspectRatioPresets: [
+              CropAspectRatioPreset.square,
+              CropAspectRatioPreset.ratio3x2,
+              CropAspectRatioPreset.original,
+              CropAspectRatioPreset.ratio4x3,
+              CropAspectRatioPreset.ratio16x9,
+            ],
+          ),
+          IOSUiSettings(
+            // minimumAspectRatio: 1.0,
+            // Add these settings for iOS
+            cancelButtonTitle: 'Cancel',
+            doneButtonTitle: 'Done',
+            aspectRatioPresets: [
+              CropAspectRatioPreset.original,
+              CropAspectRatioPreset.square,
+            ],
+          ),
         ],
-        androidUiSettings: const AndroidUiSettings(
-          toolbarTitle: 'Crop Image',
-          toolbarColor: Colors.blue,
-          toolbarWidgetColor: Colors.white,
-          statusBarColor: Colors.blue,
-          backgroundColor: Colors.white,
-          // Add these settings for better discard handling
-          initAspectRatio: CropAspectRatioPreset.original,
-          lockAspectRatio: false,
-          hideBottomControls: false,
-        ),
-        iosUiSettings: const IOSUiSettings(
-          // minimumAspectRatio: 1.0,
-          // Add these settings for iOS
-          cancelButtonTitle: 'Cancel',
-          doneButtonTitle: 'Done',
-        ),
       );
 
       if (croppedFile == null) {
