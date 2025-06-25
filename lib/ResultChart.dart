@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:http/http.dart' as http;
+import 'dart:developer';
 
 class ResultChart extends StatefulWidget {
   final String studentId;
@@ -13,7 +14,8 @@ class ResultChart extends StatefulWidget {
   final String secId;
   final String className;
 
-  const ResultChart({super.key, 
+  const ResultChart({
+    super.key,
     required this.className,
     required this.studentId,
     required this.academicYr,
@@ -60,8 +62,8 @@ class _ResultChartState extends State<ResultChart> {
       final response = await http.post(Uri.parse(url3), body: body);
 
       if (response.statusCode == 200) {
-        print('fetchLineChart: ${response.statusCode}');
-        print('fetchLineChart: ${response.body}');
+        log('fetchLineChart: ${response.statusCode}');
+        log('fetchLineChart: ${response.body}');
 
         final data = json.decode(response.body) as List<dynamic>;
 
@@ -97,8 +99,8 @@ class _ResultChartState extends State<ResultChart> {
 
     try {
       final response = await http.post(Uri.parse(url2), body: body);
-      print('Bar Chart data: ${widget.studentId}');
-      print('Bar Chart data: ${response.body}');
+      log('Bar Chart data: ${widget.studentId}');
+      log('Bar Chart data: ${response.body}');
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -137,7 +139,7 @@ class _ResultChartState extends State<ResultChart> {
       setState(() {
         centerText = "Result not found"; // Error handling
       });
-      print('Error: $e');
+      log('Error: $e');
     }
   }
 
@@ -152,7 +154,7 @@ class _ResultChartState extends State<ResultChart> {
 
     try {
       final response = await http.post(Uri.parse(url1), body: body);
-      print('Pie load data ${response.body}');
+      log('Pie load data ${response.body}');
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -176,7 +178,7 @@ class _ResultChartState extends State<ResultChart> {
         }
 
         List<Map<String, dynamic>> subjectMarks =
-        details.map<Map<String, dynamic>>((detail) {
+            details.map<Map<String, dynamic>>((detail) {
           return json.decode(detail) as Map<String, dynamic>;
         }).toList();
 
@@ -188,13 +190,13 @@ class _ResultChartState extends State<ResultChart> {
         setState(() {
           centerText = "Result not found"; // API error response
         });
-        print('Failed to load data');
+        log('Failed to load data');
       }
     } catch (e) {
       setState(() {
         centerText = "Result not found"; // Error message for exception
       });
-      print('Error: $e');
+      log('Error: $e');
     }
   }
 
@@ -263,7 +265,7 @@ class _ResultChartState extends State<ResultChart> {
 
                 _buildResultChart(),
                 SizedBox(height: 30.h),
-                _buildThirdStackedBarChart(),// Bar chart widget below pie chart
+                _buildThirdStackedBarChart(), // Bar chart widget below pie chart
                 SizedBox(height: 30.h),
                 _buildBarChart(),
               ],
@@ -283,31 +285,31 @@ class _ResultChartState extends State<ResultChart> {
       ),
       child: lineChartData.isEmpty
           ? Center(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Text(
-            centerText_lc,
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ),
-      )
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Text(
+                  centerText_lc,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            )
           : Column(
-        children: [
-          _buildTermTitles(),
-          SizedBox(height: 8),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Column(
-              children: _buildSubjectRows(),
+              children: [
+                _buildTermTitles(),
+                SizedBox(height: 8),
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Column(
+                    children: _buildSubjectRows(),
+                  ),
+                ),
+              ],
             ),
-          ),
-        ],
-      ),
     );
   }
 
@@ -347,7 +349,6 @@ class _ResultChartState extends State<ResultChart> {
     );
   }
 
-
 // Build each row for each subject with scores across exams
   List<Widget> _buildSubjectRows() {
     // Collect unique subjects
@@ -361,8 +362,9 @@ class _ResultChartState extends State<ResultChart> {
       // Collect scores for the subject across all exams as List<String>
       List<String> scores = lineChartData.map((examData) {
         final details = examData['Details'].firstWhere(
-              (detail) => detail['Subject'] == subject,
-          orElse: () => <String, dynamic>{'Percentage': 'N/A'}, // Use 'N/A' if no score
+          (detail) => detail['Subject'] == subject,
+          orElse: () =>
+              <String, dynamic>{'Percentage': 'N/A'}, // Use 'N/A' if no score
         );
         return details['Percentage']?.toString() ?? 'N/A'; // Convert to string
       }).toList();
@@ -413,7 +415,10 @@ class _ResultChartState extends State<ResultChart> {
   Widget _buildBarSegment(int currentScore, int? previousScore) {
     Gradient gradient;
     // ignore: deprecated_member_use
-    BoxShadow shadow = BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 6, offset: Offset(0, 3)); // Default shadow
+    BoxShadow shadow = BoxShadow(
+        color: Colors.black.withOpacity(0.2),
+        blurRadius: 6,
+        offset: Offset(0, 3)); // Default shadow
 
     if (previousScore == null) {
       // For the first valid term, always blue gradient
@@ -424,40 +429,65 @@ class _ResultChartState extends State<ResultChart> {
       );
     } else {
       // Calculate the percentage difference
-      double percentageChange = ((currentScore - previousScore) / previousScore) * 100;
+      double percentageChange =
+          ((currentScore - previousScore) / previousScore) * 100;
 
       if (percentageChange > 25) {
         gradient = LinearGradient(
-          colors: [Colors.green.shade700, Colors.green.shade300], // Dark to light green
+          colors: [
+            Colors.green.shade700,
+            Colors.green.shade300
+          ], // Dark to light green
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
         );
         // ignore: deprecated_member_use
-        shadow = BoxShadow(color: Colors.green.withOpacity(0.6), blurRadius: 6, offset: Offset(0, 3)); // Add shadow for improvement
+        shadow = BoxShadow(
+            color: Colors.green.withOpacity(0.6),
+            blurRadius: 6,
+            offset: Offset(0, 3)); // Add shadow for improvement
       } else if (percentageChange > 0) {
         gradient = LinearGradient(
-          colors: [Colors.green.shade300, Colors.green.shade100], // Lighter green
+          colors: [
+            Colors.green.shade300,
+            Colors.green.shade100
+          ], // Lighter green
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
         );
         // ignore: deprecated_member_use
-        shadow = BoxShadow(color: Colors.green.withOpacity(0.3), blurRadius: 6, offset: Offset(0, 3));
+        shadow = BoxShadow(
+            color: Colors.green.withOpacity(0.3),
+            blurRadius: 6,
+            offset: Offset(0, 3));
       } else if (percentageChange < -25) {
         gradient = LinearGradient(
-          colors: [Colors.red.shade700, Colors.red.shade300], // Red gradient for large decline
+          colors: [
+            Colors.red.shade700,
+            Colors.red.shade300
+          ], // Red gradient for large decline
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
         );
         // ignore: deprecated_member_use
-        shadow = BoxShadow(color: Colors.red.withOpacity(0.6), blurRadius: 6, offset: Offset(0, 3));
+        shadow = BoxShadow(
+            color: Colors.red.withOpacity(0.6),
+            blurRadius: 6,
+            offset: Offset(0, 3));
       } else {
         gradient = LinearGradient(
-          colors: [Colors.orange.shade700, Colors.orange.shade300], // Amber gradient for small decline
+          colors: [
+            Colors.orange.shade700,
+            Colors.orange.shade300
+          ], // Amber gradient for small decline
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
         );
         // ignore: deprecated_member_use
-        shadow = BoxShadow(color: Colors.orange.withOpacity(0.6), blurRadius: 6, offset: Offset(0, 3));
+        shadow = BoxShadow(
+            color: Colors.orange.withOpacity(0.6),
+            blurRadius: 6,
+            offset: Offset(0, 3));
       }
     }
 
@@ -473,7 +503,8 @@ class _ResultChartState extends State<ResultChart> {
       alignment: Alignment.center,
       child: Text(
         currentScore.toString(),
-        style: TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.bold),
+        style: TextStyle(
+            fontSize: 12, color: Colors.white, fontWeight: FontWeight.bold),
       ),
     );
   }
@@ -491,11 +522,11 @@ class _ResultChartState extends State<ResultChart> {
       alignment: Alignment.center,
       child: Text(
         "N/A",
-        style: TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.bold),
+        style: TextStyle(
+            fontSize: 12, color: Colors.white, fontWeight: FontWeight.bold),
       ),
     );
   }
-
 
   Widget _buildResultChart() {
     return Container(
@@ -505,7 +536,6 @@ class _ResultChartState extends State<ResultChart> {
         borderRadius: BorderRadius.circular(22),
       ),
       child: AspectRatio(
-
         aspectRatio: 0.95,
         child: Stack(
           children: [
@@ -566,70 +596,71 @@ class _ResultChartState extends State<ResultChart> {
       ),
       child: AspectRatio(
         aspectRatio: 1,
-        child: BarChart(
-            BarChartData(
-              alignment: BarChartAlignment.spaceAround,
-              minY: 0, // Set the minimum Y value to 0
-              maxY: 100, // Set the maximum Y value to 100 for percentages
-              titlesData: FlTitlesData(
-                show: true,
-                leftTitles: AxisTitles(
-                  sideTitles: SideTitles(
-                    showTitles: true,
-                    interval: 10, // Set the interval for Y-axis titles
-                    getTitlesWidget: (double value, TitleMeta meta) {
-                      if (value % 10 == 0) {  // Show values only at every 10% interval
-                        return Text(
-                          '${value.toInt()}',
-                          style: TextStyle(
-                            color: Color(0xff7589a2),
-                            fontWeight: FontWeight.bold,
-                            fontSize: 12,
-                          ),
-                        );
-                      }
-                      return Container(); // Hide labels for other values
-                    },
-                  ),
-                ),
-                rightTitles: AxisTitles(
-                  sideTitles: SideTitles(showTitles: false),
-                ),
-                topTitles: AxisTitles(
-                  sideTitles: SideTitles(showTitles: false),
-                ),
-                bottomTitles: AxisTitles(
-                  sideTitles: SideTitles(
-                    showTitles: true,
-                    getTitlesWidget: (double value, TitleMeta meta) {
-                      const style = TextStyle(
+        child: BarChart(BarChartData(
+          alignment: BarChartAlignment.spaceAround,
+          minY: 0, // Set the minimum Y value to 0
+          maxY: 100, // Set the maximum Y value to 100 for percentages
+          titlesData: FlTitlesData(
+            show: true,
+            leftTitles: AxisTitles(
+              sideTitles: SideTitles(
+                showTitles: true,
+                interval: 10, // Set the interval for Y-axis titles
+                getTitlesWidget: (double value, TitleMeta meta) {
+                  if (value % 10 == 0) {
+                    // Show values only at every 10% interval
+                    return Text(
+                      '${value.toInt()}',
+                      style: TextStyle(
                         color: Color(0xff7589a2),
                         fontWeight: FontWeight.bold,
-                        fontSize: 14,
-                      );
-                      if (value.toInt() < barData.length) {
-                        String academicYear = barData[value.toInt()]['Academic Year'];
-
-                        // Extract last two digits of the years
-                        String shortYear = '${academicYear.substring(2, 4)}-${academicYear.substring(7, 9)}';
-
-                        return Text(shortYear, style: style);
-                      }
-                      return const Text('');
-                    },
-                  ),
-                ),
-              ),
-              barTouchData: BarTouchData(
-                touchTooltipData: BarTouchTooltipData(),
-                touchCallback: (FlTouchEvent event, response) {
-                  setState(() {});
+                        fontSize: 12,
+                      ),
+                    );
+                  }
+                  return Container(); // Hide labels for other values
                 },
               ),
-              borderData: FlBorderData(show: false),
-              barGroups: barGroups,
-            )
-        ),
+            ),
+            rightTitles: AxisTitles(
+              sideTitles: SideTitles(showTitles: false),
+            ),
+            topTitles: AxisTitles(
+              sideTitles: SideTitles(showTitles: false),
+            ),
+            bottomTitles: AxisTitles(
+              sideTitles: SideTitles(
+                showTitles: true,
+                getTitlesWidget: (double value, TitleMeta meta) {
+                  const style = TextStyle(
+                    color: Color(0xff7589a2),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  );
+                  if (value.toInt() < barData.length) {
+                    String academicYear =
+                        barData[value.toInt()]['Academic Year'];
+
+                    // Extract last two digits of the years
+                    String shortYear =
+                        '${academicYear.substring(2, 4)}-${academicYear.substring(7, 9)}';
+
+                    return Text(shortYear, style: style);
+                  }
+                  return const Text('');
+                },
+              ),
+            ),
+          ),
+          barTouchData: BarTouchData(
+            touchTooltipData: BarTouchTooltipData(),
+            touchCallback: (FlTouchEvent event, response) {
+              setState(() {});
+            },
+          ),
+          borderData: FlBorderData(show: false),
+          barGroups: barGroups,
+        )),
       ),
     );
   }

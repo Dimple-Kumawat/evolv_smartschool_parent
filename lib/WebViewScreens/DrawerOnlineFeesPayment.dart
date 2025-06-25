@@ -1,8 +1,4 @@
-import 'dart:async';
-
-import 'package:evolvu/Parent/parentDashBoard_Page.dart';
 import 'package:flutter/material.dart';
-// import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -12,7 +8,6 @@ import '../AcademicYearProvider.dart';
 import 'FeesReceiptWebViewScreen.dart';
 
 class DrawerOnlineFeesPayment extends StatefulWidget {
-  // final String paymentUrl;
   final String regId;
   final String paymentUrlShare;
   final String receiptUrl;
@@ -20,7 +15,8 @@ class DrawerOnlineFeesPayment extends StatefulWidget {
   final String academicYr;
   final int receipt_button;
 
-  const DrawerOnlineFeesPayment({super.key,
+  const DrawerOnlineFeesPayment({
+    super.key,
     required this.regId,
     required this.paymentUrlShare,
     required this.receiptUrl,
@@ -30,14 +26,12 @@ class DrawerOnlineFeesPayment extends StatefulWidget {
   });
 
   @override
-  _PaymentWebviewState createState() => _PaymentWebviewState();
+  State<DrawerOnlineFeesPayment> createState() => _PaymentWebviewState();
 }
 
 class _PaymentWebviewState extends State<DrawerOnlineFeesPayment> {
-  late WebViewController _controller;
-  late SharedPreferences prefs;
-  String? paymentUrl;
-  String? logoUrl;
+  WebViewController? _controller;
+  SharedPreferences? _prefs;
   String? name;
   String? newUrl;
   String? dUrl;
@@ -46,83 +40,96 @@ class _PaymentWebviewState extends State<DrawerOnlineFeesPayment> {
   void initState() {
     super.initState();
     _initializeData();
-    // _setupDownloader();
   }
 
   Future<void> _initializeData() async {
-    print('response.body URL: Draw ${widget.paymentUrlShare}');
+    try {
+      _prefs = await SharedPreferences.getInstance();
+      name = _prefs?.getString('name');
+      newUrl = _prefs?.getString('newUrl');
+      dUrl = _prefs?.getString('project_url');
 
-    prefs = await SharedPreferences.getInstance();
-    name = prefs.getString('name');
-    newUrl = prefs.getString('newUrl');
-    dUrl = prefs.getString('project_url');
+      debugPrint('Payment URL: ${widget.paymentUrlShare}');
 
-    // paymentUrl = "http://holyspiritconvent.evolvu.in/test/hscs_test/index.php/worldline/WL_online_payment_req_apk/?reg_id=1039&academic_yr=2024-2025&user_id=8421853656&encryptedUsername=a34dca3f54ec276c214d5a423c537af101cc67b7&short_name=HSCS";
+      _controller = WebViewController()
+        ..setJavaScriptMode(JavaScriptMode.unrestricted)
+        ..loadRequest(Uri.parse(widget.paymentUrlShare));
 
-
-    _controller = WebViewController()
-      ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..loadRequest(Uri.parse(widget.paymentUrlShare));
-
-    setState(() {});
-  }
-
-
-    @override
-  Widget build(BuildContext context) {
-      final academicYearProvider = Provider.of<AcademicYearProvider>(context);
-      bool isAcademicYearMatch = academicYearProvider.academic_yr == widget.academicYr;
-      return Scaffold( // Use Scaffold here
-        backgroundColor: Colors.transparent,
-        extendBodyBehindAppBar: true,
-        appBar: AppBar(
-          toolbarHeight: 70.h,
-          title: Text(
-            'Fees Payment $academic_yr',
-            style: TextStyle(fontSize: 20.sp, color: Colors.white),
-          ),
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-        ),
-        body: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Colors.pink, Colors.blue],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-            ),
-          ),
-          child: Column(
-            children: [
-              SizedBox(height: 110.h),
-              if(academicYearProvider.academic_yr == academic_yr)
-                Expanded(
-                  child: WebViewWidget(controller: _controller),
-                ) else Expanded(
-                child: ReceiptWebViewScreenVali(
-                  receiptUrl: '${widget.receiptUrl}?reg_id=${widget.regId}&academic_yr=${widget.academicYr}&short_name=${widget.shortName}',
-                ),
-              ),
-            ],
-          ),
-        ),
-        floatingActionButton: isAcademicYearMatch
-            ? FloatingActionButton.extended(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => ReceiptWebViewScreen(
-                  receiptUrl: '${widget.receiptUrl}?reg_id=${widget.regId}&academic_yr=${widget.academicYr}&short_name=${widget.shortName}',
-                ),
-              ),
-            );
-          },
-          icon: const Icon(Icons.receipt, color: Colors.black),
-          label: const Text("Receipt"),
-          backgroundColor: Colors.blue.shade400,
-        )
-            : null, // Hide the button when the condition is false
-      );
+      if (mounted) {
+        setState(() {});
+      }
+    } catch (e) {
+      debugPrint('Error initializing data: $e');
     }
   }
+
+  @override
+  void dispose() {
+    // Dispose of resources if necessary
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final academicYearProvider = Provider.of<AcademicYearProvider>(context);
+    final isAcademicYearMatch =
+        academicYearProvider.academic_yr == widget.academicYr;
+
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        toolbarHeight: 70.h,
+        title: Text(
+          'Fees Payment ${widget.academicYr}',
+          style: TextStyle(fontSize: 20.sp, color: Colors.white),
+        ),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+      ),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.pink, Colors.blue],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: Column(
+          children: [
+            SizedBox(height: 110.h),
+            Expanded(
+              child: _controller == null
+                  ? const Center(child: CircularProgressIndicator())
+                  : isAcademicYearMatch
+                      ? WebViewWidget(controller: _controller!)
+                      : ReceiptWebViewScreen(
+                          receiptUrl:
+                              '${widget.receiptUrl}?reg_id=${widget.regId}&academic_yr=${widget.academicYr}&short_name=${widget.shortName}',
+                        ),
+            ),
+          ],
+        ),
+      ),
+      floatingActionButton:
+          (widget.receiptUrl.isNotEmpty && isAcademicYearMatch)
+              ? FloatingActionButton.extended(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => ReceiptWebViewScreen(
+                          receiptUrl:
+                              '${widget.receiptUrl}?reg_id=${widget.regId}&academic_yr=${widget.academicYr}&short_name=${widget.shortName}',
+                        ),
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.receipt, color: Colors.black),
+                  label: const Text('Receipt'),
+                  backgroundColor: Colors.blue.shade400,
+                )
+              : null,
+    );
+  }
+}

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 import 'package:evolvu/Parent/parentDashBoard_Page.dart';
 import 'package:flutter/material.dart';
@@ -121,7 +122,7 @@ class _CalendarPageState extends State<CalendarPage> {
     });
 
     if (response.statusCode == 200) {
-      print('Academic Year Response: ${response.body}');
+      log('Academic Year Response: ${response.body}');
       final data = jsonDecode(response.body)[0];
       setState(() {
         _academicYearStart = DateTime.parse(data['academic_yr_from']);
@@ -142,7 +143,7 @@ class _CalendarPageState extends State<CalendarPage> {
     });
 
     if (response.statusCode == 200) {
-      print('Events Response: ${response.body}');
+      log('Events Response: ${response.body}');
       final data = jsonDecode(response.body);
 
       setState(() {

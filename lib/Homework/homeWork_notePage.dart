@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'package:evolvu/Homework/homework_DetailCard.dart';
 import 'package:evolvu/Parent/parentDashBoard_Page.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +15,8 @@ class HomeWorkNotePage extends StatefulWidget {
   final String classId;
   final String secId;
 
-  const HomeWorkNotePage({super.key, 
+  const HomeWorkNotePage({
+    super.key,
     required this.studentId,
     required this.academic_yr,
     required this.shortName,
@@ -50,10 +52,10 @@ class _HomeWorkNotePage extends State<HomeWorkNotePage> {
         // academic_yr = logUrlsparsed['academic_yr'];
         reg_id = logUrlsparsed['reg_id'];
       } catch (e) {
-        print('Error parsing logUrls: $e');
+        log('Error parsing logUrls: $e');
       }
     } else {
-      print('LogUrls not found in SharedPreferences.');
+      log('LogUrls not found in SharedPreferences.');
     }
 
     if (schoolInfoJson != null) {
@@ -62,10 +64,10 @@ class _HomeWorkNotePage extends State<HomeWorkNotePage> {
         shortName = parsedData['short_name'];
         url = parsedData['url'];
       } catch (e) {
-        print('Error parsing schoolInfoJson: $e');
+        log('Error parsing schoolInfoJson: $e');
       }
     } else {
-      print('School info not found in SharedPreferences.');
+      log('School info not found in SharedPreferences.');
     }
 
     final response = await http.post(
@@ -87,7 +89,9 @@ class _HomeWorkNotePage extends State<HomeWorkNotePage> {
 
       try {
         List jsonResponse = json.decode(response.body);
-        return jsonResponse.map((homework) => Homework.fromJson(homework)).toList();
+        return jsonResponse
+            .map((homework) => Homework.fromJson(homework))
+            .toList();
       } catch (e) {
         throw Exception('Error parsing JSON: $e');
       }
@@ -177,7 +181,9 @@ class _HomeWorkNotePage extends State<HomeWorkNotePage> {
                                   fit: BoxFit.contain,
                                 ),
                               ),
-                              SizedBox(height: 10), // Add spacing between emoji and text
+                              SizedBox(
+                                  height:
+                                      10), // Add spacing between emoji and text
                               Text(
                                 'No Homework Assigned',
                                 style: TextStyle(
@@ -219,7 +225,9 @@ class _HomeWorkNotePage extends State<HomeWorkNotePage> {
                                   fit: BoxFit.contain,
                                 ),
                               ),
-                              SizedBox(height: 10), // Add spacing between emoji and text
+                              SizedBox(
+                                  height:
+                                      10), // Add spacing between emoji and text
                               Text(
                                 'No Homework Assigned',
                                 style: TextStyle(
@@ -257,7 +265,8 @@ class _HomeWorkNotePage extends State<HomeWorkNotePage> {
                                       academic_yr: academic_yr,
                                       subject: note.subjectName,
                                       assignedDate: note.startDate,
-                                      submissionDate: truncateEndDate(note.endDate),
+                                      submissionDate:
+                                          truncateEndDate(note.endDate),
                                       status: note.homeworkStatus,
                                       homeworkId: note.homeworkId,
                                       parentComment: note.parentComment,

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:crypto/crypto.dart';
 import 'package:evolvu/Homework/homeWork_notePage.dart';
@@ -64,7 +65,8 @@ class StudentActivityPage extends StatefulWidget {
   final String secId;
   final String attendance_perc;
 
-  const StudentActivityPage({super.key, 
+  const StudentActivityPage({
+    super.key,
     required this.reg_id,
     required this.shortName,
     required this.studentId,
@@ -87,7 +89,6 @@ class StudentActivityPage extends StatefulWidget {
 }
 
 class _StudentActivityPageState extends State<StudentActivityPage> {
-
   // late final List<String> absentDates = [ // Add more dates as needed
   // ];
 
@@ -105,13 +106,13 @@ class _StudentActivityPageState extends State<StudentActivityPage> {
   String Fname = "";
   String username = "";
   late int receiptButton;
-  String paymentUrl="";
-  String paymentUrlShare="";
-  String smartchat_url="";
-  int receipt_button=0;
-  int online_fees_payment=0;
-  int smartchat=0;
-  String encryptedUsername="";
+  String paymentUrl = "";
+  String paymentUrlShare = "";
+  String smartchat_url = "";
+  int receipt_button = 0;
+  int online_fees_payment = 0;
+  int smartchat = 0;
+  String encryptedUsername = "";
 
   int pageIndex = 0;
   late BuildContext _context;
@@ -127,13 +128,11 @@ class _StudentActivityPageState extends State<StudentActivityPage> {
   }
 
   Future<List<String>> getAbsentDates(String studentId) async {
-    final url = '${widget.url}get_all_absent_dates'; // Replace with your actual endpoint
+    final url =
+        '${widget.url}get_all_absent_dates'; // Replace with your actual endpoint
 
     // Prepare request parameters
-    final params = {
-      'student_id': studentId,
-      'short_name': shortName
-    };
+    final params = {'student_id': studentId, 'short_name': shortName};
 
     try {
       final response = await http.post(
@@ -141,15 +140,19 @@ class _StudentActivityPageState extends State<StudentActivityPage> {
         body: params,
       );
 
-      print('Response get_all_absent_dates studentId: $studentId');
-      print('Response get_all_absent_dates: ${response.body}');
+      log('Response get_all_absent_dates studentId: $studentId');
+      log('Response get_all_absent_dates: ${response.body}');
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
 
         // Ensure absent_dates is a list of maps with a string field "absent_date"
-        if (data is List && data.isNotEmpty && data[0] is Map<String, dynamic>) {
-          final absentDates = data.map<String>((item) => item['absent_date'].toString()).toList();
+        if (data is List &&
+            data.isNotEmpty &&
+            data[0] is Map<String, dynamic>) {
+          final absentDates = data
+              .map<String>((item) => item['absent_date'].toString())
+              .toList();
           return absentDates;
         } else {
           throw Exception('Absent dates not found or invalid format');
@@ -162,29 +165,26 @@ class _StudentActivityPageState extends State<StudentActivityPage> {
     }
   }
 
-
-
-
   Future<void> _getSchoolInfo() async {
     final prefs = await SharedPreferences.getInstance();
     String? schoolInfoJson = prefs.getString('school_info');
     String? logUrls = prefs.getString('logUrls');
-    print('logUrls====\\\\: $logUrls');
+    log('logUrls====\\\\: $logUrls');
     if (logUrls != null) {
       try {
         Map<String, dynamic> logUrlsparsed = json.decode(logUrls);
-        print('logUrls====\\\\11111: $logUrls');
+        log('logUrls====\\\\11111: $logUrls');
 
         // academic_yr = logUrlsparsed['academic_yr'];
         reg_id = logUrlsparsed['reg_id'];
 
-        print('academic_yr ID: $academic_yr');
-        print('reg_id: $reg_id');
+        log('academic_yr ID: $academic_yr');
+        log('reg_id: $reg_id');
       } catch (e) {
-        print('Error parsing school info: $e');
+        log('Error parsing school info: $e');
       }
     } else {
-      print('School info not found in SharedPreferences.');
+      log('School info not found in SharedPreferences.');
     }
 
     if (schoolInfoJson != null) {
@@ -194,13 +194,13 @@ class _StudentActivityPageState extends State<StudentActivityPage> {
         shortName = parsedData['short_name'];
         url = parsedData['url'];
 
-        print('Short Name: $shortName');
-        print('URL: $url');
+        log('Short Name: $shortName');
+        log('URL: $url');
       } catch (e) {
-        print('Error parsing school info: $e');
+        log('Error parsing school info: $e');
       }
     } else {
-      print('School info not found in SharedPreferences.');
+      log('School info not found in SharedPreferences.');
     }
 
     http.Response response = await http.post(
@@ -212,58 +212,56 @@ class _StudentActivityPageState extends State<StudentActivityPage> {
       },
     );
 
-    print('child status code: ${response.statusCode}');
-    print('child Response body====:>  ${response.body}');
+    log('child status code: ${response.statusCode}');
+    log('child Response body====:>  ${response.body}');
 
     if (response.statusCode == 200) {
       List<dynamic> apiResponse = json.decode(response.body);
       if (apiResponse.isNotEmpty) {
         Map<String, dynamic> firstStudent = apiResponse[0];
-         Fname = firstStudent['first_name'];
-        print('Fname: $Fname');
+        Fname = firstStudent['first_name'];
+        log('Fname: $Fname');
       } else {
-        print('No data found in API response.');
+        log('No data found in API response.');
       }
     } else {
-      print('Failed to fetch data: Status code ${response.statusCode}');
+      log('Failed to fetch data: Status code ${response.statusCode}');
     }
-
 
     http.Response getStudentProfileImagesDetails = await http.post(
       Uri.parse("${url}get_student_profile_images_details"),
-      body: {
-        'student_id': widget.studentId,
-        'short_name': shortName
-      },
+      body: {'student_id': widget.studentId, 'short_name': shortName},
     );
 
-    // print('get_student_profile_images_details status code: ${get_student_profile_images_details.statusCode}');
-    // print('get_student_profile_images_details Response body====:>  ${get_student_profile_images_details.body}');
+    // log('get_student_profile_images_details status code: ${get_student_profile_images_details.statusCode}');
+    // log('get_student_profile_images_details Response body====:>  ${get_student_profile_images_details.body}');
 
     if (getStudentProfileImagesDetails.statusCode == 200) {
-      Map<String, dynamic> responseData = json.decode(getStudentProfileImagesDetails.body);
+      Map<String, dynamic> responseData =
+          json.decode(getStudentProfileImagesDetails.body);
       imageUrl = responseData['image_url'];
-      print('Image URL: $imageUrl');
-    if (imageUrl.hashCode == 404) {
-      print('Image not found, using default image.');
-      imageUrl = ""; // or set a default image URL if available
-    } else {
-      print('Error fetching image details: ${getStudentProfileImagesDetails.statusCode}');
+      log('Image URL: $imageUrl');
+      if (imageUrl.hashCode == 404) {
+        log('Image not found, using default image.');
+        imageUrl = ""; // or set a default image URL if available
+      } else {
+        log('Error fetching image details: ${getStudentProfileImagesDetails.statusCode}');
+      }
     }
-  }
   }
 
   Future<void> fetchDashboardData() async {
     final url = Uri.parse('${widget.url}show_icons_parentdashboard_apk');
-    // print('Receipt URL: $shortName');
+    // log('Receipt URL: $shortName');
 
     try {
-      final response = await http.post(url,
+      final response = await http.post(
+        url,
         body: {'short_name': widget.shortName},
       );
 
       if (response.statusCode == 200) {
-        print('response.body URL: ${response.body}');
+        log('response.body URL: ${response.body}');
 
         final Map<String, dynamic> data = jsonDecode(response.body);
 
@@ -284,23 +282,24 @@ class _StudentActivityPageState extends State<StudentActivityPage> {
 
         String encryptedUsername = encryptUsername(username, secretKey);
 
-        paymentUrlShare = "$paymentUrl?reg_id=${widget.reg_id}&academic_yr=$academic_yr&user_id=$uriUsername&encryptedUsername=$encryptedUsername&short_name=$shortName";
+        paymentUrlShare =
+            "$paymentUrl?reg_id=${widget.reg_id}&academic_yr=$academic_yr&user_id=$uriUsername&encryptedUsername=$encryptedUsername&short_name=$shortName";
 
-        print('Encrypted Username: $paymentUrlShare');
-        print('Encrypted Username: $encryptedUsername');
+        log('Encrypted Username: $paymentUrlShare');
+        log('Encrypted Username: $encryptedUsername');
         // Use these values as needed
-        print('username URL: $username');
-        print('Receipt URL: $receiptUrl');
-        print('Receipt Button: $receiptButton');
-        print('Payment URL: $paymentUrl');
-        print('smartchat_url : $smartchat_url');
+        log('username URL: $username');
+        log('Receipt URL: $receiptUrl');
+        log('Receipt Button: $receiptButton');
+        log('Payment URL: $paymentUrl');
+        log('smartchat_url : $smartchat_url');
 
         // You can store these values in variables or use them directly
       } else {
-        print('Failed to load data: ${response.statusCode}');
+        log('Failed to load data: ${response.statusCode}');
       }
     } catch (e) {
-      print('Error: $e');
+      log('Error: $e');
     }
   }
 
@@ -316,7 +315,7 @@ class _StudentActivityPageState extends State<StudentActivityPage> {
     for (int i = 0; i < input.length; i++) {
       final String char = input[i];
       if (allowedChars.contains(char)) {
-        encoded.write(char);  // Allow the character as-is
+        encoded.write(char); // Allow the character as-is
       } else {
         // Percent-encode the character
         final List<int> bytes = utf8.encode(char);
@@ -328,6 +327,7 @@ class _StudentActivityPageState extends State<StudentActivityPage> {
 
     return encoded.toString();
   }
+
   String encryptUsername(String username, String secretKey) {
     // Combine the username and secretKey
     String combined = username + secretKey;
@@ -343,7 +343,7 @@ class _StudentActivityPageState extends State<StudentActivityPage> {
   }
 
   Future<int> fetchUnreadHomeworkCount() async {
-    print('fetching unread remarks count: $reg_id');
+    log('fetching unread remarks count: $reg_id');
 
     try {
       final response = await http.post(
@@ -359,19 +359,18 @@ class _StudentActivityPageState extends State<StudentActivityPage> {
       if (response.statusCode == 200) {
         List<dynamic> data = json.decode(response.body);
         unreadCount = int.tryParse(data[0]['unread_homeworks']) ?? 0;
-        print('fetchUnreadHomeworkCount: $unreadCount');
-
+        log('fetchUnreadHomeworkCount: $unreadCount');
       } else {
-        print('Failed to fetch unread remarks count: ${response.statusCode}');
+        log('Failed to fetch unread remarks count: ${response.statusCode}');
       }
     } catch (e) {
-      print('Error fetching unread remarks count: $e');
+      log('Error fetching unread remarks count: $e');
     }
 
     return unreadCount;
   }
-  Future<int> fetchUnreadnotices() async {
 
+  Future<int> fetchUnreadnotices() async {
     try {
       final response = await http.post(
         Uri.parse("${widget.url}get_count_of_unread_notices"),
@@ -384,20 +383,19 @@ class _StudentActivityPageState extends State<StudentActivityPage> {
       );
 
       if (response.statusCode == 200) {
-
         List<dynamic> data = json.decode(response.body);
         noticeunreadCount = int.tryParse(data[0]['unread_notices']) ?? 0;
-        print('fetching unread noticeunreadCount count: $noticeunreadCount');
-
+        log('fetching unread noticeunreadCount count: $noticeunreadCount');
       } else {
-        print('Failed to fetch unread noticeunreadCount count: ${response.statusCode}');
+        log('Failed to fetch unread noticeunreadCount count: ${response.statusCode}');
       }
     } catch (e) {
-      print('Error fetching unread noticeunreadCount count: $e');
+      log('Error fetching unread noticeunreadCount count: $e');
     }
 
     return noticeunreadCount;
   }
+
   Future<int> fetchUnreadTechetNotes() async {
     try {
       final response = await http.post(
@@ -415,19 +413,18 @@ class _StudentActivityPageState extends State<StudentActivityPage> {
         setState(() {
           TnoteunreadCount = int.tryParse(data[0]['unread_notes']) ?? 0;
         });
-        print('fetching unread TnoteunreadCount count: $TnoteunreadCount');
+        log('fetching unread TnoteunreadCount count: $TnoteunreadCount');
       } else {
-        print('Failed to fetch unread TnoteunreadCount count: ${response.statusCode}');
+        log('Failed to fetch unread TnoteunreadCount count: ${response.statusCode}');
       }
     } catch (e) {
-      print('Error fetching unread TnoteunreadCount count: $e');
+      log('Error fetching unread TnoteunreadCount count: $e');
     }
 
     return TnoteunreadCount;
   }
 
   Future<int> fetchUnreadRemark() async {
-
     try {
       final response = await http.post(
         Uri.parse("${widget.url}get_count_of_unread_remarks"),
@@ -440,21 +437,18 @@ class _StudentActivityPageState extends State<StudentActivityPage> {
       );
 
       if (response.statusCode == 200) {
-
         List<dynamic> data = json.decode(response.body);
         ReamrkunreadCount = int.tryParse(data[0]['unread_remarks']) ?? 0;
-        print('fetching unread ReamrkunreadCount count: $ReamrkunreadCount');
-
+        log('fetching unread ReamrkunreadCount count: $ReamrkunreadCount');
       } else {
-        print('Failed to fetch unread ReamrkunreadCount count: ${response.statusCode}');
+        log('Failed to fetch unread ReamrkunreadCount count: ${response.statusCode}');
       }
     } catch (e) {
-      print('Error fetching unread ReamrkunreadCount count: $e');
+      log('Error fetching unread ReamrkunreadCount count: $e');
     }
 
     return ReamrkunreadCount;
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -463,22 +457,27 @@ class _StudentActivityPageState extends State<StudentActivityPage> {
 
     refreshDash();
     final List<CardItem> cardItems = [
-
-      if(academicYearProvider.academic_yr == widget.academicYr)
-      CardItem(
-        imagePath: widget.gender == 'F' ? 'assets/girl.png' : 'assets/boy.png', // Local fallback image
-        title: 'Student Profile',
-        onTap: (context) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => StudentProfilePage(studentId: widget.studentId,shortName: shortName,cname: widget.cname,
-                secname: widget.secname,academic_yr: academic_yr
-                ,),
-            ),
-          );
-        },
-      ),
+      if (academicYearProvider.academic_yr == widget.academicYr)
+        CardItem(
+          imagePath: widget.gender == 'F'
+              ? 'assets/girl.png'
+              : 'assets/boy.png', // Local fallback image
+          title: 'Student Profile',
+          onTap: (context) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => StudentProfilePage(
+                  studentId: widget.studentId,
+                  shortName: shortName,
+                  cname: widget.cname,
+                  secname: widget.secname,
+                  academic_yr: academic_yr,
+                ),
+              ),
+            );
+          },
+        ),
       CardItem(
         imagePath: 'assets/teacher.png',
         title: 'Teacher Note',
@@ -511,10 +510,14 @@ class _StudentActivityPageState extends State<StudentActivityPage> {
         title: 'Homework',
         onTap: (context) async {
           final result = await Navigator.push(
-              context,
+            context,
             MaterialPageRoute(
-              builder: (context) => HomeWorkNotePage(studentId: widget.studentId,shortName: shortName,academic_yr: academic_yr
-                  ,classId: widget.classId,secId:widget.secId),
+              builder: (context) => HomeWorkNotePage(
+                  studentId: widget.studentId,
+                  shortName: shortName,
+                  academic_yr: academic_yr,
+                  classId: widget.classId,
+                  secId: widget.secId),
             ),
           );
           if (result != null) {
@@ -532,8 +535,12 @@ class _StudentActivityPageState extends State<StudentActivityPage> {
           final result = await Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => RemarkNotePage(studentId: widget.studentId,shortName: shortName,academic_yr: academic_yr
-                  ,classId: widget.classId,secId:widget.secId),
+              builder: (context) => RemarkNotePage(
+                  studentId: widget.studentId,
+                  shortName: shortName,
+                  academic_yr: academic_yr,
+                  classId: widget.classId,
+                  secId: widget.secId),
             ),
           );
           if (result != null) {
@@ -550,8 +557,12 @@ class _StudentActivityPageState extends State<StudentActivityPage> {
           final result = await Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => NoticeNotePage(studentId: widget.studentId,shortName: shortName,academic_yr: academic_yr
-                  ,classId: widget.classId,secId:widget.secId),
+              builder: (context) => NoticeNotePage(
+                  studentId: widget.studentId,
+                  shortName: shortName,
+                  academic_yr: academic_yr,
+                  classId: widget.classId,
+                  secId: widget.secId),
             ),
           );
           if (result != null) {
@@ -595,7 +606,8 @@ class _StudentActivityPageState extends State<StudentActivityPage> {
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: const BoxDecoration(
-                        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+                        borderRadius:
+                            BorderRadius.vertical(top: Radius.circular(16)),
                         gradient: LinearGradient(
                           colors: [Colors.pink, Colors.deepPurple],
                           begin: Alignment.topLeft,
@@ -737,9 +749,11 @@ class _StudentActivityPageState extends State<StudentActivityPage> {
               builder: (BuildContext context) {
                 return AlertDialog(
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(24), // More rounded corners
+                    borderRadius:
+                        BorderRadius.circular(24), // More rounded corners
                   ),
-                  titlePadding: const EdgeInsets.all(0), // Remove default padding
+                  titlePadding:
+                      const EdgeInsets.all(0), // Remove default padding
                   title: Container(
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
@@ -748,11 +762,13 @@ class _StudentActivityPageState extends State<StudentActivityPage> {
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                       ), // Gradient header background
-                      borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+                      borderRadius:
+                          const BorderRadius.vertical(top: Radius.circular(24)),
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.event_busy, color: Colors.white, size: 28), // Icon
+                        const Icon(Icons.event_busy,
+                            color: Colors.white, size: 28), // Icon
                         const SizedBox(width: 12),
                         const Expanded(
                           child: Text(
@@ -771,7 +787,8 @@ class _StudentActivityPageState extends State<StudentActivityPage> {
                     width: double.maxFinite,
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: Colors.grey.shade50, // Light background for content
+                      color:
+                          Colors.grey.shade50, // Light background for content
                       borderRadius: BorderRadius.circular(16),
                     ),
                     child: SizedBox(
@@ -786,16 +803,20 @@ class _StudentActivityPageState extends State<StudentActivityPage> {
                           return ListTile(
                             onTap: () {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text('Clicked on: ${absentDates[index]}')),
+                                SnackBar(
+                                    content: Text(
+                                        'Clicked on: ${absentDates[index]}')),
                               );
                             },
                             leading: CircleAvatar(
                               backgroundColor: Colors.pinkAccent,
-                              child: Icon(Icons.calendar_today, color: Colors.white),
+                              child: Icon(Icons.calendar_today,
+                                  color: Colors.white),
                             ),
                             title: Text(
                               absentDates[index],
-                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.w600),
                             ),
                           );
                         },
@@ -815,7 +836,9 @@ class _StudentActivityPageState extends State<StudentActivityPage> {
                             icon: Icon(Icons.close, color: Colors.pink),
                             label: Text(
                               'CLOSE',
-                              style: TextStyle(color: Colors.pink, fontWeight: FontWeight.bold),
+                              style: TextStyle(
+                                  color: Colors.pink,
+                                  fontWeight: FontWeight.bold),
                             ),
                           ),
                           // ElevatedButton(
@@ -837,7 +860,6 @@ class _StudentActivityPageState extends State<StudentActivityPage> {
                 );
               },
             );
-
           } catch (error) {
             // Handle errors here (e.g., show a snackbar or error message)
             ScaffoldMessenger.of(context).showSnackBar(
@@ -847,20 +869,25 @@ class _StudentActivityPageState extends State<StudentActivityPage> {
         },
       ),
 
-      if(smartchat == 1)
-      CardItem(
-        imagePath: 'assets/smartchat.png',
-        title: 'Smart Chat',
-        onTap: (context) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => WebViewPage(studentId: widget.studentId,shortName: shortName,academicYr: academic_yr
-                  ,classId: widget.classId,secId:widget.secId,smartchat_url:smartchat_url),
-            ),
-          );
-        },
-      ),
+      if (smartchat == 1)
+        CardItem(
+          imagePath: 'assets/smartchat.png',
+          title: 'Smart Chat',
+          onTap: (context) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => WebViewPage(
+                    studentId: widget.studentId,
+                    shortName: shortName,
+                    academicYr: academic_yr,
+                    classId: widget.classId,
+                    secId: widget.secId,
+                    smartchat_url: smartchat_url),
+              ),
+            );
+          },
+        ),
 
       CardItem(
         imagePath: 'assets/result.png',
@@ -869,8 +896,14 @@ class _StudentActivityPageState extends State<StudentActivityPage> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => ResultPage(studentId: widget.studentId,shortName: shortName,academicYr: academic_yr
-                  ,classId: widget.classId,secId:widget.secId,Fname: Fname,className: widget.className),
+              builder: (context) => ResultPage(
+                  studentId: widget.studentId,
+                  shortName: shortName,
+                  academicYr: academic_yr,
+                  classId: widget.classId,
+                  secId: widget.secId,
+                  Fname: Fname,
+                  className: widget.className),
             ),
           );
         },
@@ -883,8 +916,13 @@ class _StudentActivityPageState extends State<StudentActivityPage> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => ResultChart(studentId: widget.studentId,shortName: shortName,academicYr: academic_yr
-                  ,classId: widget.classId,secId:widget.secId,className: widget.className),
+              builder: (context) => ResultChart(
+                  studentId: widget.studentId,
+                  shortName: shortName,
+                  academicYr: academic_yr,
+                  classId: widget.classId,
+                  secId: widget.secId,
+                  className: widget.className),
             ),
           );
         },
@@ -953,36 +991,46 @@ class _StudentActivityPageState extends State<StudentActivityPage> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                         Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 0.h),
-
+                        Padding(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 8.w, vertical: 0.h),
                           child: Card(
                             elevation: 4, // Shadow depth for a floating effect
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(15.0),
                             ),
                             child: Padding(
-                              padding: EdgeInsets.all(6.0), // Add padding inside the card
+                              padding: EdgeInsets.all(
+                                  6.0), // Add padding inside the card
                               child: Row(
                                 children: [
                                   // Student Image Section
                                   SizedBox.square(
                                     dimension: 70.w,
                                     child: CachedNetworkImage(
-                                      imageUrl: '$imageUrl?timestamp=${DateTime.now().millisecondsSinceEpoch}',
-                                      placeholder: (context, url) => Center(child: CircularProgressIndicator()),
-                                      errorWidget: (context, url, error) => Image.asset(
-                                        widget.gender == 'M' ? 'assets/boy.png' : 'assets/girl.png',
+                                      imageUrl:
+                                          '$imageUrl?timestamp=${DateTime.now().millisecondsSinceEpoch}',
+                                      placeholder: (context, url) => Center(
+                                          child: CircularProgressIndicator()),
+                                      errorWidget: (context, url, error) =>
+                                          Image.asset(
+                                        widget.gender == 'M'
+                                            ? 'assets/boy.png'
+                                            : 'assets/girl.png',
                                       ),
                                     ),
                                   ),
-                                  SizedBox(width: 6.w), // Add space between image and details
+                                  SizedBox(
+                                      width: 6
+                                          .w), // Add space between image and details
 
                                   // Student Info Section
                                   Expanded(
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
                                       children: [
                                         Text(
                                           widget.firstName,
@@ -995,7 +1043,9 @@ class _StudentActivityPageState extends State<StudentActivityPage> {
                                         SizedBox(height: 5.h),
                                         Row(
                                           children: [
-                                            Icon(Icons.assignment_turned_in, color: Colors.green, size: 14.sp),
+                                            Icon(Icons.assignment_turned_in,
+                                                color: Colors.green,
+                                                size: 14.sp),
                                             SizedBox(width: 5.w),
                                             Text(
                                               'Roll No: ${widget.rollNo}',
@@ -1009,7 +1059,9 @@ class _StudentActivityPageState extends State<StudentActivityPage> {
                                         SizedBox(height: 5.h),
                                         Row(
                                           children: [
-                                            Icon(Icons.class_, color: Colors.blue, size: 14.sp),
+                                            Icon(Icons.class_,
+                                                color: Colors.blue,
+                                                size: 14.sp),
                                             SizedBox(width: 5.w),
                                             Text(
                                               'Class: ${widget.className}',
@@ -1023,7 +1075,8 @@ class _StudentActivityPageState extends State<StudentActivityPage> {
                                         SizedBox(height: 5.h),
                                         Row(
                                           children: [
-                                            Icon(Icons.person, color: Colors.red, size: 14.sp),
+                                            Icon(Icons.person,
+                                                color: Colors.red, size: 14.sp),
                                             SizedBox(width: 5.w),
                                             Text(
                                               'Teacher: ${trimTeacherName(widget.classTeacher)}',
@@ -1064,120 +1117,136 @@ class _StudentActivityPageState extends State<StudentActivityPage> {
                           crossAxisCount: 3,
                           crossAxisSpacing: 2.0,
                           mainAxisSpacing: 1.2,
-                          padding: const EdgeInsets.only(top: 10,left: 20,right: 30),
+                          padding: const EdgeInsets.only(
+                              top: 10, left: 20, right: 30),
                           children: List.generate(cardItems.length, (index) {
                             final item = cardItems[index];
                             return Card(
                               color: Colors.white,
-                                child: Stack(
+                              child: Stack(
                                 alignment: Alignment.center,
                                 children: [
-                                InkWell(
-                                  onTap: () => item.onTap(context),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      if (item.title == 'Attendance')
-                                        Padding(
-                                          padding: const EdgeInsets.only(top: 8.0),
-                                          child: widget.attendance_perc.isNotEmpty && double.tryParse(widget.attendance_perc) != null
-                                              ? CircularAttendanceIndicator(
-                                            percentage: double.parse(widget.attendance_perc) / 100, // Pass percentage as a fraction (0 to 1)
+                                  InkWell(
+                                    onTap: () => item.onTap(context),
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        if (item.title == 'Attendance')
+                                          Padding(
+                                            padding:
+                                                const EdgeInsets.only(top: 8.0),
+                                            child: widget.attendance_perc
+                                                        .isNotEmpty &&
+                                                    double.tryParse(widget
+                                                            .attendance_perc) !=
+                                                        null
+                                                ? CircularAttendanceIndicator(
+                                                    percentage: double.parse(widget
+                                                            .attendance_perc) /
+                                                        100, // Pass percentage as a fraction (0 to 1)
+                                                  )
+                                                : CircularAttendanceIndicator(
+                                                    percentage:
+                                                        0, // Default to 0 if data is not available
+                                                  ),
                                           )
-                                              : CircularAttendanceIndicator(
-                                            percentage: 0, // Default to 0 if data is not available
-                                          ),
-                                        )
                                         // [{"absent_date":"11-09-2024"}]
-                                      else
-                                      Image.asset(
-                                        item.imagePath,
-                                        height: 50,
-                                      ),
-                                      SizedBox(height: 10),
-                                      Text(
-                                        item.title,
-                                        style: TextStyle(
-                                          color: Colors.black,
-                                          fontSize: 12.sp,
+                                        else
+                                          Image.asset(
+                                            item.imagePath,
+                                            height: 50,
+                                          ),
+                                        SizedBox(height: 10),
+                                        Text(
+                                          item.title,
+                                          style: TextStyle(
+                                            color: Colors.black,
+                                            fontSize: 12.sp,
+                                          ),
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
-                                ),
-                                  if (item.showBadge) // Conditionally show the badge
-                                  if (unreadCount != 0) // Conditionally show the badge
-                                    Positioned(
-                                      top: 1,
-                                      right: 6,
-                                      child: CircleAvatar(
-                                        radius: 10,
-                                        backgroundColor: Colors.red,
-                                        child: Text(
-                                          '$unreadCount',
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 14.sp,
-                                            fontWeight: FontWeight.bold,
+                                  if (item
+                                      .showBadge) // Conditionally show the badge
+                                    if (unreadCount !=
+                                        0) // Conditionally show the badge
+                                      Positioned(
+                                        top: 1,
+                                        right: 6,
+                                        child: CircleAvatar(
+                                          radius: 10,
+                                          backgroundColor: Colors.red,
+                                          child: Text(
+                                            '$unreadCount',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 14.sp,
+                                              fontWeight: FontWeight.bold,
+                                            ),
                                           ),
                                         ),
                                       ),
-                                    ),
                                   if (item.showBadgenotice)
-                                    if (noticeunreadCount != 0)// Conditionally show the badge
-                                    Positioned(
-                                      top: 1,
-                                      right: 6,
-                                      child: CircleAvatar(
-                                        radius: 10,
-                                        backgroundColor: Colors.red,
-                                        child: Text(
-                                          '$noticeunreadCount',
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 14.sp,
-                                            fontWeight: FontWeight.bold,
+                                    if (noticeunreadCount !=
+                                        0) // Conditionally show the badge
+                                      Positioned(
+                                        top: 1,
+                                        right: 6,
+                                        child: CircleAvatar(
+                                          radius: 10,
+                                          backgroundColor: Colors.red,
+                                          child: Text(
+                                            '$noticeunreadCount',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 14.sp,
+                                              fontWeight: FontWeight.bold,
+                                            ),
                                           ),
                                         ),
                                       ),
-                                    ),
                                   if (item.showBadgeTnote)
-                                    if (TnoteunreadCount != 0)// Conditionally show the badge
-                                    Positioned(
-                                      top: 1,
-                                      right: 6,
-                                      child: CircleAvatar(
-                                        radius: 10,
-                                        backgroundColor: Colors.red,
-                                        child: Text(
-                                          '$TnoteunreadCount',
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 14.sp,
-                                            fontWeight: FontWeight.bold,
+                                    if (TnoteunreadCount !=
+                                        0) // Conditionally show the badge
+                                      Positioned(
+                                        top: 1,
+                                        right: 6,
+                                        child: CircleAvatar(
+                                          radius: 10,
+                                          backgroundColor: Colors.red,
+                                          child: Text(
+                                            '$TnoteunreadCount',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 14.sp,
+                                              fontWeight: FontWeight.bold,
+                                            ),
                                           ),
                                         ),
                                       ),
-                                    ), if (item.showBadgeRemark)
-                                    if (ReamrkunreadCount != 0)// Conditionally show the badge
-                                    Positioned(
-                                      top: 1,
-                                      right: 6,
-                                      child: CircleAvatar(
-                                        radius: 10,
-                                        backgroundColor: Colors.red,
-                                        child: Text(
-                                          '$ReamrkunreadCount',
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 14.sp,
-                                            fontWeight: FontWeight.bold,
+                                  if (item.showBadgeRemark)
+                                    if (ReamrkunreadCount !=
+                                        0) // Conditionally show the badge
+                                      Positioned(
+                                        top: 1,
+                                        right: 6,
+                                        child: CircleAvatar(
+                                          radius: 10,
+                                          backgroundColor: Colors.red,
+                                          child: Text(
+                                            '$ReamrkunreadCount',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 14.sp,
+                                              fontWeight: FontWeight.bold,
+                                            ),
                                           ),
                                         ),
                                       ),
-                                    ),
-                              ],
-                                ),
+                                ],
+                              ),
                             );
                           }),
                         ),
@@ -1187,15 +1256,13 @@ class _StudentActivityPageState extends State<StudentActivityPage> {
                 ),
               ],
             ),
-
             bottomNavigationBar: buildMyNavBar(context),
           );
         },
-
-
       ),
     );
   }
+
   String trimTeacherName(String name) {
     List<String> parts = name.split(' ');
     if (parts.length > 2) {
@@ -1204,30 +1271,35 @@ class _StudentActivityPageState extends State<StudentActivityPage> {
     return name; // If there's no second space, return the original name
   }
 
-Container buildMyNavBar(BuildContext context) {
-  return Container(
-    margin: const EdgeInsets.fromLTRB(12, 10, 12, 8),
-    padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 20),
-    decoration: BoxDecoration(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(30),
-      boxShadow: [
-        BoxShadow(color: Colors.black26, blurRadius: 10, offset: Offset(0, -3)),
-      ],
-    ),
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      children: [
-        _buildNavItem(icon: Icons.dashboard, label: 'Dashboard', index: 0),
-        _buildNavItem(icon: Icons.calendar_month, label: 'Events', index: 1),
-        _buildNavItem(icon: Icons.person, label: 'Profile',index: 2), // Center icon for Profile
-        _buildNavItem(icon: Icons.qr_code, label: 'QR', index: 4),
-      ],
-    ),
-  );
-}
+  Container buildMyNavBar(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.fromLTRB(12, 10, 12, 8),
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(30),
+        boxShadow: [
+          BoxShadow(
+              color: Colors.black26, blurRadius: 10, offset: Offset(0, -3)),
+        ],
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          _buildNavItem(icon: Icons.dashboard, label: 'Dashboard', index: 0),
+          _buildNavItem(icon: Icons.calendar_month, label: 'Events', index: 1),
+          _buildNavItem(
+              icon: Icons.person,
+              label: 'Profile',
+              index: 2), // Center icon for Profile
+          _buildNavItem(icon: Icons.qr_code, label: 'QR', index: 4),
+        ],
+      ),
+    );
+  }
 
-Widget _buildNavItem({required IconData icon, required String label, required int index}) {
+  Widget _buildNavItem(
+      {required IconData icon, required String label, required int index}) {
     bool isSelected = pageIndex == index;
 
     return GestureDetector(
@@ -1236,7 +1308,8 @@ Widget _buildNavItem({required IconData icon, required String label, required in
           // Navigate to the QR Code screen without modifying pageIndex
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => QRCodeScreen(regId: reg_id)),
+            MaterialPageRoute(
+                builder: (context) => QRCodeScreen(regId: reg_id)),
           );
         } else {
           Navigator.of(context).pop(index);
@@ -1245,7 +1318,8 @@ Widget _buildNavItem({required IconData icon, required String label, required in
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, color: isSelected ? Colors.blue.shade400 : Colors.grey, size: 26),
+          Icon(icon,
+              color: isSelected ? Colors.blue.shade400 : Colors.grey, size: 26),
           SizedBox(height: 4),
           Text(
             label,

@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:evolvu/login.dart';
 import 'package:evolvu/Parent/parentDashBoard_Page.dart';
 import 'package:flutter/material.dart';
-
+import 'dart:developer';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -99,19 +99,19 @@ class _LoginDemoState extends State<UserNamePage> {
     });
 
     try {
-      print('emailstr body: $BaseURl');
+      log('emailstr body: $BaseURl');
 
       Response response = await post(
         Uri.parse('$BaseURl/validate_user'),
         body: {'user_id': emailstr},
       );
 
-      print('Response status code: ${response.statusCode}');
-      print('Response body: ${response.body}');
-      print('Response body: ${response.body}');
+      log('Response status code: ${response.statusCode}');
+      log('Response body: ${response.body}');
+      log('Response body: ${response.body}');
 
       if (response.statusCode == 200) {
-        print('Success');
+        log('Success');
 
         List<dynamic> responseData = jsonDecode(response.body);
         if (responseData.isNotEmpty && responseData.isNotEmpty) {
@@ -122,7 +122,7 @@ class _LoginDemoState extends State<UserNamePage> {
 
           // Convert SchoolInfo object to JSON
           String schoolInfoJson = jsonEncode(schoolInfo.toJson());
-          print('School Info JSON: $schoolInfoJson');
+          log('School Info JSON: $schoolInfoJson');
 
           // Store JSON string in shared preferences
           SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -146,11 +146,11 @@ class _LoginDemoState extends State<UserNamePage> {
         setState(() {
           shouldShowText = true;
         });
-        print('Failed');
+        log('Failed');
         // Handle failed login
       }
     } catch (e) {
-      print('Exception: $e');
+      log('Exception: $e');
     } finally {
       setState(() {
         _isLoading = false; // Stop the loading indicator
@@ -169,23 +169,23 @@ class _LoginDemoState extends State<UserNamePage> {
     final prefs = await SharedPreferences.getInstance();
     String? schoolInfoJson = prefs.getString('school_info');
     String? logUrls = prefs.getString('logUrls');
-    print('logUrls====\\\\: $logUrls');
+    log('logUrls====\\\\: $logUrls');
     if (logUrls != null) {
       try {
         Map<String, dynamic> logUrlsparsed = json.decode(logUrls);
-        print('logUrls====\\\\11111: $logUrls');
+        log('logUrls====\\\\11111: $logUrls');
 
         user_id = logUrlsparsed['user_id'];
         academic_yr = logUrlsparsed['academic_yr'];
         reg_id = logUrlsparsed['reg_id'];
 
-        print('academic_yr ID: $academic_yr');
-        print('reg_id: $reg_id');
+        log('academic_yr ID: $academic_yr');
+        log('reg_id: $reg_id');
       } catch (e) {
-        print('Error parsing school info: $e');
+        log('Error parsing school info: $e');
       }
     } else {
-      print('School info not found in SharedPreferences.');
+      log('School info not found in SharedPreferences.');
     }
 
     if (schoolInfoJson != null) {
@@ -197,14 +197,14 @@ class _LoginDemoState extends State<UserNamePage> {
         durl = parsedData['project_url'];
         checkLoginStatus(); // Check login status when the login screen is initialized
 
-        print('Short Name: $shortName');
-        print('URL: $url');
-        print('URL: $durl');
+        log('Short Name: $shortName');
+        log('URL: $url');
+        log('URL: $durl');
       } catch (e) {
-        print('Error parsing school info: $e');
+        log('Error parsing school info: $e');
       }
     } else {
-      print('School info not found in SharedPreferences.');
+      log('School info not found in SharedPreferences.');
     }
   }
 
@@ -419,16 +419,16 @@ class _LoginDemoState extends State<UserNamePage> {
     try {
       // Call the API and get the cleaned response
       BaseURl = await apiService.fetchUrl();
-      print('BaseURl Cleaned URL: $BaseURl');
+      log('BaseURl Cleaned URL: $BaseURl');
       getVersion(context);
     } catch (error) {
       // Handle any errors
-      print('BaseURl Error: $error');
+      log('BaseURl Error: $error');
     }
   }
 
   Future<void> getVersion(BuildContext _context) async {
-    print('latest_version11 => ${BaseURl + 'flutter_latest_version'}');
+    log('latest_version11 => ${BaseURl + 'flutter_latest_version'}');
 
     final url = Uri.parse(BaseURl + 'flutter_latest_version');
 
@@ -437,33 +437,33 @@ class _LoginDemoState extends State<UserNamePage> {
         url,
         body: {'type': 'ios'},
       );
-      print('latest_version => ${response.statusCode}');
+      log('latest_version => ${response.statusCode}');
 
       if (response.statusCode == 200) {
         final jsonData = jsonDecode(response.body);
-        print('latest_version => ${response.body}');
+        log('latest_version => ${response.body}');
 
         if (jsonData is List && jsonData.isNotEmpty) {
           final packageInfo = await PackageInfo.fromPlatform();
           packageInfoVar = packageInfo.version;
-          print('Current_version => ${packageInfo.version}');
-          print('Current_version packageInfoVar=> ${packageInfoVar}');
+          log('Current_version => ${packageInfo.version}');
+          log('Current_version packageInfoVar=> ${packageInfoVar}');
 
           final androidVersion = jsonData[0]['lattest_version'] as String;
           final releaseNotes = jsonData[0]['release_notes'] as String;
           final forcedUpdate = jsonData[0]['forced_update'] as String;
 
           if (androidVersion != null) {
-            print('Current_version => 22222 ${packageInfo.version}');
+            log('Current_version => 22222 ${packageInfo.version}');
 
             final localAndroidVersion = packageInfo.version;
 
             // Compare versions
             if (_isVersionGreater(androidVersion, localAndroidVersion)) {
-              print('Current_version => 3333 ${packageInfo.version}');
+              log('Current_version => 3333 ${packageInfo.version}');
 
               if (forcedUpdate == 'N') {
-                print('Current_version => NNNNN ${packageInfo.version}');
+                log('Current_version => NNNNN ${packageInfo.version}');
 
                 showDialog(
                   context: _context,
@@ -495,7 +495,7 @@ class _LoginDemoState extends State<UserNamePage> {
                   },
                 );
               } else if (forcedUpdate == 'Y') {
-                print('Current_version => 44444 ${packageInfo.version}');
+                log('Current_version => 44444 ${packageInfo.version}');
 
                 showDialog(
                   context: _context,
@@ -524,13 +524,13 @@ class _LoginDemoState extends State<UserNamePage> {
             }
           }
         } else {
-          print("Unexpected JSON format");
+          log("Unexpected JSON format");
         }
       } else {
-        print('Error Response: ${response.statusCode}');
+        log('Error Response: ${response.statusCode}');
       }
     } catch (e) {
-      print('Error: $e');
+      log('Error: $e');
     }
   }
 

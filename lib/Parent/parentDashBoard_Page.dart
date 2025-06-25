@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:crypto/crypto.dart';
 import 'package:evolvu/Parent/parentProfile_Page.dart';
@@ -29,7 +30,8 @@ import '../ID_Card/Parent_IDCard.dart';
 class ParentDashBoardPage extends StatefulWidget {
   final String academic_yr;
   final String shortName;
-   const ParentDashBoardPage({super.key, required this.academic_yr,required this.shortName});
+  const ParentDashBoardPage(
+      {super.key, required this.academic_yr, required this.shortName});
 
   @override
   // ignore: library_private_types_in_public_api
@@ -43,26 +45,26 @@ String user_id = "";
 String url = "";
 String durl = "";
 
-String paymentUrl="";
-String paymentUrlShare="";
-int receipt_button=0;
+String paymentUrl = "";
+String paymentUrlShare = "";
+int receipt_button = 0;
 String receiptUrl = "";
 
-String smartchat_url="";
+String smartchat_url = "";
 String username = "";
 
-
 Future<void> _getSchoolInfo(BuildContext context) async {
-  final academicYearProvider = Provider.of<AcademicYearProvider>(context, listen: false);
+  final academicYearProvider =
+      Provider.of<AcademicYearProvider>(context, listen: false);
 
   final prefs = await SharedPreferences.getInstance();
   String? schoolInfoJson = prefs.getString('school_info');
   String? logUrls = prefs.getString('logUrls');
-  print('logUrls1111 $schoolInfoJson');
+  log('logUrls1111 $schoolInfoJson');
   if (logUrls != null) {
     try {
       Map<String, dynamic> logUrlsparsed = json.decode(logUrls);
-      print('logUrls====\\\\11111: $logUrls');
+      log('logUrls====\\\\11111: $logUrls');
 
       user_id = logUrlsparsed['user_id'];
       // academic_yr = logUrlsparsed['academic_yr'];
@@ -70,18 +72,18 @@ Future<void> _getSchoolInfo(BuildContext context) async {
 
       academicYearProvider.setAcademicYear(logUrlsparsed['academic_yr']);
 
-      print('academic_yr ID: ${academicYearProvider.academic_yr}');
+      log('academic_yr ID: ${academicYearProvider.academic_yr}');
       academic_yr = academicYearProvider.academic_yr;
-      if(academic_yr.isEmpty){
+      if (academic_yr.isEmpty) {
         academic_yr = logUrlsparsed['academic_yr'];
       }
-      print('academic_yr ID: $academic_yr');
-      print('reg_id $reg_id');
+      log('academic_yr ID: $academic_yr');
+      log('reg_id $reg_id');
     } catch (e) {
-      print('Error parsing school info: $e');
+      log('Error parsing school info: $e');
     }
   } else {
-    print('School info not found in SharedPreferences.');
+    log('School info not found in SharedPreferences.');
   }
 
   if (schoolInfoJson != null) {
@@ -94,14 +96,14 @@ Future<void> _getSchoolInfo(BuildContext context) async {
 
       fetchDashboardData(url);
 
-      print('Short Name: $shortName');
-      print('URL: $url');
-      print('URL: $durl');
+      log('Short Name: $shortName');
+      log('URL: $url');
+      log('URL: $durl');
     } catch (e) {
-      print('Error parsing school info: $e');
+      log('Error parsing school info: $e');
     }
   } else {
-    print('School info not found in SharedPreferences.');
+    log('School info not found in SharedPreferences.');
   }
 }
 
@@ -115,9 +117,9 @@ Future<void> fetchDashboardData(String url) async {
     );
 
     if (response.statusCode == 200) {
-      print('response.body URL: 111111');
-      print('response.body URL: ${response.body}');
-      print('response.body URL: 222222');
+      log('response.body URL: 111111');
+      log('response.body URL: ${response.body}');
+      log('response.body URL: 222222');
 
       final Map<String, dynamic> data = jsonDecode(response.body);
 
@@ -138,62 +140,60 @@ Future<void> fetchDashboardData(String url) async {
 
       String encryptedUsername = encryptUsername(username, secretKey);
 
-      paymentUrlShare = "$paymentUrl?reg_id=$reg_id&academic_yr=$academic_yr&user_id=$uriUsername&encryptedUsername=$encryptedUsername&short_name=$shortName";
+      paymentUrlShare =
+          "$paymentUrl?reg_id=$reg_id&academic_yr=$academic_yr&user_id=$uriUsername&encryptedUsername=$encryptedUsername&short_name=$shortName";
 
-      print('message1_url : ${data['message1_url']}');
-      print('message2_url : ${data['message2_url']}');
+      log('message1_url : ${data['message1_url']}');
+      log('message2_url : ${data['message2_url']}');
 
-      print('Encrypted Username: $paymentUrlShare');
-      print('Encrypted Username: $encryptedUsername');
+      log('Encrypted Username: $paymentUrlShare');
+      log('Encrypted Username: $encryptedUsername');
 
-      print('Receipt URL: $receiptUrl');
-      print('Payment URL: $paymentUrl');
-      print('smartchat_url : $smartchat_url');
+      log('Receipt URL: $receiptUrl');
+      log('Payment URL: $paymentUrl');
+      log('smartchat_url : $smartchat_url');
     } else {
-      print('Failed to load data: ${response.statusCode}');
+      log('Failed to load data: ${response.statusCode}');
     }
   } catch (e) {
-    print('Error: $e');
+    log('Error: $e');
   }
 }
 
-  String encryptUsername(String username, String secretKey) {
-    // Combine the username and secretKey
-    String combined = username + secretKey;
+String encryptUsername(String username, String secretKey) {
+  // Combine the username and secretKey
+  String combined = username + secretKey;
 
-    // Convert the combined string to bytes
-    List<int> bytes = utf8.encode(combined);
+  // Convert the combined string to bytes
+  List<int> bytes = utf8.encode(combined);
 
-    // Perform SHA1 encryption
-    Digest sha1Result = sha1.convert(bytes);
+  // Perform SHA1 encryption
+  Digest sha1Result = sha1.convert(bytes);
 
-    // Return the encrypted value as a hexadecimal string
-    return sha1Result.toString();
-  }
+  // Return the encrypted value as a hexadecimal string
+  return sha1Result.toString();
+}
 
-  String customUriEncode(String input, String allowedChars) {
-    final StringBuffer encoded = StringBuffer();
+String customUriEncode(String input, String allowedChars) {
+  final StringBuffer encoded = StringBuffer();
 
-    for (int i = 0; i < input.length; i++) {
-      final String char = input[i];
-      if (allowedChars.contains(char)) {
-        encoded.write(char);  // Allow the character as-is
-      } else {
-        // Percent-encode the character
-        final List<int> bytes = utf8.encode(char);
-        for (final int byte in bytes) {
-          encoded.write('%${byte.toRadixString(16).toUpperCase()}');
-        }
+  for (int i = 0; i < input.length; i++) {
+    final String char = input[i];
+    if (allowedChars.contains(char)) {
+      encoded.write(char); // Allow the character as-is
+    } else {
+      // Percent-encode the character
+      final List<int> bytes = utf8.encode(char);
+      for (final int byte in bytes) {
+        encoded.write('%${byte.toRadixString(16).toUpperCase()}');
       }
     }
-
-    return encoded.toString();
   }
 
-Future<void> PostMsg1() async {
-
+  return encoded.toString();
 }
 
+Future<void> PostMsg1() async {}
 
 class _ParentDashBoardPageState extends State<ParentDashBoardPage> {
   int pageIndex = 0;
@@ -210,7 +210,8 @@ class _ParentDashBoardPageState extends State<ParentDashBoardPage> {
   Widget build(BuildContext context) {
     _context = context;
     final pages = [
-      StudentCard(acd:widget.academic_yr,
+      StudentCard(
+        acd: widget.academic_yr,
         onTap: (int index) {
           setState(() {
             pageIndex = index;
@@ -244,100 +245,98 @@ class _ParentDashBoardPageState extends State<ParentDashBoardPage> {
         }
       },
       child: Scaffold(
-          backgroundColor: Colors.blue,
-          appBar: AppBar(
-            title: Text(
-              "${widget.shortName} EvolvU Smart Parent App(${widget.academic_yr})",
-              style: TextStyle(fontSize: 14.sp, color: Colors.white),
-            ),
-            backgroundColor: Colors.pink,
-            elevation: 0,
-            leading: IconButton(
-              icon: const CircleAvatar(
-                backgroundColor: Colors.white,
-                radius: 18,
-                child: Icon(Icons.menu, color: Colors.pink),
-              ),
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return CustomPopup();
-                  },
-                );
-              },
-            ),
+        backgroundColor: Colors.blue,
+        appBar: AppBar(
+          title: Text(
+            "${widget.shortName} EvolvU Smart Parent App(${widget.academic_yr})",
+            style: TextStyle(fontSize: 14.sp, color: Colors.white),
           ),
-          body: Stack(
-            children: [
-              Container(
-                width: double.infinity, // Ensure it takes full width
-                height: double.infinity, // Ensure it takes full height
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [Colors.pink, Colors.blue],
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                  ),
+          backgroundColor: Colors.pink,
+          elevation: 0,
+          leading: IconButton(
+            icon: const CircleAvatar(
+              backgroundColor: Colors.white,
+              radius: 18,
+              child: Icon(Icons.menu, color: Colors.pink),
+            ),
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return CustomPopup();
+                },
+              );
+            },
+          ),
+        ),
+        body: Stack(
+          children: [
+            Container(
+              width: double.infinity, // Ensure it takes full width
+              height: double.infinity, // Ensure it takes full height
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Colors.pink, Colors.blue],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
                 ),
               ),
-              // Page content
-              pages[pageIndex],
-            ],
-          ),
-          bottomNavigationBar: buildMyNavBar(),
+            ),
+            // Page content
+            pages[pageIndex],
+          ],
+        ),
+        bottomNavigationBar: buildMyNavBar(),
       ),
     );
   }
 
-
-
   Future<void> getVersion(BuildContext context) async {
-
     String BaseURl = "";
     final apiService = ApiService();
     try {
       // Call the API and get the cleaned response
       BaseURl = await apiService.fetchUrl();
-      print('BaseURl Cleaned URL: $BaseURl');
+      log('BaseURl Cleaned URL: $BaseURl');
     } catch (error) {
       // Handle any errors
-      print('BaseURl Error: $error');
+      log('BaseURl Error: $error');
     }
-    print('lastest_version1122 => ${'${BaseURl}flutter_latest_version'}');
+    log('lastest_version1122 => ${'${BaseURl}flutter_latest_version'}');
 
+    log('latest_version11 => ${'${BaseURl}flutter_latest_version'}');
 
-    print('latest_version11 => ${'${BaseURl}flutter_latest_version'}');
-
-    final url = Uri.parse('${BaseURl}flutter_latest_version'); // Assuming BaseURl is your base URL
+    final url = Uri.parse(
+        '${BaseURl}flutter_latest_version'); // Assuming BaseURl is your base URL
 
     try {
       final response = await http.post(url);
-      print('latest_version => ${response.statusCode}');
+      log('latest_version => ${response.statusCode}');
 
       if (response.statusCode == 200) {
         final jsonData = jsonDecode(response.body);
-        print('latest_version => ${response.body}');
+        log('latest_version => ${response.body}');
 
         // Check if jsonData is a list and extract the first item if it is
         if (jsonData is List && jsonData.isNotEmpty) {
           final packageInfo = await PackageInfo.fromPlatform();
-          print('Current_version => ${packageInfo.version}');
+          log('Current_version => ${packageInfo.version}');
 
-          final androidVersion = jsonData[0]['latest_version'] as String; // Ensure this is a String
+          final androidVersion = jsonData[0]['latest_version']
+              as String; // Ensure this is a String
           final releaseNotes = jsonData[0]['release_notes'] as String;
           final forcedUpdate = jsonData[0]['forced_update'] as String;
 
-          print('Current_version => 22222 ${packageInfo.version}');
+          log('Current_version => 22222 ${packageInfo.version}');
 
           final localAndroidVersion = packageInfo.version;
 
           // Compare versions
           if (_isVersionGreater(androidVersion, localAndroidVersion)) {
-            print('Current_version => 3333 ${packageInfo.version}');
+            log('Current_version => 3333 ${packageInfo.version}');
 
             if (forcedUpdate == 'N') {
-              print('Current_version => NNNNN ${packageInfo.version}');
+              log('Current_version => NNNNN ${packageInfo.version}');
 
               showDialog(
                 context: context,
@@ -368,7 +367,7 @@ class _ParentDashBoardPageState extends State<ParentDashBoardPage> {
                 },
               );
             } else if (forcedUpdate == 'Y') {
-              print('Current_version => 44444 ${packageInfo.version}');
+              log('Current_version => 44444 ${packageInfo.version}');
 
               showDialog(
                 context: context,
@@ -394,22 +393,24 @@ class _ParentDashBoardPageState extends State<ParentDashBoardPage> {
               );
             }
           }
-                } else {
-          print("Unexpected JSON format");
+        } else {
+          log("Unexpected JSON format");
         }
       } else {
-        print('Error Response: ${response.statusCode}');
+        log('Error Response: ${response.statusCode}');
       }
     } catch (e) {
-      print('Error: $e');
+      log('Error: $e');
     }
   }
 
 // Helper function to compare version strings
   bool _isVersionGreater(String newVersion, String currentVersion) {
     // Split version strings into parts
-    List<int> newParts = newVersion.split('.').map((e) => int.parse(e)).toList();
-    List<int> currentParts = currentVersion.split('.').map((e) => int.parse(e)).toList();
+    List<int> newParts =
+        newVersion.split('.').map((e) => int.parse(e)).toList();
+    List<int> currentParts =
+        currentVersion.split('.').map((e) => int.parse(e)).toList();
 
     // Compare each part of the version
     for (int i = 0; i < newParts.length; i++) {
@@ -428,7 +429,6 @@ class _ParentDashBoardPageState extends State<ParentDashBoardPage> {
     return false;
   }
 
-
   Widget buildMyNavBar() {
     return Container(
       margin: const EdgeInsets.fromLTRB(12, 10, 12, 8),
@@ -436,14 +436,18 @@ class _ParentDashBoardPageState extends State<ParentDashBoardPage> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(30),
-        boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 10, offset: Offset(0, -3))],
+        boxShadow: [
+          BoxShadow(
+              color: Colors.black26, blurRadius: 10, offset: Offset(0, -3))
+        ],
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           _buildNavItem(icon: Icons.dashboard, label: 'Dashboard', index: 0),
           _buildNavItem(icon: Icons.calendar_month, label: 'Events', index: 1),
-          _buildCenterNavItem(icon: Icons.currency_rupee_sharp, index: 5), // Center icon
+          _buildCenterNavItem(
+              icon: Icons.currency_rupee_sharp, index: 5), // Center icon
           _buildNavItem(icon: Icons.person, label: 'Profile', index: 2),
           _buildNavItem(icon: Icons.qr_code, label: 'QR', index: 4),
         ],
@@ -451,8 +455,8 @@ class _ParentDashBoardPageState extends State<ParentDashBoardPage> {
     );
   }
 
-
-  Widget _buildNavItem({required IconData icon, required String label, required int index}) {
+  Widget _buildNavItem(
+      {required IconData icon, required String label, required int index}) {
     bool isSelected = pageIndex == index;
 
     return GestureDetector(
@@ -461,7 +465,8 @@ class _ParentDashBoardPageState extends State<ParentDashBoardPage> {
           // Navigate to the QR Code screen without modifying pageIndex
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => QRCodeScreen(regId: reg_id)),
+            MaterialPageRoute(
+                builder: (context) => QRCodeScreen(regId: reg_id)),
           );
         } else {
           // Change pageIndex for BottomNavigationBar screens
@@ -471,7 +476,8 @@ class _ParentDashBoardPageState extends State<ParentDashBoardPage> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, color: isSelected ? Colors.blue.shade400 : Colors.grey, size: 26),
+          Icon(icon,
+              color: isSelected ? Colors.blue.shade400 : Colors.grey, size: 26),
           SizedBox(height: 4),
           Text(
             label,
@@ -486,8 +492,6 @@ class _ParentDashBoardPageState extends State<ParentDashBoardPage> {
     );
   }
 
-
-
   Widget _buildCenterNavItem({required IconData icon, required int index}) {
     bool isSelected = pageIndex == index;
 
@@ -496,11 +500,17 @@ class _ParentDashBoardPageState extends State<ParentDashBoardPage> {
         if (index == 5) {
           // Navigate to the QR Code screen without modifying pageIndex
           Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) =>
-         Dashboardonlinefeespayment(regId: reg_id, paymentUrlShare: paymentUrlShare, receiptUrl: receiptUrl, shortName: shortName, academicYr: academic_yr, receipt_button: receipt_button,),)
-
-        );
+              context,
+              MaterialPageRoute(
+                builder: (context) => Dashboardonlinefeespayment(
+                  regId: reg_id,
+                  paymentUrlShare: paymentUrlShare,
+                  receiptUrl: receiptUrl,
+                  shortName: shortName,
+                  academicYr: academic_yr,
+                  receipt_button: receipt_button,
+                ),
+              ));
         } else {
           // Change pageIndex for BottomNavigationBar screens
           setState(() => pageIndex = index);
@@ -524,7 +534,6 @@ class _ParentDashBoardPageState extends State<ParentDashBoardPage> {
       ),
     );
   }
-
 }
 
 class CardItem {
@@ -556,7 +565,7 @@ Future<void> showLogoutConfirmationDialog(BuildContext context) async {
             child: ListBody(
               children: <Widget>[
                 Text('Do you want to logout?',
-                    style: TextStyle(fontSize: 16.sp,color: Colors.grey)),
+                    style: TextStyle(fontSize: 16.sp, color: Colors.grey)),
               ],
             ),
           ),
@@ -600,10 +609,9 @@ Future<void> logout(BuildContext context) async {
   // Navigate to the login screen
   Navigator.of(context).pushAndRemoveUntil(
     MaterialPageRoute(builder: (context) => UserNamePage()),
-        (Route<dynamic> route) => false,
+    (Route<dynamic> route) => false,
   );
 }
-
 
 class CustomPopup extends StatelessWidget {
   const CustomPopup({super.key});
@@ -611,9 +619,8 @@ class CustomPopup extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     List<CardItem> cardItems = [
-
       CardItem(
-        imagePath:'assets/parents.png',
+        imagePath: 'assets/parents.png',
         title: 'My Profile',
         onTap: () {
           Navigator.push(
@@ -635,11 +642,18 @@ class CustomPopup extends StatelessWidget {
         imagePath: 'assets/cashpayment.png',
         title: 'Fees Payment',
         onTap: () {
+          //log(receiptUrl);
           Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) => DrawerOnlineFeesPayment(
-                  regId: reg_id,paymentUrlShare:paymentUrlShare,receiptUrl:receiptUrl,shortName: shortName,academicYr: academic_yr, receipt_button: receipt_button,),
+                regId: reg_id,
+                paymentUrlShare: paymentUrlShare,
+                receiptUrl: receiptUrl,
+                shortName: shortName,
+                academicYr: academic_yr,
+                receipt_button: receipt_button,
+              ),
             ),
           );
         },
@@ -651,12 +665,16 @@ class CustomPopup extends StatelessWidget {
         onTap: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (_) => ChangePasswordPage(academicYear:academic_yr,shortName: shortName, userID: user_id, url: url,)),
+            MaterialPageRoute(
+                builder: (_) => ChangePasswordPage(
+                      academicYear: academic_yr,
+                      shortName: shortName,
+                      userID: user_id,
+                      url: url,
+                    )),
           );
         },
       ),
-
-
 
       // CardItem(
       //   imagePath: 'assets/idcard.png',
@@ -675,8 +693,7 @@ class CustomPopup extends StatelessWidget {
         onTap: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (_) => StudentFormScreen(
-            )),
+            MaterialPageRoute(builder: (_) => StudentFormScreen()),
           );
         },
       ),
@@ -687,11 +704,12 @@ class CustomPopup extends StatelessWidget {
         onTap: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (_) => ChangeAcademicYearScreen(academic_yr:academic_yr,shortName: shortName)),
+            MaterialPageRoute(
+                builder: (_) => ChangeAcademicYearScreen(
+                    academic_yr: academic_yr, shortName: shortName)),
           );
         },
       ),
-
 
       // Add the new Share App card here
       CardItem(
@@ -711,7 +729,9 @@ class CustomPopup extends StatelessWidget {
         onTap: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (_) => AboutUsPage(academic_yr:academic_yr,shortName: shortName)),
+            MaterialPageRoute(
+                builder: (_) => AboutUsPage(
+                    academic_yr: academic_yr, shortName: shortName)),
           );
         },
       ),

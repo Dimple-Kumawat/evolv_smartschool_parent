@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:evolvu/Notice_SMS/notice_DeatilPage.dart';
 import 'package:flutter/material.dart';
@@ -21,8 +22,8 @@ class NoticeDetailCard extends StatelessWidget {
   final String noticeDesc;
   final List<Attachment> attachment;
 
-
-  const NoticeDetailCard({super.key, 
+  const NoticeDetailCard({
+    super.key,
     required this.teacher,
     required this.remarksubject,
     required this.type,
@@ -33,7 +34,6 @@ class NoticeDetailCard extends StatelessWidget {
     required this.classname,
     required this.noticeDesc,
     required this.attachment,
-
   });
 
   Future<void> updateReadStatus() async {
@@ -44,22 +44,22 @@ class NoticeDetailCard extends StatelessWidget {
     final prefs = await SharedPreferences.getInstance();
     String? schoolInfoJson = prefs.getString('school_info');
     String? logUrls = prefs.getString('logUrls');
-    print('logUrls====\\\\: $logUrls');
+    log('logUrls====\\\\: $logUrls');
     if (logUrls != null) {
       try {
         Map<String, dynamic> logUrlsparsed = json.decode(logUrls);
-        print('logUrls====\\\\11111: $logUrls');
+        log('logUrls====\\\\11111: $logUrls');
 
         academicYr = logUrlsparsed['academic_yr'];
         regId = logUrlsparsed['reg_id'];
 
-        print('academic_yr ID: $academicYr');
-        print('reg_id: $regId');
+        log('academic_yr ID: $academicYr');
+        log('reg_id: $regId');
       } catch (e) {
-        print('Error parsing school info: $e');
+        log('Error parsing school info: $e');
       }
     } else {
-      print('School info not found in SharedPreferences.');
+      log('School info not found in SharedPreferences.');
     }
 
     if (schoolInfoJson != null) {
@@ -69,13 +69,13 @@ class NoticeDetailCard extends StatelessWidget {
         shortName = parsedData['short_name'];
         url = parsedData['url'];
 
-        print('Short Name: $shortName');
-        print('URL: $url');
+        log('Short Name: $shortName');
+        log('URL: $url');
       } catch (e) {
-        print('Error parsing school info: $e');
+        log('Error parsing school info: $e');
       }
     } else {
-      print('School info not found in SharedPreferences.');
+      log('School info not found in SharedPreferences.');
     }
     DateTime parsedDate = DateTime.parse(DateTime.now().toIso8601String());
     String formattedDate = DateFormat("yyyy-MM-dd").format(parsedDate);
@@ -92,15 +92,14 @@ class NoticeDetailCard extends StatelessWidget {
       // Assuming the server returns a boolean to indicate success
       bool success = json.decode(response.body) as bool;
       if (success) {
-        print('Read status updated successfully');
+        log('Read status updated successfully');
       } else {
-        print('Failed to update read status');
+        log('Failed to update read status');
       }
     } else {
-      print('Failed to update read status');
+      log('Failed to update read status');
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -135,7 +134,7 @@ class NoticeDetailCard extends StatelessWidget {
           ),
           child: Column(
             children: [
-              SizedBox(height: 100.h),
+              SizedBox(height: 110.h),
               Text(
                 "Notice/SMS Details",
                 style: TextStyle(
@@ -154,13 +153,12 @@ class NoticeDetailCard extends StatelessWidget {
                       padding: const EdgeInsets.all(12.0),
                       child: NoticeDetailPage(
                         noticeInfo: NoticeInfo(
-                            classname:classname,
-                            date:date,
-                          subject:remarksubject,
-                          description:noticeDesc,
-                          attachment:attachment,
-                          noticeId:noticeID,
-
+                          classname: classname,
+                          date: date,
+                          subject: remarksubject,
+                          description: noticeDesc,
+                          attachment: attachment,
+                          noticeId: noticeID,
                         ),
 
                         // showAttachments: type == 'notice',

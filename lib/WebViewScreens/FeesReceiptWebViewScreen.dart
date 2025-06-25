@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 import 'package:evolvu/main.dart';
 import 'package:flutter/material.dart';
@@ -56,13 +57,15 @@ class _ReceiptWebViewScreenState extends State<ReceiptWebViewScreen> {
       ..setNavigationDelegate(
         NavigationDelegate(
           onNavigationRequest: (NavigationRequest request) {
-            if (request.url.endsWith(".pdf") || request.url.contains("/download_receipt")) {
+            if (request.url.endsWith(".pdf") ||
+                request.url.contains("/download_receipt")) {
               if (Platform.isAndroid) {
-                 _downloadFile(request.url);
-              }else if (Platform.isIOS) {
+                _downloadFile(request.url);
+              } else if (Platform.isIOS) {
                 _downloadFileIOS(request.url);
               }
-              return NavigationDecision.prevent; // Stop WebView from opening the URL
+              return NavigationDecision
+                  .prevent; // Stop WebView from opening the URL
             }
             return NavigationDecision.navigate;
           },
@@ -78,7 +81,7 @@ class _ReceiptWebViewScreenState extends State<ReceiptWebViewScreen> {
     });
 
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
-    AndroidNotificationDetails(
+        AndroidNotificationDetails(
       'download_channel',
       'Download Channel',
       channelDescription: 'Notifications for file downloads',
@@ -89,11 +92,11 @@ class _ReceiptWebViewScreenState extends State<ReceiptWebViewScreen> {
     );
 
     const NotificationDetails platformChannelSpecifics =
-    NotificationDetails(android: androidPlatformChannelSpecifics);
+        NotificationDetails(android: androidPlatformChannelSpecifics);
 
     try {
       var directory =
-      Directory("/storage/emulated/0/Download/Evolvuschool/Parent/receipt");
+          Directory("/storage/emulated/0/Download/Evolvuschool/Parent/receipt");
 
       int fileNumber = 1;
       while (await File('${directory.path}/receipt_$fileNumber.pdf').exists()) {
@@ -165,7 +168,6 @@ class _ReceiptWebViewScreenState extends State<ReceiptWebViewScreen> {
     }
   }
 
-
   // Future<void> _downloadFileIOS(String url) async {
   //   setState(() {
   //     _isDownloading = true; // Show loader
@@ -235,7 +237,7 @@ class _ReceiptWebViewScreenState extends State<ReceiptWebViewScreen> {
 
     // Show downloading notification
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
-    AndroidNotificationDetails(
+        AndroidNotificationDetails(
       'download_channel',
       'Download Channel',
       channelDescription: 'Notifications for file downloads',
@@ -246,10 +248,9 @@ class _ReceiptWebViewScreenState extends State<ReceiptWebViewScreen> {
     );
 
     const NotificationDetails platformChannelSpecifics =
-    NotificationDetails(android: androidPlatformChannelSpecifics);
+        NotificationDetails(android: androidPlatformChannelSpecifics);
 
     try {
-
       // await flutterLocalNotificationsPlugin.show(
       //   0,
       //   'Downloading Receipt',
@@ -290,7 +291,6 @@ class _ReceiptWebViewScreenState extends State<ReceiptWebViewScreen> {
           ),
         );
       }
-
     } catch (e) {
       await flutterLocalNotificationsPlugin.show(
         0,
@@ -362,14 +362,14 @@ class _ReceiptWebViewScreenState extends State<ReceiptWebViewScreen> {
   }
 }
 
-
 class ReceiptWebViewScreenVali extends StatefulWidget {
   final String receiptUrl;
 
   const ReceiptWebViewScreenVali({super.key, required this.receiptUrl});
 
   @override
-  _ReceiptWebViewScreenValiState createState() => _ReceiptWebViewScreenValiState();
+  _ReceiptWebViewScreenValiState createState() =>
+      _ReceiptWebViewScreenValiState();
 }
 
 class _ReceiptWebViewScreenValiState extends State<ReceiptWebViewScreenVali> {
@@ -386,13 +386,15 @@ class _ReceiptWebViewScreenValiState extends State<ReceiptWebViewScreenVali> {
       ..setNavigationDelegate(
         NavigationDelegate(
           onNavigationRequest: (NavigationRequest request) {
-            if (request.url.endsWith(".pdf") || request.url.contains("/download_receipt")) {
+            if (request.url.endsWith(".pdf") ||
+                request.url.contains("/download_receipt")) {
               if (Platform.isAndroid) {
-                 _downloadFile(request.url);
-              }else if (Platform.isIOS) {
+                _downloadFile(request.url);
+              } else if (Platform.isIOS) {
                 _downloadFileIOS(request.url);
               }
-              return NavigationDecision.prevent; // Stop WebView from opening the URL
+              return NavigationDecision
+                  .prevent; // Stop WebView from opening the URL
             }
             return NavigationDecision.navigate;
           },
@@ -408,7 +410,7 @@ class _ReceiptWebViewScreenValiState extends State<ReceiptWebViewScreenVali> {
     });
 
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
-    AndroidNotificationDetails(
+        AndroidNotificationDetails(
       'download_channel',
       'Download Channel',
       channelDescription: 'Notifications for file downloads',
@@ -419,7 +421,7 @@ class _ReceiptWebViewScreenValiState extends State<ReceiptWebViewScreenVali> {
     );
 
     const NotificationDetails platformChannelSpecifics =
-    NotificationDetails(android: androidPlatformChannelSpecifics);
+        NotificationDetails(android: androidPlatformChannelSpecifics);
 
     try {
       // First check if the URL is valid and file exists (HEAD request)
@@ -429,7 +431,8 @@ class _ReceiptWebViewScreenValiState extends State<ReceiptWebViewScreenVali> {
       }
 
       // Create download directory
-      final directory = Directory("/storage/emulated/0/Download/Evolvuschool/Parent/receipt");
+      final directory =
+          Directory("/storage/emulated/0/Download/Evolvuschool/Parent/receipt");
       if (!await directory.exists()) {
         await directory.create(recursive: true);
       }
@@ -498,7 +501,8 @@ class _ReceiptWebViewScreenValiState extends State<ReceiptWebViewScreenVali> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Download failed: ${e.toString().replaceAll('Exception: ', '')}'),
+          content: Text(
+              'Download failed: ${e.toString().replaceAll('Exception: ', '')}'),
           backgroundColor: Colors.red,
         ),
       );
@@ -527,7 +531,7 @@ class _ReceiptWebViewScreenValiState extends State<ReceiptWebViewScreenVali> {
 
     // Show downloading notification
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
-    AndroidNotificationDetails(
+        AndroidNotificationDetails(
       'download_channel',
       'Download Channel',
       channelDescription: 'Notifications for file downloads',
@@ -538,10 +542,9 @@ class _ReceiptWebViewScreenValiState extends State<ReceiptWebViewScreenVali> {
     );
 
     const NotificationDetails platformChannelSpecifics =
-    NotificationDetails(android: androidPlatformChannelSpecifics);
+        NotificationDetails(android: androidPlatformChannelSpecifics);
 
     try {
-
       // await flutterLocalNotificationsPlugin.show(
       //   0,
       //   'Downloading Receipt',
@@ -582,7 +585,6 @@ class _ReceiptWebViewScreenValiState extends State<ReceiptWebViewScreenVali> {
           ),
         );
       }
-
     } catch (e) {
       await flutterLocalNotificationsPlugin.show(
         0,
@@ -602,8 +604,6 @@ class _ReceiptWebViewScreenValiState extends State<ReceiptWebViewScreenVali> {
       });
     }
   }
-
-
 
   @override
   Widget build(BuildContext context) {

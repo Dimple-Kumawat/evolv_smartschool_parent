@@ -1,5 +1,5 @@
-
 import 'dart:convert';
+import 'dart:developer';
 import 'package:evolvu/Teacher/teacher_DeatilCard.dart';
 import 'package:evolvu/Teacher/teacher_noteCard.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +14,8 @@ class TeacherNotePage extends StatefulWidget {
   final String classId;
   final String secId;
 
-  const TeacherNotePage({super.key, 
+  const TeacherNotePage({
+    super.key,
     required this.studentId,
     required this.academic_yr,
     required this.shortName,
@@ -40,10 +41,10 @@ class _TeacherNotePageState extends State<TeacherNotePage> {
         Map<String, dynamic> logUrlsparsed = json.decode(logUrls);
         reg_id = logUrlsparsed['reg_id'];
       } catch (e) {
-        print('Error parsing school info: $e');
+        log('Error parsing school info: $e');
       }
     } else {
-      print('School info not found in SharedPreferences.');
+      log('School info not found in SharedPreferences.');
     }
 
     if (schoolInfoJson != null) {
@@ -51,10 +52,10 @@ class _TeacherNotePageState extends State<TeacherNotePage> {
         Map<String, dynamic> parsedData = json.decode(schoolInfoJson);
         url = parsedData['url'];
       } catch (e) {
-        print('Error parsing school info: $e');
+        log('Error parsing school info: $e');
       }
     } else {
-      print('School info not found in SharedPreferences.');
+      log('School info not found in SharedPreferences.');
     }
 
     final response = await http.post(
@@ -70,7 +71,7 @@ class _TeacherNotePageState extends State<TeacherNotePage> {
 
     if (response.statusCode == 200) {
       List<dynamic> data = json.decode(response.body);
-      print(data);
+      log(data.toString());
       return data.map((item) => TeacherNote.fromJson(item)).toList();
     } else {
       throw Exception('Failed to load teacher notes');
@@ -164,7 +165,9 @@ class _TeacherNotePageState extends State<TeacherNotePage> {
                                   fit: BoxFit.contain,
                                 ),
                               ),
-                              SizedBox(height: 10), // Add spacing between emoji and text
+                              SizedBox(
+                                  height:
+                                      10), // Add spacing between emoji and text
                               Text(
                                 'Teacher Notes not Assigned',
                                 style: TextStyle(
@@ -206,7 +209,9 @@ class _TeacherNotePageState extends State<TeacherNotePage> {
                                   fit: BoxFit.contain,
                                 ),
                               ),
-                              SizedBox(height: 10), // Add spacing between emoji and text
+                              SizedBox(
+                                  height:
+                                      10), // Add spacing between emoji and text
                               Text(
                                 'Teacher Notes not Assigned',
                                 style: TextStyle(
@@ -220,7 +225,6 @@ class _TeacherNotePageState extends State<TeacherNotePage> {
                           ),
                         ),
                       );
-
                     } else {
                       final notes = snapshot.data!;
                       return ListView.builder(

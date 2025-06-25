@@ -1,8 +1,8 @@
-
 import 'package:flutter/material.dart';
 
 class HashLabeledDropdown extends StatelessWidget {
   final String label;
+  final bool readOnly;
   final List<String> options;
   final String? selectedValue;
   final Function(String?) onChanged;
@@ -12,6 +12,7 @@ class HashLabeledDropdown extends StatelessWidget {
     super.key,
     required this.label,
     required this.options,
+    this.readOnly = false,
     required this.onChanged,
     this.selectedValue,
     this.isRequired = true, // Default to not required
@@ -29,7 +30,6 @@ class HashLabeledDropdown extends StatelessWidget {
             child: RichText(
               text: TextSpan(
                 children: [
-
                   TextSpan(
                     text: label,
                     style: const TextStyle(
@@ -60,9 +60,10 @@ class HashLabeledDropdown extends StatelessWidget {
               ),
               child: DropdownButtonHideUnderline(
                 child: DropdownButton<String>(
-                  value: selectedValue != null && options.contains(selectedValue)
-                      ? selectedValue
-                      : options.first, // Ensure a valid default
+                  value:
+                      selectedValue != null && options.contains(selectedValue)
+                          ? selectedValue
+                          : options.first, // Ensure a valid default
                   icon: const Icon(Icons.arrow_drop_down),
                   isExpanded: true,
                   items: options.map<DropdownMenuItem<String>>((String value) {
@@ -72,7 +73,8 @@ class HashLabeledDropdown extends StatelessWidget {
                         value,
                         style: const TextStyle(
                           fontSize: 14.0,
-                          fontWeight: FontWeight.normal, // Ensure text is not bold
+                          fontWeight:
+                              FontWeight.normal, // Ensure text is not bold
                           color: Colors.black, // Set color explicitly if needed
                         ),
                       ),

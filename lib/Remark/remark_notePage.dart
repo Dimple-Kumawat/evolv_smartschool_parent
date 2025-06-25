@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:evolvu/Parent/parentDashBoard_Page.dart';
 import 'package:evolvu/Remark/remark_DeatilCard.dart';
 import 'package:flutter/material.dart';
@@ -15,7 +17,13 @@ class RemarkNotePage extends StatefulWidget {
   final String shortName;
   final String classId;
   final String secId;
-  const RemarkNotePage({super.key, required this.studentId, required this.academic_yr, required this.shortName, required this.classId, required this.secId});
+  const RemarkNotePage(
+      {super.key,
+      required this.studentId,
+      required this.academic_yr,
+      required this.shortName,
+      required this.classId,
+      required this.secId});
 
   @override
   _RemarkNotePage createState() => _RemarkNotePage();
@@ -29,15 +37,13 @@ class _RemarkNotePage extends State<RemarkNotePage> {
   String url = "";
   String Ack = "";
 
-
-
   @override
   void initState() {
     super.initState();
     futureRemarks = fetchRemarks();
   }
 
-  Future<void> setRemarkAck(String remarkId,String ack) async {
+  Future<void> setRemarkAck(String remarkId, String ack) async {
     final prefs = await SharedPreferences.getInstance();
     String? schoolInfoJson = prefs.getString('school_info');
     String? logUrls = prefs.getString('logUrls');
@@ -50,7 +56,7 @@ class _RemarkNotePage extends State<RemarkNotePage> {
         Map<String, dynamic> logUrlsparsed = json.decode(logUrls);
         regId = logUrlsparsed['reg_id'];
       } catch (e) {
-        print('Error parsing log URLs: $e');
+        log('Error parsing log URLs: $e');
       }
     }
 
@@ -59,7 +65,7 @@ class _RemarkNotePage extends State<RemarkNotePage> {
         Map<String, dynamic> parsedData = json.decode(schoolInfoJson);
         url = parsedData['url'];
       } catch (e) {
-        print('Error parsing school info: $e');
+        log('Error parsing school info: $e');
       }
     }
 
@@ -72,12 +78,12 @@ class _RemarkNotePage extends State<RemarkNotePage> {
     );
 
     if (response.statusCode == 200) {
-      print('set_remarkAck Success: ${response.body}');
+      log('set_remarkAck Success: ${response.body}');
 
       // Ack = response.body;
-      // print('set_remarkAck ACK : $Ack');
+      // log('set_remarkAck ACK : $Ack');
 
-      if(ack == 'N'){
+      if (ack == 'N') {
         Fluttertoast.showToast(
           msg: "Acknowledge Successfully",
           toastLength: Toast.LENGTH_SHORT,
@@ -93,11 +99,10 @@ class _RemarkNotePage extends State<RemarkNotePage> {
         futureRemarks = fetchRemarks();
       });
     } else {
-      print('Failed to acknowledge remark: ${response.statusCode}');
+      log('Failed to acknowledge remark: ${response.statusCode}');
       throw Exception('Failed to acknowledge remark: ${response.statusCode}');
     }
   }
-
 
   Future<List<Remark>> fetchRemarks() async {
     final prefs = await SharedPreferences.getInstance();
@@ -110,10 +115,10 @@ class _RemarkNotePage extends State<RemarkNotePage> {
         // academic_yr = logUrlsparsed['academic_yr'];
         reg_id = logUrlsparsed['reg_id'];
       } catch (e) {
-        print('Error parsing log URLs: $e');
+        log('Error parsing log URLs: $e');
       }
     } else {
-      print('Log URLs not found in SharedPreferences.');
+      log('Log URLs not found in SharedPreferences.');
     }
 
     if (schoolInfoJson != null) {
@@ -122,13 +127,13 @@ class _RemarkNotePage extends State<RemarkNotePage> {
         shortName = parsedData['short_name'];
         url = parsedData['url'];
       } catch (e) {
-        print('Error parsing school info: $e');
+        log('Error parsing school info: $e');
       }
     } else {
-      print('School info not found in SharedPreferences.');
+      log('School info not found in SharedPreferences.');
     }
 
-    print('API URL: $url get_premark');
+    log('API URL: $url get_premark');
     final response = await http.post(
       Uri.parse('${url}get_premark'),
       body: {
@@ -140,7 +145,7 @@ class _RemarkNotePage extends State<RemarkNotePage> {
     );
 
     if (response.statusCode == 200) {
-      print('Response: ${response.body}');
+      log('Response: ${response.body}');
 
       List jsonResponse = json.decode(response.body);
       if (jsonResponse.isNotEmpty) {
@@ -149,14 +154,14 @@ class _RemarkNotePage extends State<RemarkNotePage> {
 
       return jsonResponse.map((remark) => Remark.fromJson(remark)).toList();
     } else {
-      print('Failed to load remarks: ${response.statusCode}');
+      log('Failed to load remarks: ${response.statusCode}');
       throw Exception('Failed to load remarks: ${response.statusCode}');
     }
   }
-  Future<void> updateReadStatus(String remarkId,String ack) async {
 
-    if(ack == 'N'){
-      setRemarkAck(remarkId,ack);
+  Future<void> updateReadStatus(String remarkId, String ack) async {
+    if (ack == 'N') {
+      setRemarkAck(remarkId, ack);
     }
     final prefs = await SharedPreferences.getInstance();
     String? schoolInfoJson = prefs.getString('school_info');
@@ -171,7 +176,7 @@ class _RemarkNotePage extends State<RemarkNotePage> {
         Map<String, dynamic> logUrlsparsed = json.decode(logUrls);
         regId = logUrlsparsed['reg_id'];
       } catch (e) {
-        print('Error parsing log URLs: $e');
+        log('Error parsing log URLs: $e');
       }
     }
 
@@ -181,13 +186,13 @@ class _RemarkNotePage extends State<RemarkNotePage> {
         shortName = parsedData['short_name'];
         url = parsedData['url'];
       } catch (e) {
-        print('Error parsing school info: $e');
+        log('Error parsing school info: $e');
       }
     }
 
     DateTime now = DateTime.now();
     String formattedDate = DateFormat('yyyy-MM-dd').format(now);
-    print(formattedDate); // Example output: 2023-08-10
+    log(formattedDate); // Example output: 2023-08-10
 
     final response = await http.post(
       Uri.parse('${url}remark_read_log_create'),
@@ -200,12 +205,12 @@ class _RemarkNotePage extends State<RemarkNotePage> {
     );
 
     if (response.statusCode == 200) {
-      print('remark_read_log_create: ${response.body}');
+      log('remark_read_log_create: ${response.body}');
       setState(() {
         futureRemarks = fetchRemarks();
       });
     } else {
-      print('Failed to update read status: ${response.statusCode}');
+      log('Failed to update read status: ${response.statusCode}');
       throw Exception('Failed to update read status: ${response.statusCode}');
     }
   }
@@ -216,14 +221,14 @@ class _RemarkNotePage extends State<RemarkNotePage> {
     });
   }
 
-    @override
+  @override
   Widget build(BuildContext context) {
-      return WillPopScope(
-        onWillPop: () async {
-          // Pop until reaching the HistoryTab route
-          Navigator.pop(context, true);
-          return false;
-        },
+    return WillPopScope(
+      onWillPop: () async {
+        // Pop until reaching the HistoryTab route
+        Navigator.pop(context, true);
+        return false;
+      },
       child: Scaffold(
         backgroundColor: Colors.transparent,
         extendBodyBehindAppBar: true,
@@ -291,7 +296,9 @@ class _RemarkNotePage extends State<RemarkNotePage> {
                                   fit: BoxFit.contain,
                                 ),
                               ),
-                              SizedBox(height: 10), // Add spacing between emoji and text
+                              SizedBox(
+                                  height:
+                                      10), // Add spacing between emoji and text
                               Text(
                                 'No Remarks Assigned',
                                 style: TextStyle(
@@ -333,7 +340,9 @@ class _RemarkNotePage extends State<RemarkNotePage> {
                                   fit: BoxFit.contain,
                                 ),
                               ),
-                              SizedBox(height: 10), // Add spacing between emoji and text
+                              SizedBox(
+                                  height:
+                                      10), // Add spacing between emoji and text
                               Text(
                                 'No Remarks Assigned',
                                 style: TextStyle(
@@ -348,7 +357,8 @@ class _RemarkNotePage extends State<RemarkNotePage> {
                         ),
                       );
                     } else {
-                      List<Remark> sortedRemarks = List.from(snapshot.data ?? []);
+                      List<Remark> sortedRemarks =
+                          List.from(snapshot.data ?? []);
                       sortedRemarks.sort((a, b) => DateTime.parse(b.remarkDate)
                           .compareTo(DateTime.parse(a.remarkDate)));
 
@@ -367,7 +377,8 @@ class _RemarkNotePage extends State<RemarkNotePage> {
                               showDownloadIcon: remark.imageList,
                               acknowledge: remark.acknowledge,
                               onTap: () async {
-                                await updateReadStatus(remark.remarkId,remark.acknowledge);
+                                await updateReadStatus(
+                                    remark.remarkId, remark.acknowledge);
                                 if (mounted) {
                                   Navigator.push(
                                     context,

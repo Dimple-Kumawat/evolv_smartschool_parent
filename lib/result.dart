@@ -6,7 +6,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
-
+import 'dart:developer';
 import 'ResultChart.dart';
 import 'main.dart';
 
@@ -76,7 +76,8 @@ class ResultPage extends StatefulWidget {
   final String Fname;
   final String className;
 
-  const ResultPage({super.key, 
+  const ResultPage({
+    super.key,
     required this.className,
     required this.Fname,
     required this.studentId,
@@ -115,7 +116,7 @@ class _ResultPageState extends State<ResultPage> {
 
   Future<void> check_report_card() async {
     final url1 = Uri.parse('${url}check_report_card');
-    // print('Receipt URL: $shortName');
+    // log('Receipt URL: $shortName');
 
     try {
       final response = await http.post(
@@ -135,9 +136,9 @@ class _ResultPageState extends State<ResultPage> {
 
         error_msg = data['error_msg'] ?? ''; // Default to '' if not found
         int flag = data['flag'];
-        print('check_report_card response: ${response.body}');
-        print('check_report_card response: ${response.statusCode}');
-        print('check_report_card response111: $error_msg');
+        log('check_report_card response: ${response.body}');
+        log('check_report_card response: ${response.statusCode}');
+        log('check_report_card response111: $error_msg');
 
         setState(() {
           // Update viewReportCardVisible based on the API flag
@@ -156,15 +157,15 @@ class _ResultPageState extends State<ResultPage> {
           }
         });
 
-        print('View Report Card Visibility: $viewReportCardVisible');
+        log('View Report Card Visibility: $viewReportCardVisible');
       } else {
         setState(() {
           viewReportCardVisible = 0;
         });
-        print('Failed to load data: ${response.statusCode}');
+        log('Failed to load data: ${response.statusCode}');
       }
     } catch (e) {
-      print('Error checking report card: $e');
+      log('Error checking report card: $e');
       setState(() {
         viewReportCardVisible = 0;
       });
@@ -181,27 +182,27 @@ class _ResultPageState extends State<ResultPage> {
       );
 
       if (response.statusCode == 200) {
-        print('Show Icon response.body URL: ${response.body}');
+        log('Show Icon response.body URL: ${response.body}');
 
         // Safely decode JSON response
         final Map<String, dynamic> data = jsonDecode(response.body);
 
         if (data.isEmpty) {
-          print('Response is empty.');
+          log('Response is empty.');
         } else {
           try {
             // Handle the error_msg
             String msg = data['error_msg'] ?? '';
-            print('error_msg ==> $msg');
+            log('error_msg ==> $msg');
 
             // Checking for the graph (should be an integer check)
             if (data['graph'] == 1) {
-              print('Graph is visible');
+              log('Graph is visible');
               setState(() {
                 resultChartVisible = 1;
               });
             } else {
-              print('Graph is hidden');
+              log('Graph is hidden');
               setState(() {
                 resultChartVisible = 0;
               });
@@ -213,30 +214,31 @@ class _ResultPageState extends State<ResultPage> {
                 cbseCardVisible = 1;
                 showCBSE = "Y";
               });
-              print('CBSE Report Card is visible');
+              log('CBSE Report Card is visible');
             } else {
               setState(() {
                 cbseCardVisible = 0;
                 showCBSE = 'N';
               });
-              print('CBSE Report Card is hidden');
+              log('CBSE Report Card is hidden');
             }
 
             // Check if there are other fields like 'message1_url' and 'message2_url'
-            String message1Url = data['message1_url'] ?? ''; // Default to empty if null
+            String message1Url =
+                data['message1_url'] ?? ''; // Default to empty if null
             String message2Url = data['message2_url'] ?? '';
 
-            print('message1 URL: $message1Url');
-            print('message2 URL: $message2Url');
+            log('message1 URL: $message1Url');
+            log('message2 URL: $message2Url');
           } catch (e) {
-            print('Error parsing data: $e');
+            log('Error parsing data: $e');
           }
         }
       } else {
-        print('Failed to load data: ${response.statusCode}');
+        log('Failed to load data: ${response.statusCode}');
       }
     } catch (e) {
-      print('Error: $e');
+      log('Error: $e');
     }
   }
 
@@ -265,8 +267,8 @@ class _ResultPageState extends State<ResultPage> {
       );
 
       if (response.statusCode == 200) {
-        print('student_marks fetching results: ${response.body}');
-        print('fetching results code : ${response.statusCode}');
+        log('student_marks fetching results: ${response.body}');
+        log('fetching results code : ${response.statusCode}');
 
         // Assuming your response is a JSON list of maps
         List<dynamic> jsonData = jsonDecode(response.body);
@@ -279,19 +281,17 @@ class _ResultPageState extends State<ResultPage> {
 
         if (results.isNotEmpty) {
           String examName = results[0].examName; // Get the Exam_name
-          print('Exam_name: $examName');
+          log('Exam_name: $examName');
 
           if (examName == "Final exam" ||
               examName == "Term 1" ||
               examName == "Term 2") {
-            if (cbseCardVisible == 'Y' && widget.className == 9 || widget.className == 11) {
+            if (cbseCardVisible == 'Y' && widget.className == 9 ||
+                widget.className == 11) {
               CBSE_ReportCard();
 
-              if(CBSE_ReportCard() == 1){
-
-              } else {
-
-              }
+              if (CBSE_ReportCard() == 1) {
+              } else {}
             }
           }
         }
@@ -305,7 +305,7 @@ class _ResultPageState extends State<ResultPage> {
       }
     } catch (error) {
       ShowResult = 'N';
-      print('Error fetching results: $error');
+      log('Error fetching results: $error');
       setState(() {
         isLoading = false;
       });
@@ -322,10 +322,10 @@ class _ResultPageState extends State<ResultPage> {
         // 'student_id': '2444', // Assuming hardcoded student ID for now
       });
 
-      print('cbse_reportcard response: ${response.body}');
+      log('cbse_reportcard response: ${response.body}');
 
       if (response.statusCode == 200) {
-        print('cbse_reportcard response: ${response.body}');
+        log('cbse_reportcard response: ${response.body}');
 
         final Map<String, dynamic> data1 = jsonDecode(response.body);
 
@@ -334,21 +334,21 @@ class _ResultPageState extends State<ResultPage> {
 
         // Check if the flag is 1
         if (flag == 0) {
-          print('CBSE flag000 : $flag');
+          log('CBSE flag000 : $flag');
 
           cbseCardVisible = 0; // 1 means visible, 0 means hidden
         } else {
           cbseCardVisible = 1; // 1 means visible, 0 means hidden
         }
 
-        print('CBSE flag: $flag');
+        log('CBSE flag: $flag');
       } else {
         cbseCardVisible = 0; // 1 means visible, 0 means hidden
 
-        print('Failed to load data: ${response.statusCode}');
+        log('Failed to load data: ${response.statusCode}');
       }
     } catch (e) {
-      print('Error: $e');
+      log('Error: $e');
       cbseCardVisible = 0; // Hide the card in case of an error
     }
   }
@@ -459,7 +459,7 @@ class _ResultPageState extends State<ResultPage> {
                                       Colors.deepPurple, () {
                                     // Handle CBSE Report Card tap
                                     // _showToast("CBSE Report Card");
-                                    print('URL: $durl');
+                                    log('URL: $durl');
 
                                     String url = "";
 
@@ -476,10 +476,12 @@ class _ResultPageState extends State<ResultPage> {
 
                                     switch (widget.className) {
                                       case "9":
-                                        url = "${durl}index.php/assessment/pdf_download_class9_cbseformat?student_id=${widget.studentId}&class_id=${widget.classId}&login_type=P&acd_yr=${widget.academicYr}&short_name=${widget.shortName}";
+                                        url =
+                                            "${durl}index.php/assessment/pdf_download_class9_cbseformat?student_id=${widget.studentId}&class_id=${widget.classId}&login_type=P&acd_yr=${widget.academicYr}&short_name=${widget.shortName}";
                                         break;
                                       case "11":
-                                        url = "${durl}index.php/HSC/pdf_download_class11_cbseformat?student_id=${widget.studentId}&class_id=${widget.classId}&login_type=P&acd_yr=${widget.academicYr}&short_name=${widget.shortName}";
+                                        url =
+                                            "${durl}index.php/HSC/pdf_download_class11_cbseformat?student_id=${widget.studentId}&class_id=${widget.classId}&login_type=P&acd_yr=${widget.academicYr}&short_name=${widget.shortName}";
                                         break;
                                     }
 
@@ -489,7 +491,7 @@ class _ResultPageState extends State<ResultPage> {
 
                                     downloadFile(url, context,
                                         'CBSE_RC_${'${widget.Fname}-$date'}.pdf');
-                                    print(' resultUrl downloadUrl $url');
+                                    log(' resultUrl downloadUrl $url');
                                   }),
                                 if (viewReportCardVisible == 1)
                                   _buildCard('View Report Card',
@@ -501,7 +503,8 @@ class _ResultPageState extends State<ResultPage> {
                                     // resultUrl = durl + "index.php/assessment/pdf_download" +
                                     //     "?student_id=" + '2444' + "&class_id=" + '25' + "&login_type=P&" + "acd_yr=" + '2023-2024' + "&short_name=" + shortName;
 
-                                    resultUrl = "${durl}index.php/assessment/pdf_download?student_id=${widget.studentId}&class_id=${widget.classId}&login_type=P&acd_yr=${widget.academicYr}&short_name=$shortName";
+                                    resultUrl =
+                                        "${durl}index.php/assessment/pdf_download?student_id=${widget.studentId}&class_id=${widget.classId}&login_type=P&acd_yr=${widget.academicYr}&short_name=$shortName";
 
                                     DateTime now = DateTime.now();
                                     String date =
@@ -509,24 +512,20 @@ class _ResultPageState extends State<ResultPage> {
 
                                     downloadFile(resultUrl, context,
                                         'RC_${'${widget.Fname}-$date'}.pdf');
-                                    print('downloadUrl $resultUrl');
+                                    log('downloadUrl $resultUrl');
 
-                                    print('cbseCardVisible: $cbseCardVisible');
-                                    print(
-                                        'viewReportCardVisible: $viewReportCardVisible');
-                                    print(
-                                        'resultChartVisible: $resultChartVisible');
+                                    log('cbseCardVisible: $cbseCardVisible');
+                                    log('viewReportCardVisible: $viewReportCardVisible');
+                                    log('resultChartVisible: $resultChartVisible');
                                   }),
                                 if (resultChartVisible == 1)
                                   _buildCard('Result Chart', Icons.bar_chart,
                                       Colors.orange, () {
                                     // Handle Result Chart tap
 
-                                    print('cbseCardVisible: $cbseCardVisible');
-                                    print(
-                                        'viewReportCardVisible: $viewReportCardVisible');
-                                    print(
-                                        'resultChartVisible: $resultChartVisible');
+                                    log('cbseCardVisible: $cbseCardVisible');
+                                    log('viewReportCardVisible: $viewReportCardVisible');
+                                    log('resultChartVisible: $resultChartVisible');
 
                                     Navigator.push(
                                       context,

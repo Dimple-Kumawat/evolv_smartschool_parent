@@ -5,19 +5,23 @@ import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
-
+import 'dart:developer';
 import 'AcademicYearProvider.dart';
 
 class ChangeAcademicYearScreen extends StatefulWidget {
   final String academic_yr;
   final String shortName;
-  const ChangeAcademicYearScreen({super.key, required this.academic_yr, required this.shortName});
+  const ChangeAcademicYearScreen(
+      {super.key, required this.academic_yr, required this.shortName});
   @override
-  _ChangeAcademicYearScreenState createState() => _ChangeAcademicYearScreenState();
+  _ChangeAcademicYearScreenState createState() =>
+      _ChangeAcademicYearScreenState();
 }
 
 class _ChangeAcademicYearScreenState extends State<ChangeAcademicYearScreen> {
-  List<String> academicYearList = ["Select Academic Year"]; // Default dropdown item
+  List<String> academicYearList = [
+    "Select Academic Year"
+  ]; // Default dropdown item
   String selectedAcademicYear = "Select Academic Year";
   String currentAcademicYear = "";
   bool isLoading = true;
@@ -46,7 +50,7 @@ class _ChangeAcademicYearScreenState extends State<ChangeAcademicYearScreen> {
   /// Fetch available academic years from the API
   Future<void> fetchAcademicYearList() async {
     // if ( shortName == null) return;
-    print('Failed to load academic years $shortName');
+    log('Failed to load academic years $shortName');
 
     final response = await http.post(
       Uri.parse('${url}get_academic_years_list'),
@@ -63,7 +67,7 @@ class _ChangeAcademicYearScreenState extends State<ChangeAcademicYearScreen> {
       });
     } else {
       setState(() => isLoading = false);
-      print('Failed to load academic years');
+      log('Failed to load academic years');
     }
   }
 
@@ -88,32 +92,35 @@ class _ChangeAcademicYearScreenState extends State<ChangeAcademicYearScreen> {
     );
 
     if (response.statusCode == 200) {
-      print('Academic Year Changed: ${response.body}');
-      print('newAcademicYear $newAcademicYear');
+      log('Academic Year Changed: ${response.body}');
+      log('newAcademicYear $newAcademicYear');
 
       // ✅ Store new academic year in SharedPreferences
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setString('academic_year', newAcademicYear);
 
-      final academicYearProvider = Provider.of<AcademicYearProvider>(context, listen: false);
+      final academicYearProvider =
+          Provider.of<AcademicYearProvider>(context, listen: false);
       academicYearProvider.setAcademicYear(newAcademicYear);
 
       // ✅ Notify the app of the change
       // You can use a callback or a state management solution here
       Navigator.pushAndRemoveUntil(
         context,
-        MaterialPageRoute(builder: (context) =>
-            ParentDashBoardPage(academic_yr: newAcademicYear, shortName: shortName)),
-            (Route<dynamic> route) => false,
+        MaterialPageRoute(
+            builder: (context) => ParentDashBoardPage(
+                academic_yr: newAcademicYear, shortName: shortName)),
+        (Route<dynamic> route) => false,
       );
     } else {
-      print('Failed to change academic year');
+      log('Failed to change academic year');
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final academicYearProvider = Provider.of<AcademicYearProvider>(context, listen: false);
+    final academicYearProvider =
+        Provider.of<AcademicYearProvider>(context, listen: false);
     return Scaffold(
       backgroundColor: Colors.transparent,
       extendBodyBehindAppBar: true,
@@ -151,36 +158,42 @@ class _ChangeAcademicYearScreenState extends State<ChangeAcademicYearScreen> {
                     isLoading
                         ? Center(child: CircularProgressIndicator())
                         : Card(
-                      elevation: 3,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(25.r),
-                      ),
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 5.h),
-                        child: DropdownButton<String>(
-                          value: selectedAcademicYear,
-                          isExpanded: true,
-                          underline: SizedBox(),
-                          icon: Icon(Icons.arrow_drop_down, color: Colors.blueAccent),
-                          onChanged: (String? newValue) {
-                            setState(() {
-                              selectedAcademicYear = newValue!;
-                            });
-                          },
-                          items: academicYearList.map<DropdownMenuItem<String>>((String value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Center(
-                                child: Text(
-                                  value,
-                                  style: TextStyle(fontSize: 15.sp, color: Colors.black),
-                                ),
+                            elevation: 3,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(25.r),
+                            ),
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 18.w, vertical: 5.h),
+                              child: DropdownButton<String>(
+                                value: selectedAcademicYear,
+                                isExpanded: true,
+                                underline: SizedBox(),
+                                icon: Icon(Icons.arrow_drop_down,
+                                    color: Colors.blueAccent),
+                                onChanged: (String? newValue) {
+                                  setState(() {
+                                    selectedAcademicYear = newValue!;
+                                  });
+                                },
+                                items: academicYearList
+                                    .map<DropdownMenuItem<String>>(
+                                        (String value) {
+                                  return DropdownMenuItem<String>(
+                                    value: value,
+                                    child: Center(
+                                      child: Text(
+                                        value,
+                                        style: TextStyle(
+                                            fontSize: 15.sp,
+                                            color: Colors.black),
+                                      ),
+                                    ),
+                                  );
+                                }).toList(),
                               ),
-                            );
-                          }).toList(),
-                        ),
-                      ),
-                    ),
+                            ),
+                          ),
                     SizedBox(height: 30.h),
                     ElevatedButton(
                       onPressed: () {
@@ -189,7 +202,8 @@ class _ChangeAcademicYearScreenState extends State<ChangeAcademicYearScreen> {
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blueAccent,
-                        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30),
                         ),

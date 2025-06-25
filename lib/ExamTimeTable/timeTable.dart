@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'dart:convert';
@@ -13,7 +15,8 @@ class TimeTablePage extends StatefulWidget {
   final String secId;
   final String className;
 
-  const TimeTablePage({super.key, 
+  const TimeTablePage({
+    super.key,
     required this.studentId,
     required this.academic_yr,
     required this.shortName,
@@ -29,7 +32,8 @@ class TimeTablePage extends StatefulWidget {
 class _TimeTablePageState extends State<TimeTablePage> {
   final List<String> days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
   Map<String, List<Period>> timetable = {};
-  Map<String, String> subjectTeachers = {}; // Map to hold subjects and their respective teachers
+  Map<String, String> subjectTeachers =
+      {}; // Map to hold subjects and their respective teachers
   int selectedIndex = 0;
   late PageController _pageController;
   String errorMessage = "";
@@ -52,7 +56,8 @@ class _TimeTablePageState extends State<TimeTablePage> {
 
   Future<void> _fetchSubjects() async {
     try {
-      final response = await http.post(Uri.parse("${url}get_all_subjects"),
+      final response = await http.post(
+        Uri.parse("${url}get_all_subjects"),
         body: {
           'short_name': widget.shortName,
           'section_id': widget.secId,
@@ -62,12 +67,13 @@ class _TimeTablePageState extends State<TimeTablePage> {
       );
 
       if (response.statusCode == 200) {
-        print('Subjects Response: ${response.body}');
+        log('Subjects Response: ${response.body}');
 
         Map<String, dynamic> data = json.decode(response.body);
 
         setState(() {
-          subjectTeachers = Map<String, String>.from(data); // Store the subjects and teachers
+          subjectTeachers =
+              Map<String, String>.from(data); // Store the subjects and teachers
         });
       } else {
         setState(() {
@@ -83,7 +89,8 @@ class _TimeTablePageState extends State<TimeTablePage> {
 
   Future<void> _fetchTimetable() async {
     try {
-      final response = await http.post(Uri.parse("${url}get_timetable"),
+      final response = await http.post(
+        Uri.parse("${url}get_timetable"),
         body: {
           'short_name': widget.shortName,
           'section_id': widget.secId,
@@ -93,7 +100,7 @@ class _TimeTablePageState extends State<TimeTablePage> {
       );
 
       if (response.statusCode == 200) {
-        print('Timetable Response: ${response.body}');
+        log('Timetable Response: ${response.body}');
 
         List<dynamic> data = json.decode(response.body);
         if (data.isEmpty) {
@@ -116,7 +123,8 @@ class _TimeTablePageState extends State<TimeTablePage> {
             tempTimetable['Wed']?.add(_createPeriod(periodData, 'wednesday'));
             tempTimetable['Thu']?.add(_createPeriod(periodData, 'thursday'));
             tempTimetable['Fri']?.add(_createPeriod(periodData, 'friday'));
-            tempTimetable['Sat']?.add(_createPeriod(periodData, 'saturday', sat: true));
+            tempTimetable['Sat']
+                ?.add(_createPeriod(periodData, 'saturday', sat: true));
           }
 
           setState(() {
@@ -126,19 +134,24 @@ class _TimeTablePageState extends State<TimeTablePage> {
         }
       } else {
         setState(() {
-          errorMessage = "Server error: ${response.statusCode}. Please try again later.";
+          errorMessage =
+              "Server error: ${response.statusCode}. Please try again later.";
         });
       }
     } catch (e) {
       setState(() {
-        errorMessage = "Error fetching timetable: $e. Please check your connection and try again.";
+        errorMessage =
+            "Error fetching timetable: $e. Please check your connection and try again.";
       });
     }
   }
 
-  Period _createPeriod(Map<String, dynamic> periodData, String day, {bool sat = false}) {
-    String timeIn = sat ? periodData['sat_in'] ?? '' : periodData['time_in'] ?? '';
-    String timeOut = sat ? periodData['sat_out'] ?? '' : periodData['time_out'] ?? '';
+  Period _createPeriod(Map<String, dynamic> periodData, String day,
+      {bool sat = false}) {
+    String timeIn =
+        sat ? periodData['sat_in'] ?? '' : periodData['time_in'] ?? '';
+    String timeOut =
+        sat ? periodData['sat_out'] ?? '' : periodData['time_out'] ?? '';
     String subject = periodData[day] ?? '';
 
     // Extract teacher names
@@ -151,7 +164,6 @@ class _TimeTablePageState extends State<TimeTablePage> {
       teacher: teacherNames,
     );
   }
-
 
   String _getTeacherNames(String subject) {
     if (subject.isEmpty) return 'N/A';
@@ -174,8 +186,6 @@ class _TimeTablePageState extends State<TimeTablePage> {
 
     return teacherNames.join(' / '); // Join multiple names with '/'
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -223,18 +233,21 @@ class _TimeTablePageState extends State<TimeTablePage> {
                         },
                         child: AnimatedContainer(
                           duration: const Duration(milliseconds: 300),
-                          padding: EdgeInsets.symmetric(vertical: 8, horizontal: 11),
+                          padding:
+                              EdgeInsets.symmetric(vertical: 8, horizontal: 11),
                           decoration: BoxDecoration(
-                            color: selectedIndex == index ? Colors.orange : Color.fromARGB(255, 228, 218, 218),
+                            color: selectedIndex == index
+                                ? Colors.orange
+                                : Color.fromARGB(255, 228, 218, 218),
                             borderRadius: BorderRadius.circular(12),
                             boxShadow: selectedIndex == index
                                 ? [
-                              const BoxShadow(
-                                color: Colors.orangeAccent,
-                                blurRadius: 10,
-                                offset: Offset(0, 4),
-                              ),
-                            ]
+                                    const BoxShadow(
+                                      color: Colors.orangeAccent,
+                                      blurRadius: 10,
+                                      offset: Offset(0, 4),
+                                    ),
+                                  ]
                                 : [],
                           ),
                           child: Text(
@@ -242,7 +255,9 @@ class _TimeTablePageState extends State<TimeTablePage> {
                             style: TextStyle(
                               fontSize: 16.sp,
                               fontWeight: FontWeight.bold,
-                              color: selectedIndex == index ? Colors.white : Colors.black,
+                              color: selectedIndex == index
+                                  ? Colors.white
+                                  : Colors.black,
                             ),
                           ),
                         ),
@@ -266,11 +281,15 @@ class _TimeTablePageState extends State<TimeTablePage> {
                     final day = days[index];
                     final periods = timetable[day] ?? [];
 
-                    final validPeriods = periods.where((period) => period.subject.isNotEmpty).toList();
+                    final validPeriods = periods
+                        .where((period) => period.subject.isNotEmpty)
+                        .toList();
 
                     return SingleChildScrollView(
                       child: Column(
-                        children: validPeriods.map((period) => buildPeriodCard(period)).toList(),
+                        children: validPeriods
+                            .map((period) => buildPeriodCard(period))
+                            .toList(),
                       ),
                     );
                   },
@@ -289,8 +308,7 @@ class _TimeTablePageState extends State<TimeTablePage> {
         borderRadius: BorderRadius.circular(15),
       ),
       margin: EdgeInsets.symmetric(vertical: 4.0, horizontal: 12.0),
-      child: 
-      ListTile(
+      child: ListTile(
         // leading: period.icon != null
         //     ? Icon(period.icon, color: Color.fromARGB(255, 139, 40, 95), size: 30) : null,
         title: Text(
@@ -301,11 +319,12 @@ class _TimeTablePageState extends State<TimeTablePage> {
             color: Colors.black,
           ),
         ),
-        
+
         subtitle: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Expanded( // Wrap the text in Expanded to make it fit within the available space
+            Expanded(
+              // Wrap the text in Expanded to make it fit within the available space
               child: Text(
                 period.time,
                 style: TextStyle(
@@ -322,7 +341,8 @@ class _TimeTablePageState extends State<TimeTablePage> {
                   fontWeight: FontWeight.bold,
                   color: Color.fromARGB(255, 139, 40, 95),
                 ),
-                overflow: TextOverflow.ellipsis, // This ensures the text is truncated with ellipsis if too long
+                overflow: TextOverflow
+                    .ellipsis, // This ensures the text is truncated with ellipsis if too long
                 softWrap: false, // Prevents text from wrapping to the next line
                 maxLines: 1, // Ensures the text takes up only one line
               ),
@@ -330,10 +350,8 @@ class _TimeTablePageState extends State<TimeTablePage> {
           ],
         ),
       ),
-      
     );
   }
-
 }
 
 class Period {
@@ -342,5 +360,9 @@ class Period {
   final IconData? icon;
   final String teacher;
 
-  Period({required this.time, required this.subject, this.icon, required this.teacher});
+  Period(
+      {required this.time,
+      required this.subject,
+      this.icon,
+      required this.teacher});
 }

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:evolvu/Parent/parentDashBoard_Page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -14,7 +16,8 @@ class ExamTimeTablePage extends StatefulWidget {
   final String className;
 
   const ExamTimeTablePage(
-      {super.key, required this.academic_yr,
+      {super.key,
+      required this.academic_yr,
       required this.shortName,
       required this.classId,
       required this.secId,
@@ -44,8 +47,8 @@ class _ExamTimeTablePageState extends State<ExamTimeTablePage> {
     );
 
     if (response.body.isNotEmpty) {
-      print('display_exam_timetable Response body: ${response.body}');
-      print('display_exam_timetable Response body: ${response.statusCode}');
+      log('display_exam_timetable Response body: ${response.body}');
+      log('display_exam_timetable Response body: ${response.statusCode}');
       List<dynamic> jsonResponse = json.decode(response.body);
       return jsonResponse.map((data) => Period.fromJson(data)).toList();
     } else {
@@ -225,11 +228,12 @@ class _ExamTimeTablePageState extends State<ExamTimeTablePage> {
                           SizedBox(
                             height: 20.h,
                           ),
-
                           Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 20.0, vertical: 12.0),
                             child: Visibility(
-                              visible: snapshot.data!.first.description.isNotEmpty, // Condition to check if description is not empty
+                              visible: snapshot.data!.first.description
+                                  .isNotEmpty, // Condition to check if description is not empty
                               child: Container(
                                 padding: EdgeInsets.all(16),
                                 decoration: BoxDecoration(
@@ -257,30 +261,34 @@ class _ExamTimeTablePageState extends State<ExamTimeTablePage> {
                                       height: 10.h,
                                     ),
                                     Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: snapshot.data!.first.description
                                           .split('\n')
                                           .map(
                                             (line) => Padding(
-                                          padding: const EdgeInsets.only(bottom: 6.0),
-                                          child: Row(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              Expanded(
-                                                child: Text(
-                                                  line,
-                                                  style: TextStyle(
-                                                    fontSize: 14.sp,
-                                                    fontWeight: FontWeight.w500,
-                                                    color: Colors.white38,
-                                                    height: 1.4,
+                                              padding: const EdgeInsets.only(
+                                                  bottom: 6.0),
+                                              child: Row(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Expanded(
+                                                    child: Text(
+                                                      line,
+                                                      style: TextStyle(
+                                                        fontSize: 14.sp,
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                        color: Colors.white38,
+                                                        height: 1.4,
+                                                      ),
+                                                    ),
                                                   ),
-                                                ),
+                                                ],
                                               ),
-                                            ],
-                                          ),
-                                        ),
-                                      )
+                                            ),
+                                          )
                                           .toList(),
                                     ),
                                   ],
@@ -288,7 +296,6 @@ class _ExamTimeTablePageState extends State<ExamTimeTablePage> {
                               ),
                             ),
                           ),
-
                         ],
                       );
                     }

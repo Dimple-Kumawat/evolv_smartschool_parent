@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:http/http.dart' as http;
@@ -61,10 +62,10 @@ class _NoticeDetailPageState extends State<NoticeDetailPage> {
           projectUrl = parsedData['project_url'];
         });
       } catch (e) {
-        print('Error parsing school info: $e');
+        log('Error parsing school info: $e');
       }
     } else {
-      print('School info not found in SharedPreferences.');
+      log('School info not found in SharedPreferences.');
     }
   }
 
@@ -157,7 +158,6 @@ class _NoticeDetailPageState extends State<NoticeDetailPage> {
   }
 
   Future<void> _handleDownload(Attachment attachment) async {
-
     if (projectUrl.isNotEmpty) {
       try {
         if (attachment.fileSize == 0) {
@@ -167,13 +167,14 @@ class _NoticeDetailPageState extends State<NoticeDetailPage> {
             ),
           );
         } else {
-          String downloadUrl = '${projectUrl}uploads/notice/${widget.noticeInfo.noticeId}/${attachment.imageName}';
-          print("_downloadFileIOS $downloadUrl");
+          String downloadUrl =
+              '${projectUrl}uploads/notice/${widget.noticeInfo.noticeId}/${attachment.imageName}';
+          log("_downloadFileIOS $downloadUrl");
 
           if (Platform.isAndroid) {
             await downloadFile(downloadUrl, context, attachment.imageName);
           } else if (Platform.isIOS) {
-            await _downloadFileIOS(downloadUrl,context, attachment.imageName);
+            await _downloadFileIOS(downloadUrl, context, attachment.imageName);
           } else {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -181,7 +182,6 @@ class _NoticeDetailPageState extends State<NoticeDetailPage> {
               ),
             );
           }
-
         }
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -224,13 +224,12 @@ class _NoticeDetailPageState extends State<NoticeDetailPage> {
   }
 
   downloadFile(String url, BuildContext context, String name) async {
-
     setState(() {
       _isDownloading = true; // Show loader
     });
 
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
-    AndroidNotificationDetails(
+        AndroidNotificationDetails(
       'download_channel',
       'Download Channel',
       channelDescription: 'Notifications for file downloads',
@@ -241,7 +240,7 @@ class _NoticeDetailPageState extends State<NoticeDetailPage> {
     );
 
     const NotificationDetails platformChannelSpecifics =
-    NotificationDetails(android: androidPlatformChannelSpecifics);
+        NotificationDetails(android: androidPlatformChannelSpecifics);
     var directory =
         Directory("/storage/emulated/0/Download/Evolvuschool/Parent/Notice");
 
@@ -292,7 +291,8 @@ class _NoticeDetailPageState extends State<NoticeDetailPage> {
     }
   }
 
-  Future<void> _downloadFileIOS(String url,BuildContext fun, String fileName) async {
+  Future<void> _downloadFileIOS(
+      String url, BuildContext fun, String fileName) async {
     // Get the documents directory on iOS
     final directory = await getApplicationDocumentsDirectory();
 
@@ -301,7 +301,7 @@ class _NoticeDetailPageState extends State<NoticeDetailPage> {
     final file = File(filePath);
 
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
-    AndroidNotificationDetails(
+        AndroidNotificationDetails(
       'download_channel',
       'Download Channel',
       channelDescription: 'Notifications for file downloads',
@@ -312,19 +312,18 @@ class _NoticeDetailPageState extends State<NoticeDetailPage> {
     );
 
     const NotificationDetails platformChannelSpecifics =
-    NotificationDetails(android: androidPlatformChannelSpecifics);
-
+        NotificationDetails(android: androidPlatformChannelSpecifics);
 
     try {
-      print("Starting download...");
+      log("Starting download...");
       final directory = await getApplicationDocumentsDirectory();
       final filePath = '${directory.path}/$fileName';
-      print("File will be saved at: $filePath");
+      log("File will be saved at: $filePath");
 
       final response = await http.get(Uri.parse(url));
-      print("HTTP Response Status: ${response.statusCode}");
+      log("HTTP Response Status: ${response.statusCode}");
       if (response.statusCode == 200) {
-        print("Writing file...");
+        log("Writing file...");
 
         await flutterLocalNotificationsPlugin.show(
           0,
@@ -334,9 +333,8 @@ class _NoticeDetailPageState extends State<NoticeDetailPage> {
           payload: filePath, // Pass the file path as payload
         );
 
-
         await File(filePath).writeAsBytes(response.bodyBytes);
-        print("File saved successfully.");
+        log("File saved successfully.");
         ScaffoldMessenger.of(fun).showSnackBar(
           SnackBar(content: Text('File downloaded successfully.')),
         );
@@ -350,12 +348,10 @@ class _NoticeDetailPageState extends State<NoticeDetailPage> {
         'Failed to download file',
         platformChannelSpecifics,
       );
-      print("Error: $e");
+      log("Error: $e");
       ScaffoldMessenger.of(fun).showSnackBar(
         SnackBar(content: Text('Failed to download file: $e')),
       );
     }
-
   }
-
 }

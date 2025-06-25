@@ -1,11 +1,11 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:device_info/device_info.dart';
 import 'package:evolvu/Parent/parentDashBoard_Page.dart';
 import 'package:evolvu/username_page.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
@@ -15,7 +15,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'forgotPassword.dart';
 
 class LogUrls {
-
   final String reg_id;
   final String user_id;
   final String academic_yr;
@@ -23,9 +22,13 @@ class LogUrls {
   final String name;
   final String answer_one;
 
-  LogUrls({required this.reg_id, required this.user_id, required this.academic_yr,
-    required this.role_id, required this.name,required this.answer_one});
-
+  LogUrls(
+      {required this.reg_id,
+      required this.user_id,
+      required this.academic_yr,
+      required this.role_id,
+      required this.name,
+      required this.answer_one});
 
   factory LogUrls.fromJson(Map<String, dynamic> json) {
     return LogUrls(
@@ -34,8 +37,7 @@ class LogUrls {
         academic_yr: json['academic_yr'],
         role_id: json['role_id'],
         name: json['name'],
-        answer_one: json['answer_one']
-    );
+        answer_one: json['answer_one']);
   }
 
   // Method to serialize SchoolInfo object into JSON
@@ -49,9 +51,7 @@ class LogUrls {
       'answer_one': answer_one
     };
   }
-
 }
-
 
 class LoginPage extends StatefulWidget {
   final String emailstr;
@@ -61,6 +61,7 @@ class LoginPage extends StatefulWidget {
   @override
   _LoginState createState() => _LoginState();
 }
+
 String shortName1 = "";
 String schoolnamestr = "";
 String teacherApkUrl = "";
@@ -105,19 +106,18 @@ class _LoginState extends State<LoginPage> {
           teacherApkUrl = parsedData['teacherapk_url']; // Ensure this updates
         });
 
-        print('Updated School Info:');
-        print('Short Name: $shortName');
-        print('URL: $url');
-        print('Project URL: $durl');
-        print('Teacher APK URL: $teacherApkUrl');
+        log('Updated School Info:');
+        log('Short Name: $shortName');
+        log('URL: $url');
+        log('Project URL: $durl');
+        log('Teacher APK URL: $teacherApkUrl');
       } catch (e) {
-        print('Error parsing school info: $e');
+        log('Error parsing school info: $e');
       }
     } else {
-      print('School info not found in SharedPreferences.');
+      log('School info not found in SharedPreferences.');
     }
   }
-
 
   // Request Permission for Notifications
   void requestPermission() async {
@@ -130,20 +130,18 @@ class _LoginState extends State<LoginPage> {
     );
 
     if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-      print('User granted permission');
+      log('User granted permission');
       debugPrint("Failed to fetch FCM token111111.");
-
     } else {
-      print('User declined or has not accepted permission');
+      log('User declined or has not accepted permission');
       debugPrint("Failed to fetch FCM token22222.");
-
     }
   }
 
   void getToken() async {
     try {
       FirebaseMessaging messaging = FirebaseMessaging.instance;
-       token = await messaging.getToken();
+      token = await messaging.getToken();
 
       if (token != null) {
         debugPrint("FCM Token: $token");
@@ -154,7 +152,6 @@ class _LoginState extends State<LoginPage> {
       debugPrint("Error fetching FCM token: $e");
     }
   }
-
 
   Future<String> getDeviceId() async {
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
@@ -168,9 +165,7 @@ class _LoginState extends State<LoginPage> {
     return 'Unknown';
   }
 
-
-  void log(String ema, String pass) async {
-
+  void logIn(String ema, String pass) async {
     setState(() {
       _isLoading = true; // Start the loading indicator
     });
@@ -192,35 +187,38 @@ class _LoginState extends State<LoginPage> {
           String projectUrl = parsedData['project_url'];
           String defaultPassword = parsedData['default_password'];
 
-          print('School ID: $schoolId');
-          print('Name: $name');
-          print('Short Name: $shortName');
-          print('URL: $url');
-          print('Teacher APK URL: $teacherApkUrl');
-          print('Project URL: $projectUrl');
-          print('Default Password: $defaultPassword');
-
-
+          log('School ID: $schoolId');
+          log('Name: $name');
+          log('Short Name: $shortName');
+          log('URL: $url');
+          log('Teacher APK URL: $teacherApkUrl');
+          log('Project URL: $projectUrl');
+          log('Default Password: $defaultPassword');
         } catch (e) {
-          print('Error parsing school info: $e');
+          log('Error parsing school info: $e');
         }
       } else {
-        print('School info not found in SharedPreferences.');
+        log('School info not found in SharedPreferences.');
       }
 
       String deviceId = await getDeviceId();
-      print('Device ID: $url');
+      log('Device ID: $url');
 
       http.Response response = await http.post(
         Uri.parse("${url}get_login"),
-        body: {'user_id': ema, 'password': pass,'short_name': shortName,'device_id':deviceId},
+        body: {
+          'user_id': ema,
+          'password': pass,
+          'short_name': shortName,
+          'device_id': deviceId
+        },
       );
 
-      print('Response status code: ${response.statusCode}');
-      print('Response body: ${response.body}');
+      log('Response status code: ${response.statusCode}');
+      log('Response body: ${response.body}');
 
       if (response.statusCode == 200) {
-        print('Success');
+        log('Success');
 
         if (response.body.contains('"error":true')) {
           setState(() {
@@ -240,13 +238,13 @@ class _LoginState extends State<LoginPage> {
 
           // Extract the academic_yr field
           String academicYr = logUrls11['academic_yr'];
-          print('logDetJson===>  $academicYr');
+          log('logDetJson===>  $academicYr');
 
           // Store JSON string in shared preferences
           SharedPreferences prefs = await SharedPreferences.getInstance();
           prefs.setString('logUrls', logDetJson);
 
-          print('logDetJson===>  $logDetJson');
+          log('logDetJson===>  $logDetJson');
 
           // Store login status in SharedPreferences
           storeLoginStatus(true);
@@ -257,12 +255,12 @@ class _LoginState extends State<LoginPage> {
           //               Navigator.of(context).pushNamed(loginPage);
           //             },
 
-
           Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(
-              builder: (context) => ParentDashBoardPage(academic_yr:academicYr,shortName: shortName),
+              builder: (context) => ParentDashBoardPage(
+                  academic_yr: academicYr, shortName: shortName),
             ),
-                (Route<dynamic> route) => false, // This removes all previous routes
+            (Route<dynamic> route) => false, // This removes all previous routes
           );
         }
       } else {
@@ -270,19 +268,17 @@ class _LoginState extends State<LoginPage> {
           shouldShowText = true;
         });
 
-        print('Failed');
+        log('Failed');
         // Handle failed login
       }
     } catch (e) {
-      print('Exception: $e');
+      log('Exception: $e');
     } finally {
       setState(() {
         _isLoading = false; // Stop the loading indicator
       });
     }
   }
-
-
 
   // Store login status in SharedP
   // Store login status in SharedPreferences
@@ -305,11 +301,11 @@ class _LoginState extends State<LoginPage> {
         shortName = parsedData['short_name'];
         schoolnamestr = parsedData['short_name'];
         url = parsedData['url'];
-         teacherApkUrl = parsedData['project_url'];
+        teacherApkUrl = parsedData['project_url'];
         String projectUrl = parsedData['project_url'];
         String defaultPassword = parsedData['default_password'];
       } catch (e) {
-        print('Error parsing school info: $e');
+        log('Error parsing school info: $e');
       }
     }
 
@@ -321,15 +317,14 @@ class _LoginState extends State<LoginPage> {
         MaterialPageRoute(builder: (_) => UserNamePage()),
       );
     }
-
   }
 
   @override
   Widget build(BuildContext context) {
-    String logoPath ='' ;
+    String logoPath = '';
     // if(schoolnamestr == 'SACS'){
 
-      logoPath = '${teacherApkUrl}uploads/logo.jpg';
+    logoPath = '${teacherApkUrl}uploads/logo.jpg';
 
     // } else if (schoolnamestr == 'HSCS'){
     //   logoPath = teacherApkUrl+'uploads/logo.jpg';
@@ -337,7 +332,7 @@ class _LoginState extends State<LoginPage> {
     String schoolName = schoolnamestr == 'HSCS'
         ? 'Holy Spirit Convent School'
         : 'St. Arnolds Central School';
-    // print('Error parsing school info: $logoPath');
+    // log('Error parsing school info: $logoPath');
 
     return WillPopScope(
       onWillPop: () async {
@@ -376,75 +371,82 @@ class _LoginState extends State<LoginPage> {
                             // Logo with loading indicator
                             logoPath.isNotEmpty
                                 ? Image.network(
-                              logoPath,
-                              width: 40,
-                              height: 40,
-                              loadingBuilder: (context, child, loadingProgress) {
-                                if (loadingProgress == null) {
-                                  // The image has loaded successfully
-
-                                  Image.network(
-                                    logoPath, // Replace with your small logo image
+                                    logoPath,
                                     width: 40,
                                     height: 40,
-                                  );
+                                    loadingBuilder:
+                                        (context, child, loadingProgress) {
+                                      if (loadingProgress == null) {
+                                        // The image has loaded successfully
 
-                                  return child;
-                                }
-                                // Display a CircularProgressIndicator while loading
-                                return SizedBox(
-                                  width: 40,
-                                  height: 40,
-                                  child: Center(
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      value: loadingProgress.expectedTotalBytes != null
-                                          ? loadingProgress.cumulativeBytesLoaded /
-                                          (loadingProgress.expectedTotalBytes ?? 1)
-                                          : null,
-                                    ),
-                                  ),
-                                );
-                              },
-                              errorBuilder: (context, error, stackTrace) {
-                                // Display a local fallback image if network image fails
-                                return Image.asset(
-                                  'assets/logo.png',
-                                  width: 40,
-                                  height: 40,
-                                );
-                              },
-                            )
+                                        Image.network(
+                                          logoPath, // Replace with your small logo image
+                                          width: 40,
+                                          height: 40,
+                                        );
+
+                                        return child;
+                                      }
+                                      // Display a CircularProgressIndicator while loading
+                                      return SizedBox(
+                                        width: 40,
+                                        height: 40,
+                                        child: Center(
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2,
+                                            value: loadingProgress
+                                                        .expectedTotalBytes !=
+                                                    null
+                                                ? loadingProgress
+                                                        .cumulativeBytesLoaded /
+                                                    (loadingProgress
+                                                            .expectedTotalBytes ??
+                                                        1)
+                                                : null,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                    errorBuilder: (context, error, stackTrace) {
+                                      // Display a local fallback image if network image fails
+                                      return Image.asset(
+                                        'assets/logo.png',
+                                        width: 40,
+                                        height: 40,
+                                      );
+                                    },
+                                  )
                                 : Image.asset(
-                              'assets/logo.png',
-                              width: 40,
-                              height: 40,
-                            ),
+                                    'assets/logo.png',
+                                    width: 40,
+                                    height: 40,
+                                  ),
                             SizedBox(width: 8),
 
                             // School name
-                            schoolName.isNotEmpty ?
-                            Text(
-                              schoolName,
-                              style: TextStyle(
-                                fontSize: 22,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black,
-                              ),
-                            ):Text(
-                              'EvolvU Smart Parent App',
-                              style: TextStyle(
-                                fontSize: 22,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black,
-                              ),
-                            ),
+                            schoolName.isNotEmpty
+                                ? Text(
+                                    schoolName,
+                                    style: TextStyle(
+                                      fontSize: 22,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black,
+                                    ),
+                                  )
+                                : Text(
+                                    'EvolvU Smart Parent App',
+                                    style: TextStyle(
+                                      fontSize: 22,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black,
+                                    ),
+                                  ),
                           ],
                         ),
                       ),
 
                       SizedBox(height: 20),
-      
+
                       Image.asset(
                         'assets/school.png', // Replace with your logo image
                         width: 380,
@@ -479,7 +481,8 @@ class _LoginState extends State<LoginPage> {
                         ),
                         child: TextField(
                           controller: password,
-                          obscureText: !_passwordVisible, // Negate the visibility state
+                          obscureText:
+                              !_passwordVisible, // Negate the visibility state
                           decoration: InputDecoration(
                             hintText: 'Password',
                             hintStyle: TextStyle(color: Colors.grey),
@@ -487,12 +490,15 @@ class _LoginState extends State<LoginPage> {
                             border: InputBorder.none,
                             suffixIcon: IconButton(
                               icon: Icon(
-                                _passwordVisible ? Icons.visibility : Icons.visibility_off,
+                                _passwordVisible
+                                    ? Icons.visibility
+                                    : Icons.visibility_off,
                                 color: Colors.grey,
                               ),
                               onPressed: () {
                                 setState(() {
-                                  _passwordVisible = !_passwordVisible; // Toggle visibility state
+                                  _passwordVisible =
+                                      !_passwordVisible; // Toggle visibility state
                                 });
                               },
                             ),
@@ -527,9 +533,13 @@ class _LoginState extends State<LoginPage> {
                                 // Fluttertoast.showToast(msg: "$shortName abcd $academic_yr");
                                 Navigator.push(
                                   context,
-                                  MaterialPageRoute(builder: (_) => ForgotPasswordPage(widget.emailstr,shortName: shortName,academic_yr:academic_yr)),
+                                  MaterialPageRoute(
+                                      builder: (_) => ForgotPasswordPage(
+                                          widget.emailstr,
+                                          shortName: shortName,
+                                          academic_yr: academic_yr)),
                                 );
-      
+
                                 // Handle "Forgot password"
                               },
                               child: Text(
@@ -540,7 +550,7 @@ class _LoginState extends State<LoginPage> {
                           ),
                         ],
                       ),
-      
+
                       Visibility(
                         visible:
                             shouldShowText, // Set this boolean based on your condition
@@ -569,39 +579,40 @@ class _LoginState extends State<LoginPage> {
                       _isLoading
                           ? CircularProgressIndicator() // Show progress indicator when loading
                           : ElevatedButton(
-                        onPressed: () {
-      
-                          if(password.text.toString().isEmpty){
-                            setState(() {
-                              shouldShowText2 = true;
-                            });
-      
-                            Fluttertoast.showToast(
-                              msg: 'Please Enter Password!!',
-                              backgroundColor: Colors.black45,
-                              textColor: Colors.white,
-                              toastLength: Toast.LENGTH_LONG,
-                              gravity: ToastGravity.CENTER,
-                            );
-      
-                          } else {
-                            setState(() {
-                              shouldShowText2 = false;
-                            });
-                            log(email.text.toString(), password.text.toString());
-                          }
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue, // Button background color
-                          shape: StadiumBorder(),
-                          padding:
-                              EdgeInsets.symmetric(horizontal: 72, vertical: 12),
-                        ),
-                        child: Text(
-                          'Login',
-                          style: TextStyle(color: Colors.white, fontSize: 16),
-                        ),
-                      ),
+                              onPressed: () {
+                                if (password.text.toString().isEmpty) {
+                                  setState(() {
+                                    shouldShowText2 = true;
+                                  });
+
+                                  Fluttertoast.showToast(
+                                    msg: 'Please Enter Password!!',
+                                    backgroundColor: Colors.black45,
+                                    textColor: Colors.white,
+                                    toastLength: Toast.LENGTH_LONG,
+                                    gravity: ToastGravity.CENTER,
+                                  );
+                                } else {
+                                  setState(() {
+                                    shouldShowText2 = false;
+                                  });
+                                  logIn(email.text.toString(),
+                                      password.text.toString());
+                                }
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor:
+                                    Colors.blue, // Button background color
+                                shape: StadiumBorder(),
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 72, vertical: 12),
+                              ),
+                              child: Text(
+                                'Login',
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 16),
+                              ),
+                            ),
                       SizedBox(height: 20),
                       Text(
                         'aceventuraservices@gmail.com',
@@ -622,5 +633,3 @@ class _LoginState extends State<LoginPage> {
     );
   }
 }
-
-

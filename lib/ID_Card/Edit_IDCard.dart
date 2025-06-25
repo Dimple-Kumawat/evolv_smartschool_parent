@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 import 'package:evolvu/Parent/parentDashBoard_Page.dart';
 import 'package:http/http.dart' as http;
@@ -14,7 +15,8 @@ import 'Parent_IDCard.dart';
 class EditStudentFormScreen extends StatefulWidget {
   final Student student;
   final Function(Student) onStudentUpdated;
-  const EditStudentFormScreen({super.key, required this.student, required this.onStudentUpdated});
+  const EditStudentFormScreen(
+      {super.key, required this.student, required this.onStudentUpdated});
 
   @override
   _EditStudentFormScreenState createState() => _EditStudentFormScreenState();
@@ -29,7 +31,7 @@ class _EditStudentFormScreenState extends State<EditStudentFormScreen> {
   String? _selectedBloodGroup;
   late TextEditingController _addressController;
 
-  String imageUrl = "";  // Store the image URL here
+  String imageUrl = ""; // Store the image URL here
   File? file;
   bool _isLoading = false; // To show a progress indicator
   @override
@@ -63,7 +65,7 @@ class _EditStudentFormScreenState extends State<EditStudentFormScreen> {
         final response = await http.head(Uri.parse(imageUrl));
         if (response.statusCode == 404) {
           needsImage = true;
-          print('Invalid image: 404 Not Found');
+          log('Invalid image: 404 Not Found');
           Fluttertoast.showToast(
             msg: "Please Upload Student Profile picture",
             toastLength: Toast.LENGTH_SHORT,
@@ -75,12 +77,12 @@ class _EditStudentFormScreenState extends State<EditStudentFormScreen> {
         }
       } catch (e) {
         needsImage = true;
-        print('Invalid image: Error checking URL ($e)');
+        log('Invalid image: Error checking URL ($e)');
       }
     }
 
-    print('imageUrl: $imageUrl');
-    if(imageUrl.endsWith('/')){
+    log('imageUrl: $imageUrl');
+    if (imageUrl.endsWith('/')) {
       Fluttertoast.showToast(
         msg: "Please Upload Student Profile picture",
         toastLength: Toast.LENGTH_SHORT,
@@ -107,10 +109,9 @@ class _EditStudentFormScreenState extends State<EditStudentFormScreen> {
       });
 
       try {
-        print('durl: $durl/index.php/IdcardApi/student_idcard_details');
+        log('durl: $durl/index.php/IdcardApi/student_idcard_details');
 
         final response = await http.post(
-
           Uri.parse('${durl}index.php/IdcardApi/student_idcard_details'),
           body: {
             'short_name': shortName,
@@ -120,9 +121,9 @@ class _EditStudentFormScreenState extends State<EditStudentFormScreen> {
             'academic_yr': academic_yr,
           },
         );
-        print('durl: $shortName');
-        print('academic_yr: $academic_yr');
-        print('widget.student.studentId: ${widget.student.studentId}');
+        log('durl: $shortName');
+        log('academic_yr: $academic_yr');
+        log('widget.student.studentId: ${widget.student.studentId}');
 
         if (response.statusCode == 200) {
           // Handle successful response
@@ -146,7 +147,7 @@ class _EditStudentFormScreenState extends State<EditStudentFormScreen> {
           );
 
           // Navigate back to the previous screen
-          Navigator.pop(context,updatedStudent);
+          Navigator.pop(context, updatedStudent);
           // Navigator.pop(context);
         } else {
           // Handle error response
@@ -175,16 +176,17 @@ class _EditStudentFormScreenState extends State<EditStudentFormScreen> {
     }
   }
 
-
   Future<void> uploadImage(ImageSource source) async {
     try {
-      final XFile? image = await ImagePicker().pickImage(
+      final XFile? image = await ImagePicker()
+          .pickImage(
         source: source,
         // Add this line to handle dismissal properly
         preferredCameraDevice: CameraDevice.rear,
-      ).catchError((error) {
+      )
+          .catchError((error) {
         // Handle if user cancels the picker
-        print("Image picker cancelled: $error");
+        log("Image picker cancelled: $error");
         return null;
       });
 
@@ -210,7 +212,7 @@ class _EditStudentFormScreenState extends State<EditStudentFormScreen> {
         imageUrl = newImageUrl;
       });
     } catch (e) {
-      print("Error in uploadImage: $e");
+      log("Error in uploadImage: $e");
     }
   }
 
@@ -253,12 +255,13 @@ class _EditStudentFormScreenState extends State<EditStudentFormScreen> {
 
       return File(croppedFile.path);
     } catch (e) {
-      print("Error in cropImage: $e");
+      log("Error in cropImage: $e");
       return null;
     }
   }
 
-  Future<String> uploadImageToServer(File croppedImage, String base64Image) async {
+  Future<String> uploadImageToServer(
+      File croppedImage, String base64Image) async {
     try {
       var response = await http.post(
         Uri.parse("${url}upload_student_profile_image_into_folder"),
@@ -274,7 +277,7 @@ class _EditStudentFormScreenState extends State<EditStudentFormScreen> {
       if (response.statusCode == 200) {
         setState(() {
           imageUrl =
-          "${durl}uploads/student_image/${widget.student.studentId}.jpg?timestamp=${DateTime.now().millisecondsSinceEpoch}";
+              "${durl}uploads/student_image/${widget.student.studentId}.jpg?timestamp=${DateTime.now().millisecondsSinceEpoch}";
         });
 
         Fluttertoast.showToast(
@@ -301,7 +304,7 @@ class _EditStudentFormScreenState extends State<EditStudentFormScreen> {
         throw Exception('Failed to upload image');
       }
     } catch (e) {
-      print("Error uploading image: $e");
+      log("Error uploading image: $e");
       throw Exception('Failed to upload image');
     }
   }
@@ -315,7 +318,10 @@ class _EditStudentFormScreenState extends State<EditStudentFormScreen> {
         toolbarHeight: 80.h,
         title: Text(
           "Edit Student Details",
-          style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold, color: Colors.white),
+          style: TextStyle(
+              fontSize: 18.sp,
+              fontWeight: FontWeight.bold,
+              color: Colors.white),
         ),
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -347,20 +353,24 @@ class _EditStudentFormScreenState extends State<EditStudentFormScreen> {
                           backgroundColor: Colors.grey[200],
                           backgroundImage: NetworkImage(imageUrl),
                           child: IconButton(
-                            icon: const Icon(Icons.camera_alt, color: Colors.white),
+                            icon: const Icon(Icons.camera_alt,
+                                color: Colors.white),
                             onPressed: () {
                               uploadImage(ImageSource.gallery);
                             },
                           ),
                         ),
                         const SizedBox(height: 20),
-                        _buildReadOnlyField("Full Name", widget.student.fullName, Icons.person),
+                        _buildReadOnlyField(
+                            "Full Name", widget.student.fullName, Icons.person),
 
                         // Class-Division (Read-only)
-                        _buildReadOnlyField("Class-Division", widget.student.classDivision, Icons.school),
+                        _buildReadOnlyField("Class-Division",
+                            widget.student.classDivision, Icons.school),
 
                         // DOB (Read-only)
-                        _buildReadOnlyField("Date of Birth", widget.student.dob, Icons.calendar_today),
+                        _buildReadOnlyField("Date of Birth", widget.student.dob,
+                            Icons.calendar_today),
 
                         // Blood Group (Editable Dropdown)
                         LabeledDropdownID(
@@ -378,13 +388,16 @@ class _EditStudentFormScreenState extends State<EditStudentFormScreen> {
                           selectedValue: _selectedBloodGroup,
                           onChanged: (String? newValue) {
                             setState(() {
-                              _selectedBloodGroup = newValue; // Update selected blood group
+                              _selectedBloodGroup =
+                                  newValue; // Update selected blood group
                             });
                           },
                         ),
 
                         // Address (Editable)
-                        _buildTextField("Address", _addressController, Icons.home, maxLines: 2),
+                        _buildTextField(
+                            "Address", _addressController, Icons.home,
+                            maxLines: 2),
 
                         const SizedBox(height: 20),
 
@@ -392,16 +405,17 @@ class _EditStudentFormScreenState extends State<EditStudentFormScreen> {
                         _isLoading
                             ? CircularProgressIndicator() // Show loading indicator
                             : ElevatedButton(
-                          onPressed: _submitForm,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blue,
-                            padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
-                          ),
-                          child: const Text(
-                            "Save Changes",
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        ),
+                                onPressed: _submitForm,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.blue,
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 50, vertical: 15),
+                                ),
+                                child: const Text(
+                                  "Save Changes",
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              ),
                       ],
                     ),
                   ),
@@ -429,7 +443,9 @@ class _EditStudentFormScreenState extends State<EditStudentFormScreen> {
     );
   }
 
-  Widget _buildTextField(String label, TextEditingController controller, IconData icon, {int maxLines = 1}) {
+  Widget _buildTextField(
+      String label, TextEditingController controller, IconData icon,
+      {int maxLines = 1}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: TextFormField(
@@ -457,7 +473,8 @@ class LabeledDropdownID extends StatelessWidget {
   final String? selectedValue;
   final Function(String?) onChanged;
 
-  const LabeledDropdownID({super.key, 
+  const LabeledDropdownID({
+    super.key,
     required this.label,
     required this.options,
     required this.selectedValue,
@@ -487,7 +504,8 @@ class LabeledDropdownID extends StatelessWidget {
             onChanged: onChanged,
             decoration: InputDecoration(
               border: OutlineInputBorder(),
-              contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+              contentPadding:
+                  EdgeInsets.symmetric(horizontal: 10, vertical: 12),
             ),
             validator: (value) {
               if (value == null || value.isEmpty) {
@@ -501,4 +519,3 @@ class LabeledDropdownID extends StatelessWidget {
     );
   }
 }
-

@@ -6,6 +6,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'dart:developer';
 
 class ForgotPasswordPage extends StatefulWidget {
   final String academic_yr;
@@ -13,7 +14,7 @@ class ForgotPasswordPage extends StatefulWidget {
   final String emailstr;
 
   const ForgotPasswordPage(this.emailstr,
-      {super.key,  required this.shortName, required this.academic_yr});
+      {super.key, required this.shortName, required this.academic_yr});
 
   @override
   _ForgotPasswordPageState createState() => _ForgotPasswordPageState();
@@ -61,31 +62,30 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
         Map<String, dynamic> parsedData = json.decode(schoolInfoJson);
         projectUrl = parsedData['project_url'];
         shortName1 = parsedData['short_name'];
-        print('academic_yr ID: $shortName1');
+        log('academic_yr ID: $shortName1');
         url = parsedData['url'];
         return url;
       } catch (e) {
-        print('Error parsing school info: $e');
+        log('Error parsing school info: $e');
         return null;
       }
     } else {
-      print('School info not found in SharedPreferences.');
+      log('School info not found in SharedPreferences.');
       return null;
     }
   }
 
   Future<void> recivePassword() async {
-    print(projectUrl);
+    log(projectUrl);
 
     final http.Response response = await http.post(
       Uri.parse('${projectUrl}index.php/LoginApi/receive_new_password'),
-
       body: {
         'short_name': shortName1,
         'user_id': _userIdController.text.trim(),
       },
     );
-    print("receive_new_password${response.body}");
+    log("receive_new_password${response.body}");
 
     if (response.statusCode == 200) {
       // Fluttertoast.showToast(msg: "Password reset successfully.");
@@ -96,21 +96,26 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text('⚠ Password Sent !!',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
-
+              title: Text(
+                '⚠ Password Sent !!',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
               content: Padding(
                 padding: const EdgeInsets.only(top: 20),
                 child: Text(
-                  responseData['message'], style: TextStyle(fontSize: 16),),
+                  responseData['message'],
+                  style: TextStyle(fontSize: 16),
+                ),
               ),
               actions: <Widget>[
                 TextButton(
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
-                  child: const Text('OK', style: TextStyle(
-                      color: Colors.blueAccent, fontWeight: FontWeight.bold)),
+                  child: const Text('OK',
+                      style: TextStyle(
+                          color: Colors.blueAccent,
+                          fontWeight: FontWeight.bold)),
                 ),
               ],
             );
@@ -120,23 +125,21 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
         Fluttertoast.showToast(msg: responseData['message']);
       }
     } else {
-      print(": resss ${response.body}");
+      log(": resss ${response.body}");
 
       Fluttertoast.showToast(
           msg: "Failed to reset password.  Please try again.  ");
     }
-
   }
 
   Future<void> resetPassword() async {
-    print("${url}reset_password");
-    print(shortName1);
-    print(_motherNameController.text.trim());
-    print(_dobController.text.trim());
+    log("${url}reset_password");
+    log(shortName1);
+    log(_motherNameController.text.trim());
+    log(_dobController.text.trim());
 
     final http.Response response = await http.post(
       Uri.parse('${url}reset_password'),
-
       body: {
         'short_name': shortName1,
         'user_id': _userIdController.text.trim(),
@@ -145,10 +148,9 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
         'role_id': 'P', // Assuming the role_id is 'parent'
       },
     );
-    print("www${response.body}");
+    log("www${response.body}");
 
     if (response.statusCode == 200) {
-
       final responseData = json.decode(response.body);
       if (responseData['status'] == true) {
         Fluttertoast.showToast(msg: responseData['message']);
@@ -157,21 +159,26 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text('Password Reset Successful',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
-
+              title: Text(
+                'Password Reset Successful',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
               content: Padding(
                 padding: const EdgeInsets.only(top: 20),
                 child: Text(
-                  responseData['message'], style: TextStyle(fontSize: 16),),
+                  responseData['message'],
+                  style: TextStyle(fontSize: 16),
+                ),
               ),
               actions: <Widget>[
                 TextButton(
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
-                  child: const Text('OK', style: TextStyle(
-                      color: Colors.blueAccent, fontWeight: FontWeight.bold)),
+                  child: const Text('OK',
+                      style: TextStyle(
+                          color: Colors.blueAccent,
+                          fontWeight: FontWeight.bold)),
                 ),
               ],
             );
@@ -181,7 +188,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
         Fluttertoast.showToast(msg: responseData['message']);
       }
     } else {
-      print(": resss ${response.body}");
+      log(": resss ${response.body}");
 
       Fluttertoast.showToast(
           msg: "Failed to reset password.  Please try again.  ");
@@ -216,229 +223,223 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
             child: Form(
               key: _formKey,
               child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                  SizedBox(height: 60.0),
-              Text(
-                shortName1 == 'SACS'
-                    ? 'St. Arnold\'s Central School'
-                    : shortName1 == 'HSCS' ? 'Holy Spirit Convent School'
-                    : 'Evolvu Parent Application',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 24.0,
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Text(
-                widget.academic_yr,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 24.0,
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 16.0),
-              const Text(
-                'Forgot password',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 18.0,
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 24.0),
-              const Text(
-                'Please enter your user id',
-                style: TextStyle(
-                  fontSize: 16.0,
-                  color: Colors.white,
-                ),
-              ),
-              const SizedBox(height: 4.0),
-              TextFormField(
-                controller: _userIdController,
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: Colors.white,
-                  hintText: 'Enter userId',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                ),
-                validator: (value) {
-                  if (value == null || value
-                      .trim()
-                      .isEmpty) {
-                    return 'Enter UserId';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 8.0),
-              const Text(
-                'Please enter your Mother\'s name',
-                style: TextStyle(
-                  fontSize: 16.0,
-                  color: Colors.white,
-                ),
-              ),
-              const SizedBox(height: 8.0),
-              TextFormField(
-                controller: _motherNameController,
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: Colors.white,
-                  hintText: 'Enter your mother\'s name',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                ),
-                validator: (value) {
-                  if (value == null || value
-                      .trim()
-                      .isEmpty) {
-                    return "Enter Mother's Name";
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 8.0),
-              const Text(
-                'Your Child\'s Date Of Birth',
-                style: TextStyle(
-                  fontSize: 16.0,
-                  color: Colors.white,
-                ),
-              ),
-              const SizedBox(height: 8.0),
-              TextFormField(
-                controller: _dobController,
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: Colors.white,
-                  hintText: 'Select date of birth',
-                  suffixIcon: Icon(Icons.calendar_today),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                ),
-                readOnly: true,
-                onTap: () async {
-                  DateTime? pickedDate = await showDatePicker(
-                    context: context,
-                    initialDate: DateTime.now(),
-                    firstDate: DateTime(2000),
-                    lastDate: DateTime(2101),
-                  );
-                  if (pickedDate != null) {
-                    _dobController.text =
-                        DateFormat('dd-MM-yyyy').format(pickedDate);
-                  }
-                },
-                validator: (value) {
-                  if (value == null || value
-                      .trim()
-                      .isEmpty) {
-                    return 'Enter Date of Birth';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 24.0),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      if (validate()) {
-                        resetPassword();
-                        // Fluttertoast.showToast(msg: "Validation Passed ");
-
-                      } else {
-                        Fluttertoast.showToast(msg: "Validation Failed");
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue, // background color
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
-                    ),
-                    child: const Padding(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: 24.0, vertical: 12.0),
-                      child: Text(
-                          'RESET', style: TextStyle(color: Colors.white)),
-                    ),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (_) => UserNamePage()),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.grey, // background color
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
-                    ),
-                    child: const Padding(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: 24.0, vertical: 12.0),
-                      child: Text(
-                          'LOGIN', style: TextStyle(color: Colors.white)),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 120.0),
-              const Text(
-                'If you do not remember answers to these questions then please enter your userid and click on this link to receive a new password',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 12.0,
-                  color: Colors.white,
-                ),
-              ),
-              SizedBox(height: 10.0),
-              Padding(
-                padding: const EdgeInsets.only(right: 0.0),
-                child: TextButton(
-                  onPressed: () {
-                    if(_userIdController != ""){
-                      recivePassword();
-                    }
-                  },
-                  child: Text(
-                    'receive a new password',
+                  SizedBox(height: 60.0),
+                  Text(
+                    shortName1 == 'SACS'
+                        ? 'St. Arnold\'s Central School'
+                        : shortName1 == 'HSCS'
+                            ? 'Holy Spirit Convent School'
+                            : 'Evolvu Parent Application',
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      fontSize: 14.0,
-                      color: Colors.black,
+                      fontSize: 24.0,
+                      color: Colors.white,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                ),
-                ),
-                SizedBox(height: 10.0),
-                InkWell(
-                  onTap: _launchURL,
-                  child: const Text(
-                    'Aceventura Services',
+                  Text(
+                    widget.academic_yr,
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      fontSize: 14.0,
+                      fontSize: 24.0,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 16.0),
+                  const Text(
+                    'Forgot password',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 18.0,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 24.0),
+                  const Text(
+                    'Please enter your user id',
+                    style: TextStyle(
+                      fontSize: 16.0,
                       color: Colors.white,
                     ),
                   ),
-                ),
+                  const SizedBox(height: 4.0),
+                  TextFormField(
+                    controller: _userIdController,
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Colors.white,
+                      hintText: 'Enter userId',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'Enter UserId';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 8.0),
+                  const Text(
+                    'Please enter your Mother\'s name',
+                    style: TextStyle(
+                      fontSize: 16.0,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 8.0),
+                  TextFormField(
+                    controller: _motherNameController,
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Colors.white,
+                      hintText: 'Enter your mother\'s name',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return "Enter Mother's Name";
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 8.0),
+                  const Text(
+                    'Your Child\'s Date Of Birth',
+                    style: TextStyle(
+                      fontSize: 16.0,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 8.0),
+                  TextFormField(
+                    controller: _dobController,
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Colors.white,
+                      hintText: 'Select date of birth',
+                      suffixIcon: Icon(Icons.calendar_today),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                    ),
+                    readOnly: true,
+                    onTap: () async {
+                      DateTime? pickedDate = await showDatePicker(
+                        context: context,
+                        initialDate: DateTime.now(),
+                        firstDate: DateTime(2000),
+                        lastDate: DateTime(2101),
+                      );
+                      if (pickedDate != null) {
+                        _dobController.text =
+                            DateFormat('dd-MM-yyyy').format(pickedDate);
+                      }
+                    },
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'Enter Date of Birth';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 24.0),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () {
+                          if (validate()) {
+                            resetPassword();
+                            // Fluttertoast.showToast(msg: "Validation Passed ");
+                          } else {
+                            Fluttertoast.showToast(msg: "Validation Failed");
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue, // background color
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                        ),
+                        child: const Padding(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 24.0, vertical: 12.0),
+                          child: Text('RESET',
+                              style: TextStyle(color: Colors.white)),
+                        ),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => UserNamePage()),
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.grey, // background color
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                        ),
+                        child: const Padding(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 24.0, vertical: 12.0),
+                          child: Text('LOGIN',
+                              style: TextStyle(color: Colors.white)),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 120.0),
+                  const Text(
+                    'If you do not remember answers to these questions then please enter your userid and click on this link to receive a new password',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 12.0,
+                      color: Colors.white,
+                    ),
+                  ),
+                  SizedBox(height: 10.0),
+                  Padding(
+                    padding: const EdgeInsets.only(right: 0.0),
+                    child: TextButton(
+                      onPressed: () {
+                        if (_userIdController != "") {
+                          recivePassword();
+                        }
+                      },
+                      child: Text(
+                        'receive a new password',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 14.0,
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 10.0),
+                  InkWell(
+                    onTap: _launchURL,
+                    child: const Text(
+                      'Aceventura Services',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 14.0,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),

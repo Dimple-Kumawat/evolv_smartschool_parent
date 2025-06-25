@@ -1,9 +1,10 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-  import 'package:http/http.dart' as http;
+import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -47,11 +48,11 @@ class TeacherDetailCard extends StatelessWidget {
         String projectUrl = parsedData['project_url'];
         return projectUrl;
       } catch (e) {
-        print('Error parsing school info: $e');
+        log('Error parsing school info: $e');
         return null;
       }
     } else {
-      print('School info not found in SharedPreferences.');
+      log('School info not found in SharedPreferences.');
       return null;
     }
   }
@@ -64,22 +65,22 @@ class TeacherDetailCard extends StatelessWidget {
     final prefs = await SharedPreferences.getInstance();
     String? schoolInfoJson = prefs.getString('school_info');
     String? logUrls = prefs.getString('logUrls');
-    print('logUrls====\\\\: $logUrls');
+    log('logUrls====\\\\: $logUrls');
     if (logUrls != null) {
       try {
         Map<String, dynamic> logUrlsparsed = json.decode(logUrls);
-        print('logUrls====\\\\11111: $logUrls');
+        log('logUrls====\\\\11111: $logUrls');
 
         academicYr = logUrlsparsed['academic_yr'];
         regId = logUrlsparsed['reg_id'];
 
-        print('academic_yr ID: $academicYr');
-        print('reg_id: $regId');
+        log('academic_yr ID: $academicYr');
+        log('reg_id: $regId');
       } catch (e) {
-        print('Error parsing school info: $e');
+        log('Error parsing school info: $e');
       }
     } else {
-      print('School info not found in SharedPreferences.');
+      log('School info not found in SharedPreferences.');
     }
 
     if (schoolInfoJson != null) {
@@ -89,13 +90,13 @@ class TeacherDetailCard extends StatelessWidget {
         shortName = parsedData['short_name'];
         url = parsedData['url'];
 
-        print('Short Name: $shortName');
-        print('URL: $url');
+        log('Short Name: $shortName');
+        log('URL: $url');
       } catch (e) {
-        print('Error parsing school info: $e');
+        log('Error parsing school info: $e');
       }
     } else {
-      print('School info not found in SharedPreferences.');
+      log('School info not found in SharedPreferences.');
     }
     DateTime parsedDate = DateTime.parse(DateTime.now().toIso8601String());
     String formattedDate = DateFormat("yyyy-MM-dd").format(parsedDate);
@@ -112,14 +113,15 @@ class TeacherDetailCard extends StatelessWidget {
       // Assuming the server returns a boolean to indicate success
       bool success = json.decode(response.body) as bool;
       if (success) {
-        print('Read status updated successfully');
+        log('Read status updated successfully');
       } else {
-        print('Failed to update read status');
+        log('Failed to update read status');
       }
     } else {
-      print('Failed to update read status');
+      log('Failed to update read status');
     }
   }
+
   Widget buildRow(String label, String value) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -141,7 +143,6 @@ class TeacherDetailCard extends StatelessWidget {
       ],
     );
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -226,65 +227,85 @@ class TeacherDetailCard extends StatelessWidget {
                                     ),
                                   ),
                                   ...imageList.map((attachment) {
-                                    bool isFileNotUploaded = (attachment.fileSize / 1024) == 0.00;
+                                    bool isFileNotUploaded =
+                                        (attachment.fileSize / 1024) == 0.00;
                                     return ListTile(
-                                      contentPadding: EdgeInsets.symmetric(horizontal: 0.0),
+                                      contentPadding:
+                                          EdgeInsets.symmetric(horizontal: 0.0),
                                       leading: Icon(Icons.file_download),
                                       title: isFileNotUploaded
                                           ? Text(
-                                        '${attachment.imageName}\nFile is not uploaded properly',
-                                        style: TextStyle(
-                                          fontSize: 14.sp,
-                                          color: Colors.red,
-                                        ),
-                                      )
+                                              '${attachment.imageName}\nFile is not uploaded properly',
+                                              style: TextStyle(
+                                                fontSize: 14.sp,
+                                                color: Colors.red,
+                                              ),
+                                            )
                                           : Text(
-                                        attachment.imageName,
-                                        style: TextStyle(fontSize: 14.sp),
-                                      ),
+                                              attachment.imageName,
+                                              style: TextStyle(fontSize: 14.sp),
+                                            ),
                                       subtitle: Text(
                                         '${(attachment.fileSize / 1024).toStringAsFixed(2)} KB',
                                         style: TextStyle(fontSize: 14.sp),
                                       ),
                                       onTap: () async {
                                         DateTime now = DateTime.now();
-                                        String formattedDate = DateFormat('yyyy-MM-dd').format(now);
-                                        String? projectUrl = await _getProjectUrl();
+                                        String formattedDate =
+                                            DateFormat('yyyy-MM-dd')
+                                                .format(now);
+                                        String? projectUrl =
+                                            await _getProjectUrl();
                                         if (projectUrl != null) {
                                           try {
                                             if (attachment.fileSize == 0) {
-                                              ScaffoldMessenger.of(context).showSnackBar(
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(
                                                 SnackBar(
-                                                  content: Text('File not uploaded properly'),
+                                                  content: Text(
+                                                      'File not uploaded properly'),
                                                 ),
                                               );
                                             } else {
-                                              String downloadUrl = '${projectUrl}uploads/daily_notes/$date/$notesId/${attachment.imageName}';
-                                              print('Teacher downloadUrl: $downloadUrl');
+                                              String downloadUrl =
+                                                  '${projectUrl}uploads/daily_notes/$date/$notesId/${attachment.imageName}';
+                                              log('Teacher downloadUrl: $downloadUrl');
                                               if (Platform.isAndroid) {
                                                 _permissionRequest();
-                                                await downloadFile(downloadUrl, context, attachment.imageName);
+                                                await downloadFile(
+                                                    downloadUrl,
+                                                    context,
+                                                    attachment.imageName);
                                               } else if (Platform.isIOS) {
-                                                await _downloadFileIOS(downloadUrl,context, attachment.imageName);
+                                                await _downloadFileIOS(
+                                                    downloadUrl,
+                                                    context,
+                                                    attachment.imageName);
                                               } else {
-                                                ScaffoldMessenger.of(context).showSnackBar(
+                                                ScaffoldMessenger.of(context)
+                                                    .showSnackBar(
                                                   SnackBar(
-                                                    content: Text('Failed to download file'),
+                                                    content: Text(
+                                                        'Failed to download file'),
                                                   ),
                                                 );
                                               }
                                             }
                                           } catch (e) {
-                                            ScaffoldMessenger.of(context).showSnackBar(
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(
                                               SnackBar(
-                                                content: Text('Failed to download file: $e'),
+                                                content: Text(
+                                                    'Failed to download file: $e'),
                                               ),
                                             );
                                           }
                                         } else {
-                                          ScaffoldMessenger.of(context).showSnackBar(
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
                                             SnackBar(
-                                              content: Text('Failed to retrieve project URL.'),
+                                              content: Text(
+                                                  'Failed to retrieve project URL.'),
                                             ),
                                           );
                                         }
@@ -313,9 +334,8 @@ class TeacherDetailCard extends StatelessWidget {
   }
 
   downloadFile(String url, BuildContext context, String name) async {
-
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
-    AndroidNotificationDetails(
+        AndroidNotificationDetails(
       'download_channel',
       'Download Channel',
       channelDescription: 'Notifications for file downloads',
@@ -326,9 +346,10 @@ class TeacherDetailCard extends StatelessWidget {
     );
 
     const NotificationDetails platformChannelSpecifics =
-    NotificationDetails(android: androidPlatformChannelSpecifics);
+        NotificationDetails(android: androidPlatformChannelSpecifics);
 
-    var directory = Directory("/storage/emulated/0/Download/Evolvuschool/Parent/TeacherNote");
+    var directory = Directory(
+        "/storage/emulated/0/Download/Evolvuschool/Parent/TeacherNote");
 
     if (!await directory.exists()) {
       await directory.create(recursive: true);
@@ -359,7 +380,8 @@ class TeacherDetailCard extends StatelessWidget {
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('File downloaded successfully: Download/Evolvuschool/Parent/TeacherNote'),
+          content: Text(
+              'File downloaded successfully: Download/Evolvuschool/Parent/TeacherNote'),
         ),
       );
     } catch (e) {
@@ -378,7 +400,8 @@ class TeacherDetailCard extends StatelessWidget {
     }
   }
 
-  Future<void> _downloadFileIOS(String url,BuildContext context, String fileName) async {
+  Future<void> _downloadFileIOS(
+      String url, BuildContext context, String fileName) async {
     final directory = await getApplicationDocumentsDirectory();
 
     // Construct the full path for the downloaded file
@@ -386,7 +409,7 @@ class TeacherDetailCard extends StatelessWidget {
     final file = File(filePath);
 
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
-    AndroidNotificationDetails(
+        AndroidNotificationDetails(
       'download_channel',
       'Download Channel',
       channelDescription: 'Notifications for file downloads',
@@ -397,8 +420,7 @@ class TeacherDetailCard extends StatelessWidget {
     );
 
     const NotificationDetails platformChannelSpecifics =
-    NotificationDetails(android: androidPlatformChannelSpecifics);
-
+        NotificationDetails(android: androidPlatformChannelSpecifics);
 
     try {
       final response = await http.get(Uri.parse(url));
@@ -414,15 +436,13 @@ class TeacherDetailCard extends StatelessWidget {
           payload: filePath, // Pass the file path as payload
         );
 
-
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('File Download Successfully. \n Find it in the Files/On My iPhone/EvolvU Smart School - Parent.'),
+            content: Text(
+                'File Download Successfully. \n Find it in the Files/On My iPhone/EvolvU Smart School - Parent.'),
           ),
         );
-      } else {
-
-      }
+      } else {}
     } catch (e) {
       await flutterLocalNotificationsPlugin.show(
         0,
@@ -438,7 +458,4 @@ class TeacherDetailCard extends StatelessWidget {
       );
     }
   }
-
-
-
 }

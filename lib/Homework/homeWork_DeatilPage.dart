@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -74,22 +75,22 @@ class _HomeWorkDetailPageState extends State<HomeWorkDetailPage> {
   Future<String?> _getProjectUrl() async {
     final prefs = await SharedPreferences.getInstance();
     String? logUrls = prefs.getString('logUrls');
-    print('logUrls====\\\\: $logUrls');
+    log('logUrls====\\\\: $logUrls');
     if (logUrls != null) {
       try {
         Map<String, dynamic> logUrlsparsed = json.decode(logUrls);
-        print('logUrls====\\\\11111: $logUrls');
+        log('logUrls====\\\\11111: $logUrls');
 
         academic_yr = logUrlsparsed['academic_yr'];
         reg_id = logUrlsparsed['reg_id'];
 
-        print('academic_yr ID: $academic_yr');
-        print('reg_id: $reg_id');
+        log('academic_yr ID: $academic_yr');
+        log('reg_id: $reg_id');
       } catch (e) {
-        print('Error parsing school info: $e');
+        log('Error parsing school info: $e');
       }
     } else {
-      print('School info not found in SharedPreferences.');
+      log('School info not found in SharedPreferences.');
     }
     String? schoolInfoJson = prefs.getString('school_info');
     if (schoolInfoJson != null) {
@@ -100,26 +101,26 @@ class _HomeWorkDetailPageState extends State<HomeWorkDetailPage> {
         url = parsedData['url'];
         return url;
       } catch (e) {
-        print('Error parsing school info: $e');
+        log('Error parsing school info: $e');
         return null;
       }
     } else {
-      print('School info not found in SharedPreferences.');
+      log('School info not found in SharedPreferences.');
       return null;
     }
   }
 
   Future<void> _updateHomework() async {
     if (widget.homeworkInfo.homeworkId.isEmpty) {
-      print('Homework ID is null, not sending request to server.');
+      log('Homework ID is null, not sending request to server.');
       return;
     }
     String? projectUrl = await _getProjectUrl();
     if (projectUrl == null) {
-      print('Failed to retrieve project URL.');
+      log('Failed to retrieve project URL.');
       return;
     }
-    print('Homework ID is nullprojectUrl, $projectUrl');
+    log('Homework ID is nullprojectUrl, $projectUrl');
 
     try {
       final http.Response response = await http.post(
@@ -135,7 +136,7 @@ class _HomeWorkDetailPageState extends State<HomeWorkDetailPage> {
       );
 
       if (response.statusCode == 200) {
-        print('Homework updated successfully.');
+        log('Homework updated successfully.');
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -145,7 +146,7 @@ class _HomeWorkDetailPageState extends State<HomeWorkDetailPage> {
 
         Navigator.pop(context);
       } else {
-        print('Failed to update homework. Status code: ${response.statusCode}');
+        log('Failed to update homework. Status code: ${response.statusCode}');
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Failed to update homework.'),
@@ -153,7 +154,7 @@ class _HomeWorkDetailPageState extends State<HomeWorkDetailPage> {
         );
       }
     } catch (e) {
-      print('Failed to update homework: $e');
+      log('Failed to update homework: $e');
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -168,7 +169,8 @@ class _HomeWorkDetailPageState extends State<HomeWorkDetailPage> {
     DateTime parsedDate = DateTime.parse(widget.homeworkInfo.assignedDate);
     DateTime parsedDate1 = DateTime.parse(widget.homeworkInfo.submissionDate);
     String formattedAssigneddate = DateFormat('dd-MM-yyyy').format(parsedDate);
-    String formattedSubmissiondate = DateFormat('dd-MM-yyyy').format(parsedDate1);
+    String formattedSubmissiondate =
+        DateFormat('dd-MM-yyyy').format(parsedDate1);
     return Container(
       height: 720.h,
       margin: EdgeInsets.all(8.0),
@@ -412,13 +414,16 @@ class _HomeWorkDetailPageState extends State<HomeWorkDetailPage> {
                               ),
                             );
                           } else {
-                            String downloadUrl = '${projectUrl}uploads/homework/${widget.homeworkInfo.publishDate}/${widget.homeworkInfo.homeworkId}/${attachment.imageName}';
-                            print('Home downloadUrl: $downloadUrl');
+                            String downloadUrl =
+                                '${projectUrl}uploads/homework/${widget.homeworkInfo.publishDate}/${widget.homeworkInfo.homeworkId}/${attachment.imageName}';
+                            log('Home downloadUrl: $downloadUrl');
 
                             if (Platform.isAndroid) {
-                              await downloadFile(downloadUrl, context, attachment.imageName);
+                              await downloadFile(
+                                  downloadUrl, context, attachment.imageName);
                             } else if (Platform.isIOS) {
-                              await _downloadFileIOS(downloadUrl,context, attachment.imageName);
+                              await _downloadFileIOS(
+                                  downloadUrl, context, attachment.imageName);
                             } else {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
@@ -439,7 +444,7 @@ class _HomeWorkDetailPageState extends State<HomeWorkDetailPage> {
                             ),
                           );
                         }
-                                            },
+                      },
                     );
                   }),
                 ],
@@ -475,22 +480,20 @@ class _HomeWorkDetailPageState extends State<HomeWorkDetailPage> {
     super.dispose();
   }
 
-   downloadFile(String url, BuildContext context, String name) async {
+  downloadFile(String url, BuildContext context, String name) async {
+    const AndroidNotificationDetails androidPlatformChannelSpecifics =
+        AndroidNotificationDetails(
+      'download_channel',
+      'Download Channel',
+      channelDescription: 'Notifications for file downloads',
+      importance: Importance.high,
+      priority: Priority.high,
+      showProgress: true,
+      onlyAlertOnce: true,
+    );
 
-
-     const AndroidNotificationDetails androidPlatformChannelSpecifics =
-     AndroidNotificationDetails(
-       'download_channel',
-       'Download Channel',
-       channelDescription: 'Notifications for file downloads',
-       importance: Importance.high,
-       priority: Priority.high,
-       showProgress: true,
-       onlyAlertOnce: true,
-     );
-
-     const NotificationDetails platformChannelSpecifics =
-     NotificationDetails(android: androidPlatformChannelSpecifics);
+    const NotificationDetails platformChannelSpecifics =
+        NotificationDetails(android: androidPlatformChannelSpecifics);
 
     var directory =
         Directory("/storage/emulated/0/Download/Evolvuschool/Parent/Homework");
@@ -522,7 +525,6 @@ class _HomeWorkDetailPageState extends State<HomeWorkDetailPage> {
         ),
       );
     } catch (e) {
-
       await flutterLocalNotificationsPlugin.show(
         0,
         'Download Failed',
@@ -538,11 +540,10 @@ class _HomeWorkDetailPageState extends State<HomeWorkDetailPage> {
     }
   }
 
-  Future<void> _downloadFileIOS(String url,BuildContext context, String fileName) async {
-
-
+  Future<void> _downloadFileIOS(
+      String url, BuildContext context, String fileName) async {
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
-    AndroidNotificationDetails(
+        AndroidNotificationDetails(
       'download_channel',
       'Download Channel',
       channelDescription: 'Notifications for file downloads',
@@ -553,7 +554,7 @@ class _HomeWorkDetailPageState extends State<HomeWorkDetailPage> {
     );
 
     const NotificationDetails platformChannelSpecifics =
-    NotificationDetails(android: androidPlatformChannelSpecifics);
+        NotificationDetails(android: androidPlatformChannelSpecifics);
 
     // Get the documents directory on iOS
     final directory = await getApplicationDocumentsDirectory();
@@ -577,12 +578,11 @@ class _HomeWorkDetailPageState extends State<HomeWorkDetailPage> {
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Find it in the Files/On My iPhone/EvolvU Smart School - Parent.'),
+            content: Text(
+                'Find it in the Files/On My iPhone/EvolvU Smart School - Parent.'),
           ),
         );
-      } else {
-
-      }
+      } else {}
     } catch (e) {
       await flutterLocalNotificationsPlugin.show(
         0,

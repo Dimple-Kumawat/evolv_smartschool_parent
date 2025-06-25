@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:evolvu/Parent/parentDashBoard_Page.dart';
 import 'package:flutter/material.dart';
@@ -9,8 +10,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'notice_DeatilCard.dart';
 
-
-
 class NoticeNotePage extends StatefulWidget {
   final String studentId;
   final String academic_yr;
@@ -19,7 +18,12 @@ class NoticeNotePage extends StatefulWidget {
   final String secId;
 
   const NoticeNotePage(
-      {super.key, required this.studentId, required this.academic_yr, required this.shortName, required this.classId, required this.secId});
+      {super.key,
+      required this.studentId,
+      required this.academic_yr,
+      required this.shortName,
+      required this.classId,
+      required this.secId});
 
   @override
   _NoticeNotePageState createState() => _NoticeNotePageState();
@@ -62,10 +66,10 @@ class _NoticeNotePageState extends State<NoticeNotePage> {
         // academic_yr = logUrlsparsed['academic_yr'];
         reg_id = logUrlsparsed['reg_id'];
       } catch (e) {
-        print('Error parsing log URLs: $e');
+        log('Error parsing log URLs: $e');
       }
     } else {
-      print('Log URLs not found in SharedPreferences.');
+      log('Log URLs not found in SharedPreferences.');
     }
 
     if (schoolInfoJson != null) {
@@ -74,10 +78,10 @@ class _NoticeNotePageState extends State<NoticeNotePage> {
         shortName = parsedData['short_name'];
         url = parsedData['url'];
       } catch (e) {
-        print('Error parsing school info: $e');
+        log('Error parsing school info: $e');
       }
     } else {
-      print('School info not found in SharedPreferences.');
+      log('School info not found in SharedPreferences.');
     }
 
     final response = await http.post(
@@ -89,7 +93,7 @@ class _NoticeNotePageState extends State<NoticeNotePage> {
         'class_id': widget.classId,
       },
     );
-    print('Filtering notices with query: ${response.body}'); // Debugging statement
+    log('Filtering notices with query: ${response.body}'); // Debugging statement
 
     if (response.statusCode == 200) {
       List<dynamic> body = jsonDecode(response.body);
@@ -101,7 +105,7 @@ class _NoticeNotePageState extends State<NoticeNotePage> {
 
   void filterNotes() {
     final query = _searchController.text.toLowerCase();
-    print('Filtering notices with query: $query'); // Debugging statement
+    log('Filtering notices with query: $query'); // Debugging statement
     setState(() {
       filteredNotices = allNotices.where((notice) {
         return notice.subject.toLowerCase().contains(query) ||
@@ -109,7 +113,7 @@ class _NoticeNotePageState extends State<NoticeNotePage> {
             notice.noticeType.toLowerCase().contains(query) ||
             notice.noticeDate.toLowerCase().contains(query);
       }).toList();
-      print('Filtered notices count: ${filteredNotices.length}'); // Debugging statement
+      log('Filtered notices count: ${filteredNotices.length}'); // Debugging statement
     });
   }
 
@@ -126,13 +130,14 @@ class _NoticeNotePageState extends State<NoticeNotePage> {
   }
 
   Future<void> refreshNotices() async {
-    List<Notice> updatedNotices = await fetchNotices();  // Fetch the latest notices
+    List<Notice> updatedNotices =
+        await fetchNotices(); // Fetch the latest notices
     setState(() {
-      allNotices = updatedNotices;  // Update the state with the latest notices
-      filteredNotices = updatedNotices;  // Also update filtered notices if needed
+      allNotices = updatedNotices; // Update the state with the latest notices
+      filteredNotices =
+          updatedNotices; // Also update filtered notices if needed
     });
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -164,7 +169,6 @@ class _NoticeNotePageState extends State<NoticeNotePage> {
               end: Alignment.bottomCenter,
             ),
           ),
-
           child: FutureBuilder<List<Notice>>(
             future: futureNotice,
             builder: (context, snapshot) {
@@ -198,7 +202,8 @@ class _NoticeNotePageState extends State<NoticeNotePage> {
                             fit: BoxFit.contain,
                           ),
                         ),
-                        SizedBox(height: 10), // Add spacing between emoji and text
+                        SizedBox(
+                            height: 10), // Add spacing between emoji and text
                         Text(
                           'No Notice & SMS Found',
                           style: TextStyle(
@@ -240,7 +245,8 @@ class _NoticeNotePageState extends State<NoticeNotePage> {
                             fit: BoxFit.contain,
                           ),
                         ),
-                        SizedBox(height: 10), // Add spacing between emoji and text
+                        SizedBox(
+                            height: 10), // Add spacing between emoji and text
                         Text(
                           'No Notice & SMS Found',
                           style: TextStyle(
@@ -258,7 +264,7 @@ class _NoticeNotePageState extends State<NoticeNotePage> {
                 final groupedNotes = groupByDate(filteredNotices);
                 return Column(
                   children: [
-                    SizedBox(height: 100.h),
+                    SizedBox(height: 120.h),
                     Text(
                       "Notice/SMS",
                       style: TextStyle(
@@ -268,7 +274,8 @@ class _NoticeNotePageState extends State<NoticeNotePage> {
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 18, vertical: 10),
                       child: Container(
                         decoration: BoxDecoration(
                           color: Colors.white.withOpacity(0.2),
@@ -282,7 +289,8 @@ class _NoticeNotePageState extends State<NoticeNotePage> {
                             hintText: "Search Subject",
                             hintStyle: TextStyle(color: Colors.white),
                             border: InputBorder.none,
-                            contentPadding: EdgeInsets.symmetric(vertical: 15.0),
+                            contentPadding:
+                                EdgeInsets.symmetric(vertical: 15.0),
                           ),
                           style: const TextStyle(color: Colors.black),
                         ),
@@ -294,6 +302,7 @@ class _NoticeNotePageState extends State<NoticeNotePage> {
                         itemCount: groupedNotes.keys.length,
                         itemBuilder: (context, index) {
                           final date = groupedNotes.keys.elementAt(index);
+                          log(date.toString());
                           final dateNotes = groupedNotes[date]!;
                           return Stack(
                             children: [
@@ -302,7 +311,8 @@ class _NoticeNotePageState extends State<NoticeNotePage> {
                                 child: Column(
                                   children: [
                                     Row(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         SizedBox(
                                           width: 30,
@@ -333,13 +343,15 @@ class _NoticeNotePageState extends State<NoticeNotePage> {
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: 30),
                                       child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           const SizedBox(height: 10),
                                           Column(
                                             children: dateNotes.map((note) {
                                               return Padding(
-                                                padding: const EdgeInsets.all(3.0),
+                                                padding:
+                                                    const EdgeInsets.all(3.0),
                                                 child: NoticeNoteCard(
                                                   teacher: note.teacherName,
                                                   remarksubject: note.subject,
@@ -348,24 +360,33 @@ class _NoticeNotePageState extends State<NoticeNotePage> {
                                                   // date: note.noticeDate,
                                                   readStatus: note.readStatus,
                                                   onTap: () async {
-                                                    final result = await Navigator.push(
+                                                    final result =
+                                                        await Navigator.push(
                                                       context,
                                                       MaterialPageRoute(
                                                         builder: (context) =>
-                                                              NoticeDetailCard(
-                                                                  teacher: note.teacherName,
-                                                                  remarksubject: note.subject,
-                                                                  type: note.noticeType,
-                                                                date: note.noticeDate,
-                                                                noticeID: note.noticeId,
-                                                                academic_yr: note.academicYr,
-                                                                shortName: widget.shortName,
-                                                                classname: note.className,
-                                                                noticeDesc: note.noticeDesc,
-                                                                attachment: note.imageList,
-                                                                ),
-                                                              ),
-                                                        );
+                                                            NoticeDetailCard(
+                                                          teacher:
+                                                              note.teacherName,
+                                                          remarksubject:
+                                                              note.subject,
+                                                          type: note.noticeType,
+                                                          date: note.noticeDate,
+                                                          noticeID:
+                                                              note.noticeId,
+                                                          academic_yr:
+                                                              note.academicYr,
+                                                          shortName:
+                                                              widget.shortName,
+                                                          classname:
+                                                              note.className,
+                                                          noticeDesc:
+                                                              note.noticeDesc,
+                                                          attachment:
+                                                              note.imageList,
+                                                        ),
+                                                      ),
+                                                    );
                                                     // Check if the result was 'true', meaning the notice was read
                                                     if (result == true) {
                                                       // Refresh the list of notices
@@ -376,7 +397,7 @@ class _NoticeNotePageState extends State<NoticeNotePage> {
                                               );
                                             }).toList(),
                                           ),
-                                           SizedBox(height: 15),
+                                          SizedBox(height: 15),
                                         ],
                                       ),
                                     ),
@@ -397,6 +418,7 @@ class _NoticeNotePageState extends State<NoticeNotePage> {
       ),
     );
   }
+
   String truncateEndDate(String endDate) {
     List<String> parts = endDate.split(' ');
     if (parts.length > 1) {
@@ -404,5 +426,4 @@ class _NoticeNotePageState extends State<NoticeNotePage> {
     }
     return endDate;
   }
-
 }

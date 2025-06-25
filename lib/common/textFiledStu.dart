@@ -32,7 +32,6 @@ class StuTextField extends StatelessWidget {
             child: RichText(
               text: TextSpan(
                 children: [
-
                   TextSpan(
                     text: label,
                     style: const TextStyle(

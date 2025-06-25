@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -10,7 +12,8 @@ class WebViewPage extends StatefulWidget {
   final String secId;
   final String smartchat_url;
 
-  const WebViewPage({super.key, 
+  const WebViewPage({
+    super.key,
     required this.studentId,
     required this.academicYr,
     required this.shortName,
@@ -30,14 +33,14 @@ class _WebViewPageState extends State<WebViewPage> {
   void initState() {
     super.initState();
 
-    print("WEBVIEW URL: " +
-        widget.smartchat_url+'?student_id=${widget.studentId}&academic_yr=${widget.academicYr}');
+    log("WEBVIEW URL: " +
+        widget.smartchat_url +
+        '?student_id=${widget.studentId}&academic_yr=${widget.academicYr}');
 
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..loadRequest(Uri.parse(
           '${widget.smartchat_url}?student_id=${widget.studentId}&academic_yr=${widget.academicYr}'));
-
   }
 
   @override

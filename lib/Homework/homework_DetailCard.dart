@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:evolvu/const/const_teacherNoteCard.dart';
 import 'package:evolvu/Homework/homeWork_DeatilPage.dart';
@@ -27,7 +28,6 @@ class HomeWorkDetailCard extends StatelessWidget {
   final String shortName;
   final List<Attachment> imageList;
 
-
   const HomeWorkDetailCard({
     super.key,
     required this.subject,
@@ -45,7 +45,6 @@ class HomeWorkDetailCard extends StatelessWidget {
     required this.comment_id,
     required this.publishDate,
     required this.Tcomment,
-
   });
 
   Future<void> updateReadStatus() async {
@@ -56,22 +55,22 @@ class HomeWorkDetailCard extends StatelessWidget {
     final prefs = await SharedPreferences.getInstance();
     String? schoolInfoJson = prefs.getString('school_info');
     String? logUrls = prefs.getString('logUrls');
-    print('logUrls====\\\\: $logUrls');
+    log('logUrls====\\\\: $logUrls');
     if (logUrls != null) {
       try {
         Map<String, dynamic> logUrlsparsed = json.decode(logUrls);
-        print('logUrls====\\\\11111: $logUrls');
+        log('logUrls====\\\\11111: $logUrls');
 
         academicYr = logUrlsparsed['academic_yr'];
         regId = logUrlsparsed['reg_id'];
 
-        print('academic_yr ID: $academicYr');
-        print('reg_id: $regId');
+        log('academic_yr ID: $academicYr');
+        log('reg_id: $regId');
       } catch (e) {
-        print('Error parsing school info: $e');
+        log('Error parsing school info: $e');
       }
     } else {
-      print('School info not found in SharedPreferences.');
+      log('School info not found in SharedPreferences.');
     }
 
     if (schoolInfoJson != null) {
@@ -81,13 +80,13 @@ class HomeWorkDetailCard extends StatelessWidget {
         shortName = parsedData['short_name'];
         url = parsedData['url'];
 
-        print('Short Name: $shortName');
-        print('URL: $url');
+        log('Short Name: $shortName');
+        log('URL: $url');
       } catch (e) {
-        print('Error parsing school info: $e');
+        log('Error parsing school info: $e');
       }
     } else {
-      print('School info not found in SharedPreferences.');
+      log('School info not found in SharedPreferences.');
     }
     DateTime parsedDate = DateTime.parse(DateTime.now().toIso8601String());
     String formattedDate = DateFormat("yyyy-MM-dd").format(parsedDate);
@@ -104,15 +103,14 @@ class HomeWorkDetailCard extends StatelessWidget {
       // Assuming the server returns a boolean to indicate success
       bool success = json.decode(response.body) as bool;
       if (success) {
-        print('Read status updated successfully');
+        log('Read status updated successfully');
       } else {
-        print('Failed to update read status');
+        log('Failed to update read status');
       }
     } else {
-      print('Failed to update read status');
+      log('Failed to update read status');
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -150,7 +148,7 @@ class HomeWorkDetailCard extends StatelessWidget {
                 color: Colors.white,
               ),
             ),
-           // SizedBox(height: 10.h),
+            // SizedBox(height: 10.h),
             Expanded(
               child: ListView.builder(
                 padding: EdgeInsets.only(top: 10.h),
@@ -169,21 +167,15 @@ class HomeWorkDetailCard extends StatelessWidget {
                             homework: description,
                             homeworkStatus: status,
                             teachersComment: Tcomment,
-                            attachments:imageList,
-                            homeworkId:homeworkId,
-                            studentId:studentId,
-                            comment_id:comment_id,
-                            publishDate:publishDate,
-                            parentComment:parentComment,
-
+                            attachments: imageList,
+                            homeworkId: homeworkId,
+                            studentId: studentId,
+                            comment_id: comment_id,
+                            publishDate: publishDate,
+                            parentComment: parentComment,
                           ),
-
                         ),
-
-                      )
-
-                  );
-
+                      ));
                 },
               ),
             ),
