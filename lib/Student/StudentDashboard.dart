@@ -8,7 +8,6 @@ import 'package:evolvu/Remark/remark_notePage.dart';
 import 'package:evolvu/Student/student_profile_page.dart';
 import 'package:evolvu/Teacher/teacher_notePage.dart';
 import 'package:flutter/material.dart';
-import 'package:evolvu/Student/student_card.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
@@ -21,8 +20,6 @@ import '../ExamTimeTable/timeTable.dart';
 import '../Notice_SMS/notice_notePage.dart';
 import '../QR/QR_Code.dart';
 import '../ResultChart.dart';
-import '../Utils&Config/api.dart';
-import '../WebViewScreens/OnlineFeesPayment.dart';
 import '../WebViewScreens/SmartChat_WebView.dart';
 import '../result.dart';
 

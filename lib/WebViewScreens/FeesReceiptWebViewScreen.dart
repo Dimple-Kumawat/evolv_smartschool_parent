@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:io';
 import 'package:evolvu/main.dart';
 import 'package:flutter/material.dart';

@@ -209,7 +209,7 @@ class _RemarkDetailPageState extends State<RemarkDetailPage> {
     }
   }
 
-  downloadFile(String url, BuildContext context, String name) async {
+  Future<void> downloadFile(String url, BuildContext context, String name) async {
 
     setState(() {
       _isDownloading = true; // Show loader

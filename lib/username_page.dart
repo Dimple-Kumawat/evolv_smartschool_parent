@@ -427,10 +427,10 @@ class _LoginDemoState extends State<UserNamePage> {
     }
   }
 
-  Future<void> getVersion(BuildContext _context) async {
-    log('latest_version11 => ${BaseURl + 'flutter_latest_version'}');
+  Future<void> getVersion(BuildContext context) async {
+    log('latest_version11 => ${'${BaseURl}flutter_latest_version'}');
 
-    final url = Uri.parse(BaseURl + 'flutter_latest_version');
+    final url = Uri.parse('${BaseURl}flutter_latest_version');
 
     try {
       final response = await http.post(
@@ -447,83 +447,81 @@ class _LoginDemoState extends State<UserNamePage> {
           final packageInfo = await PackageInfo.fromPlatform();
           packageInfoVar = packageInfo.version;
           log('Current_version => ${packageInfo.version}');
-          log('Current_version packageInfoVar=> ${packageInfoVar}');
+          log('Current_version packageInfoVar=> $packageInfoVar');
 
           final androidVersion = jsonData[0]['lattest_version'] as String;
           final releaseNotes = jsonData[0]['release_notes'] as String;
           final forcedUpdate = jsonData[0]['forced_update'] as String;
 
-          if (androidVersion != null) {
-            log('Current_version => 22222 ${packageInfo.version}');
+          log('Current_version => 22222 ${packageInfo.version}');
 
-            final localAndroidVersion = packageInfo.version;
+          final localAndroidVersion = packageInfo.version;
 
-            // Compare versions
-            if (_isVersionGreater(androidVersion, localAndroidVersion)) {
-              log('Current_version => 3333 ${packageInfo.version}');
+          // Compare versions
+          if (_isVersionGreater(androidVersion, localAndroidVersion)) {
+            log('Current_version => 3333 ${packageInfo.version}');
 
-              if (forcedUpdate == 'N') {
-                log('Current_version => NNNNN ${packageInfo.version}');
+            if (forcedUpdate == 'N') {
+              log('Current_version => NNNNN ${packageInfo.version}');
 
-                showDialog(
-                  context: _context,
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                      title: Text('V ${packageInfo.version}'),
-                      content: Text(releaseNotes),
-                      actions: [
-                        TextButton(
-                          onPressed: () {
-                            launchUrl(Uri.parse(
-                                'https://play.google.com/store/apps/details?id=in.aceventura.evolvuschool'));
-                          },
-                          child: Text(
-                            'Update',
-                            style: TextStyle(
-                                color: Colors.green,
-                                fontWeight: FontWeight.bold),
-                          ),
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Text('V ${packageInfo.version}'),
+                    content: Text(releaseNotes),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          launchUrl(Uri.parse(
+                              'https://play.google.com/store/apps/details?id=in.aceventura.evolvuschool'));
+                        },
+                        child: Text(
+                          'Update',
+                          style: TextStyle(
+                              color: Colors.green,
+                              fontWeight: FontWeight.bold),
                         ),
-                        TextButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          child: Text('Cancel'),
-                        ),
-                      ],
-                    );
-                  },
-                );
-              } else if (forcedUpdate == 'Y') {
-                log('Current_version => 44444 ${packageInfo.version}');
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: Text('Cancel'),
+                      ),
+                    ],
+                  );
+                },
+              );
+            } else if (forcedUpdate == 'Y') {
+              log('Current_version => 44444 ${packageInfo.version}');
 
-                showDialog(
-                  context: _context,
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                      title: Text('V ${packageInfo.version}'),
-                      content: Text(releaseNotes),
-                      actions: [
-                        TextButton(
-                          onPressed: () {
-                            launchUrl(Uri.parse(
-                                'https://play.google.com/store/apps/details?id=in.aceventura.evolvuschool'));
-                          },
-                          child: Text(
-                            'Update',
-                            style: TextStyle(
-                                color: Colors.green,
-                                fontWeight: FontWeight.bold),
-                          ),
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Text('V ${packageInfo.version}'),
+                    content: Text(releaseNotes),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          launchUrl(Uri.parse(
+                              'https://play.google.com/store/apps/details?id=in.aceventura.evolvuschool'));
+                        },
+                        child: Text(
+                          'Update',
+                          style: TextStyle(
+                              color: Colors.green,
+                              fontWeight: FontWeight.bold),
                         ),
-                      ],
-                    );
-                  },
-                );
-              }
+                      ),
+                    ],
+                  );
+                },
+              );
             }
           }
-        } else {
+                } else {
           log("Unexpected JSON format");
         }
       } else {

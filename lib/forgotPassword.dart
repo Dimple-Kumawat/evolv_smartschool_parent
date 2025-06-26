@@ -44,7 +44,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
     super.dispose();
   }
 
-  _launchURL() async {
+  Future<void> _launchURL() async {
     Uri url = Uri.parse('https://aceventura.in/');
     if (await launchUrl(url)) {
       await launchUrl(url);

@@ -333,7 +333,7 @@ class TeacherDetailCard extends StatelessWidget {
     return result.isGranted;
   }
 
-  downloadFile(String url, BuildContext context, String name) async {
+  Future<void> downloadFile(String url, BuildContext context, String name) async {
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(
       'download_channel',

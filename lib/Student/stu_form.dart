@@ -719,7 +719,7 @@ class _StudentFormState extends State<StudentForm> {
     }
   }
 
-  _init() async {
+  Future<void> _init() async {
     childInfo = await _getSchoolInfo(widget.studentId);
 
     setState(() {

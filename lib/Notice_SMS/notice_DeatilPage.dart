@@ -223,7 +223,7 @@ class _NoticeDetailPageState extends State<NoticeDetailPage> {
     );
   }
 
-  downloadFile(String url, BuildContext context, String name) async {
+  Future<void> downloadFile(String url, BuildContext context, String name) async {
     setState(() {
       _isDownloading = true; // Show loader
     });

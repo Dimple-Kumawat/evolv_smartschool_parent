@@ -480,7 +480,7 @@ class _HomeWorkDetailPageState extends State<HomeWorkDetailPage> {
     super.dispose();
   }
 
-  downloadFile(String url, BuildContext context, String name) async {
+  Future<void> downloadFile(String url, BuildContext context, String name) async {
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(
       'download_channel',
