@@ -40,7 +40,7 @@ android {
          create("release") {
             keyAlias = keystoreProperties["keyAlias"] as String?
             keyPassword = keystoreProperties["keyPassword"] as String?
-            storeFile = file("$rootDir/upload-keystore.jks")
+            storeFile = file("$rootDir/AceVenturaServices.jks")
             storePassword = keystoreProperties["storePassword"] as String?
         }
     }
