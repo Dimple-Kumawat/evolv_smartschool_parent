@@ -85,51 +85,90 @@ class _PaymentWebviewState extends State<Dashboardonlinefeespayment> {
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Colors.pink, Colors.blue],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
-        child: Column(
-          children: [
-            SizedBox(height: 110.h),
-            if (academicYearProvider.academic_yr == academic_yr)
-              Expanded(
-                child: WebViewWidget(controller: _controller),
-              )
-            else
-              Expanded(
-                child: ReceiptWebViewScreenVali(
-                  receiptUrl:
-                      '${widget.receiptUrl}?reg_id=${widget.regId}&academic_yr=${widget.academicYr}&short_name=${widget.shortName}',
-                ),
+      body: Stack(
+        children: [
+          // Background & WebView
+          Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Colors.pink, Colors.blue],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
               ),
-          ],
-        ),
-      ),
-      floatingActionButton: (widget.receiptUrl.isEmpty && isAcademicYearMatch)
-          ? FloatingActionButton.extended(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) {
-                      return ReceiptWebViewScreen(
-                        receiptUrl:
-                            '${widget.receiptUrl}?reg_id=${widget.regId}&academic_yr=${widget.academicYr}&short_name=${widget.shortName}',
-                      );
-                    },
+            ),
+            child: Column(
+              children: [
+                SizedBox(height: 120.h),
+                Expanded(
+                  child: academicYearProvider.academic_yr == widget.academicYr
+                      ? WebViewWidget(controller: _controller)
+                      : ReceiptWebViewScreenVali(
+                          receiptUrl:
+                              '${widget.receiptUrl}?reg_id=${widget.regId}&academic_yr=${widget.academicYr}&short_name=${widget.shortName}',
+                        ),
+                ),
+              ],
+            ),
+          ),
+
+          // ⚠️ Warning message overlayed near the middle-lower area
+          Align(
+            alignment: Alignment(
+                0, 0.9), // X: 0 = center, Y: 0.7 = slightly above bottom
+            child: Container(
+              margin: EdgeInsets.symmetric(horizontal: 20.w),
+              padding: EdgeInsets.all(10.h),
+              decoration: BoxDecoration(
+                color: Colors.yellow.shade100.withOpacity(0.95),
+                borderRadius: BorderRadius.circular(12.r),
+                border: Border.all(color: Colors.orange),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.warning_amber_rounded,
+                      color: Colors.orange, size: 20.sp),
+                  SizedBox(width: 8.w),
+                  Text(
+                    'Don’t refresh or close this page.This page\n'
+                    'will refresh once transaction is done',
+
+                    // 'Please wait this page will update\n'
+                    // 'once the transaction is complete.',
+                    textAlign: TextAlign.left,
+                    style: TextStyle(
+                      fontSize: 13.sp,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.black87,
+                    ),
                   ),
-                );
-              },
-              icon: const Icon(Icons.receipt, color: Colors.black),
-              label: const Text("Receipt"),
-              backgroundColor: Colors.blue.shade400,
-            )
-          : null, // Hide the button when the condition is false
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+
+      // floatingActionButton: (widget.receiptUrl.isEmpty && isAcademicYearMatch)
+      //     ? FloatingActionButton.extended(
+      //         onPressed: () {
+      //           Navigator.push(
+      //             context,
+      //             MaterialPageRoute(
+      //               builder: (_) {
+      //                 return ReceiptWebViewScreen(
+      //                   receiptUrl:
+      //                       '${widget.receiptUrl}?reg_id=${widget.regId}&academic_yr=${widget.academicYr}&short_name=${widget.shortName}',
+      //                 );
+      //               },
+      //             ),
+      //           );
+      //         },
+      //         icon: const Icon(Icons.receipt, color: Colors.black),
+      //         label: const Text("Receipt"),
+      //         backgroundColor: Colors.blue.shade400,
+      //       )
+      //     : null, // Hide the button when the condition is false
     );
   }
 }

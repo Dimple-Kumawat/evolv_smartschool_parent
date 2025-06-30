@@ -420,6 +420,7 @@ class _DrawerParentProfilePage extends State<DrawerParentProfilePage> {
                               ),
                               StuEditTextField(
                                 labelText: 'Father Adhar Card no.',
+                                readOnly: true,
                                 initialValue: ParentDetmod?.parentAdharNo ?? '',
                                 keyboardType: TextInputType.number,
                                 isRequired: true,
@@ -466,6 +467,7 @@ class _DrawerParentProfilePage extends State<DrawerParentProfilePage> {
                               ),
 
                               StuEditTextField(
+                                readOnly: true,
                                 labelText: 'Email id',
                                 initialValue: ParentDetmod?.fEmail ?? '',
                                 keyboardType: TextInputType.name,
@@ -585,6 +587,7 @@ class _DrawerParentProfilePage extends State<DrawerParentProfilePage> {
                               ),
 
                               StuEditTextField(
+                                readOnly: true,
                                 labelText: 'Telephone',
                                 initialValue: ParentDetmod?.mOfficeTel ?? '',
                                 keyboardType: TextInputType.number,

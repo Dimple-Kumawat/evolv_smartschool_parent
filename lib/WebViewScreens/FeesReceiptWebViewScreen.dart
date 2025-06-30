@@ -345,9 +345,9 @@ class _ReceiptWebViewScreenState extends State<ReceiptWebViewScreen> {
       backgroundColor: Colors.transparent,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        toolbarHeight: 60.h,
+        toolbarHeight: 70.h,
         title: Text(
-          'Receipt',
+          ' Fees Receipt',
           style: TextStyle(fontSize: 20.sp, color: Colors.white),
         ),
         backgroundColor: Colors.transparent,
@@ -366,7 +366,7 @@ class _ReceiptWebViewScreenState extends State<ReceiptWebViewScreen> {
             ),
             child: Column(
               children: [
-                SizedBox(height: 100.h),
+                SizedBox(height: 120.h),
                 Expanded(
                   child: WebViewWidget(controller: _controller),
                 ),

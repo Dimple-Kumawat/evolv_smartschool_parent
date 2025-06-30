@@ -779,13 +779,19 @@ class _StudentFormState extends State<StudentForm> {
                                           .withOpacity(0.5),
                                       shape: BoxShape.circle,
                                     ),
+                                    // child: IconButton(
+                                    //   icon: Icon(Icons.add),
+                                    //   iconSize: 24,
+                                    //   color: Colors.white,
+                                    //   onPressed: () {
+                                    //     uploadImage(ImageSource.gallery);
+                                    //   },
+                                    // ),
                                     child: IconButton(
-                                      icon: Icon(Icons.add),
+                                      icon: const Icon(Icons.add),
                                       iconSize: 24,
                                       color: Colors.white,
-                                      onPressed: () {
-                                        uploadImage(ImageSource.gallery);
-                                      },
+                                      onPressed: null, // Disables the button
                                     ),
                                   ),
                                 ),
@@ -949,6 +955,7 @@ class _StudentFormState extends State<StudentForm> {
                           ),
 
                           HashLabeledDropdown(
+                            readOnly: true,
                             label: "Gender",
 
                             options: ['Male', 'Female'],
@@ -965,7 +972,9 @@ class _StudentFormState extends State<StudentForm> {
                             },
                           ),
 
-                          LabeledDropdown(
+                          HashLabeledDropdown(
+                            readOnly: true,
+                            isRequired: false,
                             label: "Blood Group",
                             // Static label
                             options: const [
@@ -990,7 +999,9 @@ class _StudentFormState extends State<StudentForm> {
                             },
                           ),
 
-                          LabeledDropdown(
+                          HashLabeledDropdown(
+                            readOnly: true,
+                            isRequired: false,
                             label: 'House', // Static label
                             options: houseNameMapping.values
                                 .toList(), // List of house names

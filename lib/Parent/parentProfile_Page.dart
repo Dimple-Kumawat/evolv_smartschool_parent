@@ -439,6 +439,7 @@ class _ParentProfilePage extends State<ParentProfilePage> {
 
                             StuEditTextField(
                               labelText: 'Father Adhar Card no.',
+                              readOnly: true,
                               initialValue: ParentDetmod?.parentAdharNo ?? '',
                               keyboardType: TextInputType.number,
                               isRequired: true,
@@ -474,6 +475,7 @@ class _ParentProfilePage extends State<ParentProfilePage> {
                             ),
 
                             StuEditTextField(
+                              readOnly: true,
                               labelText: 'Email id',
                               initialValue: ParentDetmod?.fEmail ?? '',
                               keyboardType: TextInputType.name,
@@ -559,6 +561,7 @@ class _ParentProfilePage extends State<ParentProfilePage> {
 
                             StuEditTextField(
                               labelText: 'Telephone',
+                              readOnly: true,
                               initialValue: ParentDetmod?.mOfficeTel ?? '',
                               keyboardType: TextInputType.number,
                               onChanged: (value) {

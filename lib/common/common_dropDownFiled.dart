@@ -4,6 +4,7 @@ class LabeledDropdown extends StatelessWidget {
   final String label;
   final List<String> options;
   final String? selectedValue;
+  final bool readOnly;
   final Function(String?) onChanged;
 
   const LabeledDropdown({
@@ -11,6 +12,7 @@ class LabeledDropdown extends StatelessWidget {
     required this.label,
     required this.options,
     required this.onChanged,
+    this.readOnly = false,
     this.selectedValue,
   });
 
@@ -45,24 +47,39 @@ class LabeledDropdown extends StatelessWidget {
                   value:
                       selectedValue != null && options.contains(selectedValue)
                           ? selectedValue
-                          : options.first, // Ensure a valid default
-                  icon: const Icon(Icons.arrow_drop_down),
+                          : options.isNotEmpty
+                              ? options.first
+                              : null,
+                  icon: readOnly ? null : const Icon(Icons.arrow_drop_down),
                   isExpanded: true,
-                  items: options.map<DropdownMenuItem<String>>((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(
-                        value,
-                        style: const TextStyle(
-                          fontSize: 16.0,
-                          fontWeight:
-                              FontWeight.normal, // Ensure text is not bold
-                          color: Colors.black, // Set color explicitly if needed
-                        ),
-                      ),
-                    );
-                  }).toList(),
-                  onChanged: onChanged,
+                  items: options.isNotEmpty
+                      ? options.map<DropdownMenuItem<String>>((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(
+                              value,
+                              style: const TextStyle(
+                                fontSize: 16.0,
+                                fontWeight: FontWeight.normal,
+                                color: Colors.black,
+                              ),
+                            ),
+                          );
+                        }).toList()
+                      : [
+                          const DropdownMenuItem<String>(
+                            value: null,
+                            child: Text(
+                              'No options available',
+                              style: TextStyle(
+                                fontSize: 16.0,
+                                fontWeight: FontWeight.normal,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          ),
+                        ],
+                  onChanged: readOnly ? null : onChanged,
                 ),
               ),
             ),

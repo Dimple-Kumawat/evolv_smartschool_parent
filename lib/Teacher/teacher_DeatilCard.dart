@@ -185,7 +185,7 @@ class TeacherDetailCard extends StatelessWidget {
           child: SingleChildScrollView(
             child: Column(
               children: [
-                SizedBox(height: 80.h),
+                SizedBox(height: 90.h),
                 Text(
                   "Teacher Note Details",
                   style: TextStyle(
@@ -333,7 +333,8 @@ class TeacherDetailCard extends StatelessWidget {
     return result.isGranted;
   }
 
-  Future<void> downloadFile(String url, BuildContext context, String name) async {
+  Future<void> downloadFile(
+      String url, BuildContext context, String name) async {
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(
       'download_channel',

@@ -6,7 +6,7 @@ class HashLabeledDropdown extends StatelessWidget {
   final List<String> options;
   final String? selectedValue;
   final Function(String?) onChanged;
-  final bool isRequired; // New property to indicate if it's required
+  final bool isRequired;
 
   const HashLabeledDropdown({
     super.key,
@@ -15,7 +15,7 @@ class HashLabeledDropdown extends StatelessWidget {
     this.readOnly = false,
     required this.onChanged,
     this.selectedValue,
-    this.isRequired = true, // Default to not required
+    this.isRequired = true,
   });
 
   @override
@@ -38,7 +38,7 @@ class HashLabeledDropdown extends StatelessWidget {
                       color: Colors.black,
                     ),
                   ),
-                  if (isRequired) // Add red asterisk if required
+                  if (isRequired)
                     const TextSpan(
                       text: '* ',
                       style: TextStyle(
@@ -63,24 +63,42 @@ class HashLabeledDropdown extends StatelessWidget {
                   value:
                       selectedValue != null && options.contains(selectedValue)
                           ? selectedValue
-                          : options.first, // Ensure a valid default
-                  icon: const Icon(Icons.arrow_drop_down),
+                          : options.isNotEmpty
+                              ? options.first
+                              : null, // Fallback to null if options is empty
+                  icon: readOnly
+                      ? null
+                      : const Icon(
+                          Icons.arrow_drop_down), // Hide icon if readOnly
                   isExpanded: true,
-                  items: options.map<DropdownMenuItem<String>>((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(
-                        value,
-                        style: const TextStyle(
-                          fontSize: 14.0,
-                          fontWeight:
-                              FontWeight.normal, // Ensure text is not bold
-                          color: Colors.black, // Set color explicitly if needed
-                        ),
-                      ),
-                    );
-                  }).toList(),
-                  onChanged: onChanged,
+                  items: options.isNotEmpty
+                      ? options.map<DropdownMenuItem<String>>((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(
+                              value,
+                              style: const TextStyle(
+                                fontSize: 14.0,
+                                fontWeight: FontWeight.normal,
+                                color: Colors.black,
+                              ),
+                            ),
+                          );
+                        }).toList()
+                      : [
+                          const DropdownMenuItem<String>(
+                            value: null,
+                            child: Text(
+                              'No options available',
+                              style: TextStyle(
+                                fontSize: 14.0,
+                                fontWeight: FontWeight.normal,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          ),
+                        ],
+                  onChanged: readOnly ? null : onChanged, // Disable if readOnly
                 ),
               ),
             ),

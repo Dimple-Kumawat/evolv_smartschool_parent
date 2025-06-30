@@ -1,3 +1,4 @@
+import 'package:evolvu/Parent/parentDashBoard_Page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
@@ -114,19 +115,37 @@ class _PaymentWebviewState extends State<DrawerOnlineFeesPayment> {
       floatingActionButton:
           (widget.receiptUrl.isNotEmpty && isAcademicYearMatch)
               ? FloatingActionButton.extended(
+                  // onPressed: () {
+                  //   Navigator.push(
+                  //     context,
+                  //     MaterialPageRoute(
+                  //       builder: (_) => ReceiptWebViewScreen(
+                  //         receiptUrl:
+                  //             '${widget.receiptUrl}?reg_id=${widget.regId}&academic_yr=${widget.academicYr}&short_name=${widget.shortName}',
+                  //       ),
+                  //     ),
+                  //   );
+                  // },
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => ReceiptWebViewScreen(
-                          receiptUrl:
-                              '${widget.receiptUrl}?reg_id=${widget.regId}&academic_yr=${widget.academicYr}&short_name=${widget.shortName}',
+                    if (receiptUrl.isNotEmpty) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => ReceiptWebViewScreen(
+                            receiptUrl:
+                                '$receiptUrl?reg_id=$reg_id&academic_yr=$academic_yr&short_name=$shortName',
+                          ),
                         ),
-                      ),
-                    );
+                      );
+                    }
+                    // else {
+                    //   Fluttertoast.showToast(msg: 'Receipt URL not available');
+                    // }
                   },
                   icon: const Icon(Icons.receipt, color: Colors.black),
-                  label: const Text('Receipt'),
+                  label: Text(
+                    'Receipt${widget.academicYr}',
+                  ),
                   backgroundColor: Colors.blue.shade400,
                 )
               : null,

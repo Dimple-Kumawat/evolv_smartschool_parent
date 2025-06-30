@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'package:crypto/crypto.dart';
 import 'package:evolvu/Parent/parentProfile_Page.dart';
 import 'package:evolvu/Student/student_card.dart';
+import 'package:evolvu/WebViewScreens/FeesReceiptWebViewScreen.dart';
 import 'package:evolvu/calender_Page.dart';
 import 'package:evolvu/username_page.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +21,6 @@ import '../AcademicYearProvider.dart';
 import '../ChangeAcademicYear.dart';
 import '../QR/QR_Code.dart';
 import '../WebViewScreens/DashboardOnlineFeesPayment.dart';
-import '../WebViewScreens/DrawerOnlineFeesPayment.dart';
 import '../aboutUs.dart';
 import '../changePasswordPage.dart';
 import '../main.dart';
@@ -34,7 +34,6 @@ class ParentDashBoardPage extends StatefulWidget {
       {super.key, required this.academic_yr, required this.shortName});
 
   @override
-  // ignore: library_private_types_in_public_api
   _ParentDashBoardPageState createState() => _ParentDashBoardPageState();
 }
 
@@ -67,13 +66,10 @@ Future<void> _getSchoolInfo(BuildContext context) async {
       log('logUrls====\\\\11111: $logUrls');
 
       user_id = logUrlsparsed['user_id'];
-      // academic_yr = logUrlsparsed['academic_yr'];
+      academicYearProvider.setAcademicYear(logUrlsparsed['academic_yr']);
+      academic_yr = academicYearProvider.academic_yr;
       reg_id = logUrlsparsed['reg_id'];
 
-      academicYearProvider.setAcademicYear(logUrlsparsed['academic_yr']);
-
-      log('academic_yr ID: ${academicYearProvider.academic_yr}');
-      academic_yr = academicYearProvider.academic_yr;
       if (academic_yr.isEmpty) {
         academic_yr = logUrlsparsed['academic_yr'];
       }
@@ -123,7 +119,6 @@ Future<void> fetchDashboardData(String url) async {
 
       final Map<String, dynamic> data = jsonDecode(response.body);
 
-      // Extract the required fields with null safety
       receipt_button = data['receipt_button'] ?? 0;
       receiptUrl = data['receipt_url'] ?? '';
       paymentUrl = data['payment_url'] ?? '';
@@ -161,16 +156,9 @@ Future<void> fetchDashboardData(String url) async {
 }
 
 String encryptUsername(String username, String secretKey) {
-  // Combine the username and secretKey
   String combined = username + secretKey;
-
-  // Convert the combined string to bytes
   List<int> bytes = utf8.encode(combined);
-
-  // Perform SHA1 encryption
   Digest sha1Result = sha1.convert(bytes);
-
-  // Return the encrypted value as a hexadecimal string
   return sha1Result.toString();
 }
 
@@ -180,9 +168,8 @@ String customUriEncode(String input, String allowedChars) {
   for (int i = 0; i < input.length; i++) {
     final String char = input[i];
     if (allowedChars.contains(char)) {
-      encoded.write(char); // Allow the character as-is
+      encoded.write(char);
     } else {
-      // Percent-encode the character
       final List<int> bytes = utf8.encode(char);
       for (final int byte in bytes) {
         encoded.write('%${byte.toRadixString(16).toUpperCase()}');
@@ -199,6 +186,7 @@ class _ParentDashBoardPageState extends State<ParentDashBoardPage> {
   int pageIndex = 0;
   late BuildContext _context;
   DateTime? _lastPressedTime;
+
   @override
   void initState() {
     super.initState();
@@ -219,8 +207,6 @@ class _ParentDashBoardPageState extends State<ParentDashBoardPage> {
         },
       ),
       CalendarPage(regId: reg_id),
-
-      // Dashboardonlinefeespayment(regId: reg_id, paymentUrlShare: paymentUrlShare, receiptUrl: receiptUrl, shortName: shortName, academicYr: academic_yr, receipt_button: receipt_button,),
       ParentProfilePage(),
     ];
 
@@ -228,20 +214,19 @@ class _ParentDashBoardPageState extends State<ParentDashBoardPage> {
       onWillPop: () async {
         final now = DateTime.now();
         final bool isDoublePress = _lastPressedTime != null &&
-            now.difference(_lastPressedTime!) < Duration(seconds: 2);
+            now.difference(_lastPressedTime!) < const Duration(seconds: 2);
 
         if (isDoublePress) {
-          return true; // Exit the app
+          return true;
         } else {
-          // Show a toast or snackbar to inform the user to press back again
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
+            const SnackBar(
               content: Text('Press back again to exit'),
               duration: Duration(seconds: 2),
             ),
           );
           _lastPressedTime = now;
-          return false; // Do not exit the app
+          return false;
         }
       },
       child: Scaffold(
@@ -263,7 +248,7 @@ class _ParentDashBoardPageState extends State<ParentDashBoardPage> {
               showDialog(
                 context: context,
                 builder: (BuildContext context) {
-                  return CustomPopup();
+                  return const CustomPopup();
                 },
               );
             },
@@ -272,9 +257,9 @@ class _ParentDashBoardPageState extends State<ParentDashBoardPage> {
         body: Stack(
           children: [
             Container(
-              width: double.infinity, // Ensure it takes full width
-              height: double.infinity, // Ensure it takes full height
-              decoration: BoxDecoration(
+              width: double.infinity,
+              height: double.infinity,
+              decoration: const BoxDecoration(
                 gradient: LinearGradient(
                   colors: [Colors.pink, Colors.blue],
                   begin: Alignment.topCenter,
@@ -282,7 +267,6 @@ class _ParentDashBoardPageState extends State<ParentDashBoardPage> {
                 ),
               ),
             ),
-            // Page content
             pages[pageIndex],
           ],
         ),
@@ -295,19 +279,14 @@ class _ParentDashBoardPageState extends State<ParentDashBoardPage> {
     String BaseURl = "";
     final apiService = ApiService();
     try {
-      // Call the API and get the cleaned response
       BaseURl = await apiService.fetchUrl();
       log('BaseURl Cleaned URL: $BaseURl');
     } catch (error) {
-      // Handle any errors
       log('BaseURl Error: $error');
     }
     log('lastest_version1122 => ${'${BaseURl}flutter_latest_version'}');
 
-    log('latest_version11 => ${'${BaseURl}flutter_latest_version'}');
-
-    final url = Uri.parse(
-        '${BaseURl}flutter_latest_version'); // Assuming BaseURl is your base URL
+    final url = Uri.parse('${BaseURl}flutter_latest_version');
 
     try {
       final response = await http.post(url);
@@ -317,13 +296,11 @@ class _ParentDashBoardPageState extends State<ParentDashBoardPage> {
         final jsonData = jsonDecode(response.body);
         log('latest_version => ${response.body}');
 
-        // Check if jsonData is a list and extract the first item if it is
         if (jsonData is List && jsonData.isNotEmpty) {
           final packageInfo = await PackageInfo.fromPlatform();
           log('Current_version => ${packageInfo.version}');
 
-          final androidVersion = jsonData[0]['latest_version']
-              as String; // Ensure this is a String
+          final androidVersion = jsonData[0]['latest_version'] as String;
           final releaseNotes = jsonData[0]['release_notes'] as String;
           final forcedUpdate = jsonData[0]['forced_update'] as String;
 
@@ -331,7 +308,6 @@ class _ParentDashBoardPageState extends State<ParentDashBoardPage> {
 
           final localAndroidVersion = packageInfo.version;
 
-          // Compare versions
           if (_isVersionGreater(androidVersion, localAndroidVersion)) {
             log('Current_version => 3333 ${packageInfo.version}');
 
@@ -350,7 +326,7 @@ class _ParentDashBoardPageState extends State<ParentDashBoardPage> {
                           launchUrl(Uri.parse(
                               'https://play.google.com/store/apps/details?id=in.aceventura.evolvuschool'));
                         },
-                        child: Text(
+                        child: const Text(
                           'Update',
                           style: TextStyle(
                               color: Colors.green, fontWeight: FontWeight.bold),
@@ -360,7 +336,7 @@ class _ParentDashBoardPageState extends State<ParentDashBoardPage> {
                         onPressed: () {
                           Navigator.of(context).pop();
                         },
-                        child: Text('Cancel'),
+                        child: const Text('Cancel'),
                       ),
                     ],
                   );
@@ -381,7 +357,7 @@ class _ParentDashBoardPageState extends State<ParentDashBoardPage> {
                           launchUrl(Uri.parse(
                               'https://play.google.com/store/apps/details?id=in.aceventura.evolvuschool'));
                         },
-                        child: Text(
+                        child: const Text(
                           'Update',
                           style: TextStyle(
                               color: Colors.green, fontWeight: FontWeight.bold),
@@ -404,18 +380,14 @@ class _ParentDashBoardPageState extends State<ParentDashBoardPage> {
     }
   }
 
-// Helper function to compare version strings
   bool _isVersionGreater(String newVersion, String currentVersion) {
-    // Split version strings into parts
     List<int> newParts =
         newVersion.split('.').map((e) => int.parse(e)).toList();
     List<int> currentParts =
         currentVersion.split('.').map((e) => int.parse(e)).toList();
 
-    // Compare each part of the version
     for (int i = 0; i < newParts.length; i++) {
       if (i >= currentParts.length) {
-        // If current version has fewer parts, new version is greater
         return true;
       }
       if (newParts[i] > currentParts[i]) {
@@ -425,7 +397,6 @@ class _ParentDashBoardPageState extends State<ParentDashBoardPage> {
       }
     }
 
-    // If all parts are equal, new version is not greater
     return false;
   }
 
@@ -436,7 +407,7 @@ class _ParentDashBoardPageState extends State<ParentDashBoardPage> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(30),
-        boxShadow: [
+        boxShadow: const [
           BoxShadow(
               color: Colors.black26, blurRadius: 10, offset: Offset(0, -3))
         ],
@@ -446,8 +417,7 @@ class _ParentDashBoardPageState extends State<ParentDashBoardPage> {
         children: [
           _buildNavItem(icon: Icons.dashboard, label: 'Dashboard', index: 0),
           _buildNavItem(icon: Icons.calendar_month, label: 'Events', index: 1),
-          _buildCenterNavItem(
-              icon: Icons.currency_rupee_sharp, index: 5), // Center icon
+          _buildCenterNavItem(icon: Icons.currency_rupee_sharp, index: 5),
           _buildNavItem(icon: Icons.person, label: 'Profile', index: 2),
           _buildNavItem(icon: Icons.qr_code, label: 'QR', index: 4),
         ],
@@ -462,14 +432,12 @@ class _ParentDashBoardPageState extends State<ParentDashBoardPage> {
     return GestureDetector(
       onTap: () {
         if (index == 4) {
-          // Navigate to the QR Code screen without modifying pageIndex
           Navigator.push(
             context,
             MaterialPageRoute(
                 builder: (context) => QRCodeScreen(regId: reg_id)),
           );
         } else {
-          // Change pageIndex for BottomNavigationBar screens
           setState(() => pageIndex = index);
         }
       },
@@ -478,7 +446,7 @@ class _ParentDashBoardPageState extends State<ParentDashBoardPage> {
         children: [
           Icon(icon,
               color: isSelected ? Colors.blue.shade400 : Colors.grey, size: 26),
-          SizedBox(height: 4),
+          const SizedBox(height: 4),
           Text(
             label,
             style: TextStyle(
@@ -498,7 +466,6 @@ class _ParentDashBoardPageState extends State<ParentDashBoardPage> {
     return GestureDetector(
       onTap: () {
         if (index == 5) {
-          // Navigate to the QR Code screen without modifying pageIndex
           Navigator.push(
               context,
               MaterialPageRoute(
@@ -512,7 +479,6 @@ class _ParentDashBoardPageState extends State<ParentDashBoardPage> {
                 ),
               ));
         } else {
-          // Change pageIndex for BottomNavigationBar screens
           setState(() => pageIndex = index);
         }
       },
@@ -526,7 +492,7 @@ class _ParentDashBoardPageState extends State<ParentDashBoardPage> {
             BoxShadow(
               color: Colors.blue.shade400.withOpacity(0.4),
               blurRadius: 8,
-              offset: Offset(0, 4),
+              offset: const Offset(0, 4),
             ),
           ],
         ),
@@ -542,7 +508,6 @@ class CardItem {
   final VoidCallback onTap;
 
   CardItem({
-    Key? key,
     required this.imagePath,
     required this.title,
     required this.onTap,
@@ -552,7 +517,7 @@ class CardItem {
 Future<void> showLogoutConfirmationDialog(BuildContext context) async {
   return showDialog<void>(
     context: context,
-    barrierDismissible: false, // User must tap a button
+    barrierDismissible: false,
     builder: (BuildContext context) {
       return AlertDialog(
         title: Text(
@@ -563,28 +528,28 @@ Future<void> showLogoutConfirmationDialog(BuildContext context) async {
           child: Padding(
             padding: const EdgeInsets.only(top: 12.0),
             child: ListBody(
-              children: <Widget>[
+              children: [
                 Text('Do you want to logout?',
                     style: TextStyle(fontSize: 16.sp, color: Colors.grey)),
               ],
             ),
           ),
         ),
-        actions: <Widget>[
+        actions: [
           TextButton(
-            child: Text('Cancel'),
+            child: const Text('Cancel'),
             onPressed: () {
-              Navigator.of(context).pop(); // Dismiss the dialog
+              Navigator.of(context).pop();
             },
           ),
           TextButton(
-            child: Text(
+            child: const Text(
               'Logout',
               style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
             ),
             onPressed: () {
-              Navigator.of(context).pop(); // Dismiss the dialog
-              logout(context); // Call the logout function
+              Navigator.of(context).pop();
+              logout(context);
             },
           ),
         ],
@@ -595,9 +560,8 @@ Future<void> showLogoutConfirmationDialog(BuildContext context) async {
 
 Future<void> logout(BuildContext context) async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  await prefs.clear(); // Clear all stored data
+  await prefs.clear();
 
-  // Optionally show a toast message
   Fluttertoast.showToast(
     msg: 'Logged out successfully!',
     backgroundColor: Colors.black45,
@@ -606,7 +570,6 @@ Future<void> logout(BuildContext context) async {
     gravity: ToastGravity.CENTER,
   );
 
-  // Navigate to the login screen
   Navigator.of(context).pushAndRemoveUntil(
     MaterialPageRoute(builder: (context) => UserNamePage()),
     (Route<dynamic> route) => false,
@@ -629,7 +592,6 @@ class CustomPopup extends StatelessWidget {
           );
         },
       ),
-
       CardItem(
         imagePath: 'assets/logout1.png',
         title: 'LogOut',
@@ -637,28 +599,21 @@ class CustomPopup extends StatelessWidget {
           showLogoutConfirmationDialog(context);
         },
       ),
-
       CardItem(
         imagePath: 'assets/cashpayment.png',
-        title: 'Fees Payment',
+        title: 'Fees Receipt',
         onTap: () {
-          //log(receiptUrl);
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => DrawerOnlineFeesPayment(
-                regId: reg_id,
-                paymentUrlShare: paymentUrlShare,
-                receiptUrl: receiptUrl,
-                shortName: shortName,
-                academicYr: academic_yr,
-                receipt_button: receipt_button,
+              builder: (_) => ReceiptWebViewScreen(
+                receiptUrl:
+                    '$receiptUrl?reg_id=$reg_id&academic_yr=$academic_yr&short_name=$shortName',
               ),
             ),
           );
         },
       ),
-
       CardItem(
         imagePath: 'assets/password.png',
         title: 'Change Password',
@@ -675,18 +630,6 @@ class CustomPopup extends StatelessWidget {
           );
         },
       ),
-
-      // CardItem(
-      //   imagePath: 'assets/idcard.png',
-      //   title: 'BUS',
-      //   onTap: () {
-      //     Navigator.push(
-      //       context,
-      //       MaterialPageRoute(builder: (_) => BusTrackingScreen(busId: 'SCHOOL-101'),),
-      //     );
-      //   },
-      // ),
-
       CardItem(
         imagePath: 'assets/idcard.png',
         title: 'ID Card',
@@ -697,7 +640,6 @@ class CustomPopup extends StatelessWidget {
           );
         },
       ),
-
       CardItem(
         imagePath: 'assets/almanac.png',
         title: 'Change Academic Year',
@@ -710,19 +652,16 @@ class CustomPopup extends StatelessWidget {
           );
         },
       ),
-
-      // Add the new Share App card here
       CardItem(
-        imagePath: 'assets/share.png', // Add an appropriate icon for sharing
+        imagePath: 'assets/share.png',
         title: 'Share App',
         onTap: () {
           Share.share(
-            'Download Evolvu: Smart Schooling App https://play.google.com/store/apps/details?id=in.aceventura.evolvuschool', // Replace with your app link
+            'Download Evolvu: Smart Schooling App https://play.google.com/store/apps/details?id=in.aceventura.evolvuschool',
             subject: 'Parent App!',
           );
         },
       ),
-
       CardItem(
         imagePath: 'assets/ace.png',
         title: 'About Us',
@@ -735,23 +674,22 @@ class CustomPopup extends StatelessWidget {
           );
         },
       ),
-      // Add more CardItems here...
     ];
 
     return Dialog(
       backgroundColor: Colors.transparent,
-      insetPadding: EdgeInsets.only(top: 65, bottom: 0, left: 0, right: 0),
+      insetPadding:
+          const EdgeInsets.only(top: 65, bottom: 0, left: 0, right: 0),
       child: Stack(
         clipBehavior: Clip.none,
-        // This allows the Positioned widget to go outside the Stack's bounds
         children: [
           Align(
             alignment: Alignment.topCenter,
             child: Container(
               width: MediaQuery.of(context).size.width * 0.9,
-              padding: EdgeInsets.all(12.0),
+              padding: const EdgeInsets.all(12.0),
               decoration: BoxDecoration(
-                color: Color.fromARGB(255, 245, 241, 241),
+                color: const Color.fromARGB(255, 245, 241, 241),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: GridView.count(
@@ -766,11 +704,11 @@ class CustomPopup extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Image.asset(cardItem.imagePath, width: 40, height: 40),
-                        SizedBox(height: 8),
+                        const SizedBox(height: 8),
                         Text(
                           cardItem.title,
                           textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 13),
+                          style: const TextStyle(fontSize: 13),
                         ),
                       ],
                     ),
@@ -780,7 +718,7 @@ class CustomPopup extends StatelessWidget {
             ),
           ),
           Positioned(
-            top: -50, // Adjust this value to place the button above the dialog
+            top: -50,
             right: 30,
             child: GestureDetector(
               onTap: () {
