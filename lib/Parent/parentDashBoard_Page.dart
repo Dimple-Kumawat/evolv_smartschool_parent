@@ -1,10 +1,8 @@
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:crypto/crypto.dart';
 import 'package:evolvu/Parent/parentProfile_Page.dart';
 import 'package:evolvu/Student/student_card.dart';
-import 'package:evolvu/WebViewScreens/FeesReceiptWebViewScreen.dart';
 import 'package:evolvu/calender_Page.dart';
 import 'package:evolvu/username_page.dart';
 import 'package:flutter/material.dart';
@@ -18,9 +16,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../AcademicYearProvider.dart';
+import '../Transport/BusTraking.dart';
 import '../ChangeAcademicYear.dart';
 import '../QR/QR_Code.dart';
 import '../WebViewScreens/DashboardOnlineFeesPayment.dart';
+import '../WebViewScreens/DrawerOnlineFeesPayment.dart';
+import '../WebViewScreens/FeesReceiptWebViewScreen.dart';
 import '../aboutUs.dart';
 import '../changePasswordPage.dart';
 import '../main.dart';
@@ -30,10 +31,10 @@ import '../ID_Card/Parent_IDCard.dart';
 class ParentDashBoardPage extends StatefulWidget {
   final String academic_yr;
   final String shortName;
-  const ParentDashBoardPage(
-      {super.key, required this.academic_yr, required this.shortName});
+  ParentDashBoardPage({required this.academic_yr, required this.shortName});
 
   @override
+  // ignore: library_private_types_in_public_api
   _ParentDashBoardPageState createState() => _ParentDashBoardPageState();
 }
 
@@ -59,27 +60,30 @@ Future<void> _getSchoolInfo(BuildContext context) async {
   final prefs = await SharedPreferences.getInstance();
   String? schoolInfoJson = prefs.getString('school_info');
   String? logUrls = prefs.getString('logUrls');
-  log('logUrls1111 $schoolInfoJson');
+  print('logUrls1111 $schoolInfoJson');
   if (logUrls != null) {
     try {
       Map<String, dynamic> logUrlsparsed = json.decode(logUrls);
-      log('logUrls====\\\\11111: $logUrls');
+      print('logUrls====\\\\\11111: $logUrls');
 
       user_id = logUrlsparsed['user_id'];
-      academicYearProvider.setAcademicYear(logUrlsparsed['academic_yr']);
-      academic_yr = academicYearProvider.academic_yr;
+      // academic_yr = logUrlsparsed['academic_yr'];
       reg_id = logUrlsparsed['reg_id'];
 
+      academicYearProvider.setAcademicYear(logUrlsparsed['academic_yr']);
+
+      print('academic_yr ID: ${academicYearProvider.academic_yr}');
+      academic_yr = academicYearProvider.academic_yr;
       if (academic_yr.isEmpty) {
         academic_yr = logUrlsparsed['academic_yr'];
       }
-      log('academic_yr ID: $academic_yr');
-      log('reg_id $reg_id');
+      print('academic_yr ID: $academic_yr');
+      print('reg_id $reg_id');
     } catch (e) {
-      log('Error parsing school info: $e');
+      print('Error parsing school info: $e');
     }
   } else {
-    log('School info not found in SharedPreferences.');
+    print('School info not found in SharedPreferences.');
   }
 
   if (schoolInfoJson != null) {
@@ -92,19 +96,19 @@ Future<void> _getSchoolInfo(BuildContext context) async {
 
       fetchDashboardData(url);
 
-      log('Short Name: $shortName');
-      log('URL: $url');
-      log('URL: $durl');
+      print('Short Name: $shortName');
+      print('URL: $url');
+      print('URL: $durl');
     } catch (e) {
-      log('Error parsing school info: $e');
+      print('Error parsing school info: $e');
     }
   } else {
-    log('School info not found in SharedPreferences.');
+    print('School info not found in SharedPreferences.');
   }
 }
 
 Future<void> fetchDashboardData(String url) async {
-  final url1 = Uri.parse('${url}show_icons_parentdashboard_apk');
+  final url1 = Uri.parse(url + 'show_icons_parentdashboard_apk');
 
   try {
     final response = await http.post(
@@ -113,52 +117,69 @@ Future<void> fetchDashboardData(String url) async {
     );
 
     if (response.statusCode == 200) {
-      log('response.body URL: 111111');
-      log('response.body URL: ${response.body}');
-      log('response.body URL: 222222');
+      print('response.body URL: 111111');
+      print('response.body URL: ${response.body}');
+      print('response.body URL: 222222');
 
       final Map<String, dynamic> data = jsonDecode(response.body);
 
+      // Extract the required fields with null safety
       receipt_button = data['receipt_button'] ?? 0;
       receiptUrl = data['receipt_url'] ?? '';
       paymentUrl = data['payment_url'] ?? '';
       smartchat_url = data['smartchat_url'] ?? '';
 
-      String allowedUriChars = "@#&=*+-_.,:!?()/~'%";
+      String ALLOWED_URI_CHARS = "@#&=*+-_.,:!?()/~'%";
 
       PostMsg1();
 
-      String uriUsername = customUriEncode(username, allowedUriChars);
+      String URi_username = customUriEncode(username, ALLOWED_URI_CHARS);
       username = username;
 
       String secretKey = 'aceventura@services';
 
       String encryptedUsername = encryptUsername(username, secretKey);
 
-      paymentUrlShare =
-          "$paymentUrl?reg_id=$reg_id&academic_yr=$academic_yr&user_id=$uriUsername&encryptedUsername=$encryptedUsername&short_name=$shortName";
+      paymentUrlShare = paymentUrl +
+          "?reg_id=" +
+          reg_id +
+          "&academic_yr=" +
+          academic_yr +
+          "&user_id=" +
+          URi_username +
+          "&encryptedUsername=" +
+          encryptedUsername +
+          "&short_name=" +
+          shortName;
 
-      log('message1_url : ${data['message1_url']}');
-      log('message2_url : ${data['message2_url']}');
+      print('message1_url : ${data['message1_url']}');
+      print('message2_url : ${data['message2_url']}');
 
-      log('Encrypted Username: $paymentUrlShare');
-      log('Encrypted Username: $encryptedUsername');
+      print('paymentUrlShare: $paymentUrlShare');
+      print('Encrypted Username: $encryptedUsername');
 
-      log('Receipt URL: $receiptUrl');
-      log('Payment URL: $paymentUrl');
-      log('smartchat_url : $smartchat_url');
+      print('Receipt URL: $receiptUrl');
+      print('Payment URL: $paymentUrl');
+      print('smartchat_url : $smartchat_url');
     } else {
-      log('Failed to load data: ${response.statusCode}');
+      print('Failed to load data: ${response.statusCode}');
     }
   } catch (e) {
-    log('Error: $e');
+    print('Error: $e');
   }
 }
 
 String encryptUsername(String username, String secretKey) {
+  // Combine the username and secretKey
   String combined = username + secretKey;
+
+  // Convert the combined string to bytes
   List<int> bytes = utf8.encode(combined);
+
+  // Perform SHA1 encryption
   Digest sha1Result = sha1.convert(bytes);
+
+  // Return the encrypted value as a hexadecimal string
   return sha1Result.toString();
 }
 
@@ -168,8 +189,9 @@ String customUriEncode(String input, String allowedChars) {
   for (int i = 0; i < input.length; i++) {
     final String char = input[i];
     if (allowedChars.contains(char)) {
-      encoded.write(char);
+      encoded.write(char); // Allow the character as-is
     } else {
+      // Percent-encode the character
       final List<int> bytes = utf8.encode(char);
       for (final int byte in bytes) {
         encoded.write('%${byte.toRadixString(16).toUpperCase()}');
@@ -186,7 +208,6 @@ class _ParentDashBoardPageState extends State<ParentDashBoardPage> {
   int pageIndex = 0;
   late BuildContext _context;
   DateTime? _lastPressedTime;
-
   @override
   void initState() {
     super.initState();
@@ -207,6 +228,8 @@ class _ParentDashBoardPageState extends State<ParentDashBoardPage> {
         },
       ),
       CalendarPage(regId: reg_id),
+
+      // Dashboardonlinefeespayment(regId: reg_id, paymentUrlShare: paymentUrlShare, receiptUrl: receiptUrl, shortName: shortName, academicYr: academic_yr, receipt_button: receipt_button,),
       ParentProfilePage(),
     ];
 
@@ -214,19 +237,20 @@ class _ParentDashBoardPageState extends State<ParentDashBoardPage> {
       onWillPop: () async {
         final now = DateTime.now();
         final bool isDoublePress = _lastPressedTime != null &&
-            now.difference(_lastPressedTime!) < const Duration(seconds: 2);
+            now.difference(_lastPressedTime!) < Duration(seconds: 2);
 
         if (isDoublePress) {
-          return true;
+          return true; // Exit the app
         } else {
+          // Show a toast or snackbar to inform the user to press back again
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
+            SnackBar(
               content: Text('Press back again to exit'),
               duration: Duration(seconds: 2),
             ),
           );
           _lastPressedTime = now;
-          return false;
+          return false; // Do not exit the app
         }
       },
       child: Scaffold(
@@ -248,7 +272,7 @@ class _ParentDashBoardPageState extends State<ParentDashBoardPage> {
               showDialog(
                 context: context,
                 builder: (BuildContext context) {
-                  return const CustomPopup();
+                  return CustomPopup();
                 },
               );
             },
@@ -257,9 +281,9 @@ class _ParentDashBoardPageState extends State<ParentDashBoardPage> {
         body: Stack(
           children: [
             Container(
-              width: double.infinity,
-              height: double.infinity,
-              decoration: const BoxDecoration(
+              width: double.infinity, // Ensure it takes full width
+              height: double.infinity, // Ensure it takes full height
+              decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [Colors.pink, Colors.blue],
                   begin: Alignment.topCenter,
@@ -267,6 +291,7 @@ class _ParentDashBoardPageState extends State<ParentDashBoardPage> {
                 ),
               ),
             ),
+            // Page content
             pages[pageIndex],
           ],
         ),
@@ -275,119 +300,142 @@ class _ParentDashBoardPageState extends State<ParentDashBoardPage> {
     );
   }
 
-  Future<void> getVersion(BuildContext context) async {
+  Future<void> getVersion(BuildContext _context) async {
     String BaseURl = "";
     final apiService = ApiService();
     try {
+      // Call the API and get the cleaned response
       BaseURl = await apiService.fetchUrl();
-      log('BaseURl Cleaned URL: $BaseURl');
+      print('BaseURl Cleaned URL: $BaseURl');
     } catch (error) {
-      log('BaseURl Error: $error');
+      // Handle any errors
+      print('BaseURl Error: $error');
     }
-    log('lastest_version1122 => ${'${BaseURl}flutter_latest_version'}');
+    print('lastest_version1122 => ${BaseURl + 'flutter_latest_version'}');
 
-    final url = Uri.parse('${BaseURl}flutter_latest_version');
+    print('latest_version11 => ${BaseURl + 'flutter_latest_version'}');
+
+    final url = Uri.parse(BaseURl +
+        'flutter_latest_version'); // Assuming BaseURl is your base URL
 
     try {
-      final response = await http.post(url);
-      log('latest_version => ${response.statusCode}');
+      final response = await http.post(
+        url,
+        body: {'type': 'android'},
+      );
+      print('latest_version => ${response.statusCode}');
 
       if (response.statusCode == 200) {
         final jsonData = jsonDecode(response.body);
-        log('latest_version => ${response.body}');
+        print('latest_version => ${response.body}');
 
+        // Check if jsonData is a list and extract the first item if it is
         if (jsonData is List && jsonData.isNotEmpty) {
           final packageInfo = await PackageInfo.fromPlatform();
-          log('Current_version => ${packageInfo.version}');
+          print('Current_version => ${packageInfo.version}');
 
-          final androidVersion = jsonData[0]['latest_version'] as String;
+          final androidVersion = jsonData[0]['latest_version']
+              as String; // Ensure this is a String
           final releaseNotes = jsonData[0]['release_notes'] as String;
           final forcedUpdate = jsonData[0]['forced_update'] as String;
 
-          log('Current_version => 22222 ${packageInfo.version}');
+          if (androidVersion != null) {
+            print('Current_version => 22222 ${packageInfo.version}');
 
-          final localAndroidVersion = packageInfo.version;
+            final localAndroidVersion = packageInfo.version;
 
-          if (_isVersionGreater(androidVersion, localAndroidVersion)) {
-            log('Current_version => 3333 ${packageInfo.version}');
+            // Compare versions
+            if (_isVersionGreater(androidVersion, localAndroidVersion)) {
+              print('Current_version => 3333 ${packageInfo.version}');
 
-            if (forcedUpdate == 'N') {
-              log('Current_version => NNNNN ${packageInfo.version}');
+              if (forcedUpdate == 'N') {
+                print('Current_version => NNNNN ${packageInfo.version}');
 
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: Text('V ${packageInfo.version}'),
-                    content: Text(releaseNotes),
-                    actions: [
-                      TextButton(
-                        onPressed: () {
-                          launchUrl(Uri.parse(
-                              'https://play.google.com/store/apps/details?id=in.aceventura.evolvuschool'));
-                        },
-                        child: const Text(
-                          'Update',
-                          style: TextStyle(
-                              color: Colors.green, fontWeight: FontWeight.bold),
+                showDialog(
+                  context: _context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: Text('V ${androidVersion}'),
+                      content: Text(releaseNotes),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            launchUrl(Uri.parse(
+                                'https://play.google.com/store/apps/details?id=in.aceventura.evolvuschool'));
+                          },
+                          child: Text(
+                            'Update',
+                            style: TextStyle(
+                                color: Colors.green,
+                                fontWeight: FontWeight.bold),
+                          ),
                         ),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                        child: const Text('Cancel'),
-                      ),
-                    ],
-                  );
-                },
-              );
-            } else if (forcedUpdate == 'Y') {
-              log('Current_version => 44444 ${packageInfo.version}');
-
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: Text('V ${packageInfo.version}'),
-                    content: Text(releaseNotes),
-                    actions: [
-                      TextButton(
-                        onPressed: () {
-                          launchUrl(Uri.parse(
-                              'https://play.google.com/store/apps/details?id=in.aceventura.evolvuschool'));
-                        },
-                        child: const Text(
-                          'Update',
-                          style: TextStyle(
-                              color: Colors.green, fontWeight: FontWeight.bold),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: Text('Cancel'),
                         ),
+                      ],
+                    );
+                  },
+                );
+              } else if (forcedUpdate == 'Y') {
+                print('Current_version => 44444 ${packageInfo.version}');
+
+                showDialog(
+                  context: _context,
+                  barrierDismissible: false, // Prevent dismissing the dialog
+                  builder: (BuildContext context) {
+                    return WillPopScope(
+                      onWillPop: () async => false, // Disable back button
+                      child: AlertDialog(
+                        title: Text('V ${androidVersion}'),
+                        content: Text(releaseNotes),
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              launchUrl(Uri.parse(
+                                  'https://play.google.com/store/apps/details?id=in.aceventura.evolvuschool'));
+                            },
+                            child: Text(
+                              'Update',
+                              style: TextStyle(
+                                  color: Colors.green,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
-                  );
-                },
-              );
+                    );
+                  },
+                );
+              }
             }
           }
         } else {
-          log("Unexpected JSON format");
+          print("Unexpected JSON format");
         }
       } else {
-        log('Error Response: ${response.statusCode}');
+        print('Error Response: ${response.statusCode}');
       }
     } catch (e) {
-      log('Error: $e');
+      print('Error: $e');
     }
   }
 
+// Helper function to compare version strings
   bool _isVersionGreater(String newVersion, String currentVersion) {
+    // Split version strings into parts
     List<int> newParts =
         newVersion.split('.').map((e) => int.parse(e)).toList();
     List<int> currentParts =
         currentVersion.split('.').map((e) => int.parse(e)).toList();
 
+    // Compare each part of the version
     for (int i = 0; i < newParts.length; i++) {
       if (i >= currentParts.length) {
+        // If current version has fewer parts, new version is greater
         return true;
       }
       if (newParts[i] > currentParts[i]) {
@@ -397,30 +445,35 @@ class _ParentDashBoardPageState extends State<ParentDashBoardPage> {
       }
     }
 
+    // If all parts are equal, new version is not greater
     return false;
   }
 
   Widget buildMyNavBar() {
-    return Container(
-      margin: const EdgeInsets.fromLTRB(12, 10, 12, 8),
-      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(30),
-        boxShadow: const [
-          BoxShadow(
-              color: Colors.black26, blurRadius: 10, offset: Offset(0, -3))
-        ],
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          _buildNavItem(icon: Icons.dashboard, label: 'Dashboard', index: 0),
-          _buildNavItem(icon: Icons.calendar_month, label: 'Events', index: 1),
-          _buildCenterNavItem(icon: Icons.currency_rupee_sharp, index: 5),
-          _buildNavItem(icon: Icons.person, label: 'Profile', index: 2),
-          _buildNavItem(icon: Icons.qr_code, label: 'QR', index: 4),
-        ],
+    return SafeArea(
+      child: Container(
+        margin: const EdgeInsets.fromLTRB(12, 10, 12, 8),
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 20),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(30),
+          boxShadow: [
+            BoxShadow(
+                color: Colors.black26, blurRadius: 10, offset: Offset(0, -3))
+          ],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            _buildNavItem(icon: Icons.dashboard, label: 'Dashboard', index: 0),
+            _buildNavItem(
+                icon: Icons.calendar_month, label: 'Events', index: 1),
+            _buildCenterNavItem(
+                icon: Icons.currency_rupee_sharp, index: 5), // Center icon
+            _buildNavItem(icon: Icons.person, label: 'Profile', index: 2),
+            _buildNavItem(icon: Icons.qr_code, label: 'QR', index: 4),
+          ],
+        ),
       ),
     );
   }
@@ -432,12 +485,14 @@ class _ParentDashBoardPageState extends State<ParentDashBoardPage> {
     return GestureDetector(
       onTap: () {
         if (index == 4) {
+          // Navigate to the QR Code screen without modifying pageIndex
           Navigator.push(
             context,
             MaterialPageRoute(
                 builder: (context) => QRCodeScreen(regId: reg_id)),
           );
         } else {
+          // Change pageIndex for BottomNavigationBar screens
           setState(() => pageIndex = index);
         }
       },
@@ -446,7 +501,7 @@ class _ParentDashBoardPageState extends State<ParentDashBoardPage> {
         children: [
           Icon(icon,
               color: isSelected ? Colors.blue.shade400 : Colors.grey, size: 26),
-          const SizedBox(height: 4),
+          SizedBox(height: 4),
           Text(
             label,
             style: TextStyle(
@@ -466,6 +521,7 @@ class _ParentDashBoardPageState extends State<ParentDashBoardPage> {
     return GestureDetector(
       onTap: () {
         if (index == 5) {
+          // Navigate to the QR Code screen without modifying pageIndex
           Navigator.push(
               context,
               MaterialPageRoute(
@@ -479,6 +535,7 @@ class _ParentDashBoardPageState extends State<ParentDashBoardPage> {
                 ),
               ));
         } else {
+          // Change pageIndex for BottomNavigationBar screens
           setState(() => pageIndex = index);
         }
       },
@@ -492,7 +549,7 @@ class _ParentDashBoardPageState extends State<ParentDashBoardPage> {
             BoxShadow(
               color: Colors.blue.shade400.withOpacity(0.4),
               blurRadius: 8,
-              offset: const Offset(0, 4),
+              offset: Offset(0, 4),
             ),
           ],
         ),
@@ -508,6 +565,7 @@ class CardItem {
   final VoidCallback onTap;
 
   CardItem({
+    Key? key,
     required this.imagePath,
     required this.title,
     required this.onTap,
@@ -517,7 +575,7 @@ class CardItem {
 Future<void> showLogoutConfirmationDialog(BuildContext context) async {
   return showDialog<void>(
     context: context,
-    barrierDismissible: false,
+    barrierDismissible: false, // User must tap a button
     builder: (BuildContext context) {
       return AlertDialog(
         title: Text(
@@ -528,28 +586,28 @@ Future<void> showLogoutConfirmationDialog(BuildContext context) async {
           child: Padding(
             padding: const EdgeInsets.only(top: 12.0),
             child: ListBody(
-              children: [
+              children: <Widget>[
                 Text('Do you want to logout?',
                     style: TextStyle(fontSize: 16.sp, color: Colors.grey)),
               ],
             ),
           ),
         ),
-        actions: [
+        actions: <Widget>[
           TextButton(
-            child: const Text('Cancel'),
+            child: Text('Cancel'),
             onPressed: () {
-              Navigator.of(context).pop();
+              Navigator.of(context).pop(); // Dismiss the dialog
             },
           ),
           TextButton(
-            child: const Text(
+            child: Text(
               'Logout',
               style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
             ),
             onPressed: () {
-              Navigator.of(context).pop();
-              logout(context);
+              Navigator.of(context).pop(); // Dismiss the dialog
+              logout(context); // Call the logout function
             },
           ),
         ],
@@ -560,8 +618,9 @@ Future<void> showLogoutConfirmationDialog(BuildContext context) async {
 
 Future<void> logout(BuildContext context) async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  await prefs.clear();
+  await prefs.clear(); // Clear all stored data
 
+  // Optionally show a toast message
   Fluttertoast.showToast(
     msg: 'Logged out successfully!',
     backgroundColor: Colors.black45,
@@ -570,6 +629,7 @@ Future<void> logout(BuildContext context) async {
     gravity: ToastGravity.CENTER,
   );
 
+  // Navigate to the login screen
   Navigator.of(context).pushAndRemoveUntil(
     MaterialPageRoute(builder: (context) => UserNamePage()),
     (Route<dynamic> route) => false,
@@ -577,8 +637,6 @@ Future<void> logout(BuildContext context) async {
 }
 
 class CustomPopup extends StatelessWidget {
-  const CustomPopup({super.key});
-
   @override
   Widget build(BuildContext context) {
     List<CardItem> cardItems = [
@@ -592,6 +650,7 @@ class CustomPopup extends StatelessWidget {
           );
         },
       ),
+
       CardItem(
         imagePath: 'assets/logout1.png',
         title: 'LogOut',
@@ -599,6 +658,7 @@ class CustomPopup extends StatelessWidget {
           showLogoutConfirmationDialog(context);
         },
       ),
+
       CardItem(
         imagePath: 'assets/cashpayment.png',
         title: 'Fees Receipt',
@@ -608,7 +668,7 @@ class CustomPopup extends StatelessWidget {
             MaterialPageRoute(
               builder: (_) => ReceiptWebViewScreen(
                 receiptUrl:
-                    '$receiptUrl?reg_id=$reg_id&academic_yr=$academic_yr&short_name=$shortName',
+                    '${receiptUrl}?reg_id=${reg_id}&academic_yr=${academic_yr}&short_name=${shortName}',
               ),
             ),
           );
@@ -630,6 +690,18 @@ class CustomPopup extends StatelessWidget {
           );
         },
       ),
+
+      // CardItem(
+      //   imagePath: 'assets/idcard.png',
+      //   title: 'BUS',
+      //   onTap: () {
+      //     Navigator.push(
+      //       context,
+      //       MaterialPageRoute(builder: (_) => BusTrackingScreen(busId: 'SCHOOL-101'),),
+      //     );
+      //   },
+      // ),
+
       CardItem(
         imagePath: 'assets/idcard.png',
         title: 'ID Card',
@@ -640,6 +712,7 @@ class CustomPopup extends StatelessWidget {
           );
         },
       ),
+
       CardItem(
         imagePath: 'assets/almanac.png',
         title: 'Change Academic Year',
@@ -652,16 +725,19 @@ class CustomPopup extends StatelessWidget {
           );
         },
       ),
+
+      // Add the new Share App card here
       CardItem(
-        imagePath: 'assets/share.png',
+        imagePath: 'assets/share.png', // Add an appropriate icon for sharing
         title: 'Share App',
         onTap: () {
           Share.share(
-            'Download Evolvu: Smart Schooling App https://play.google.com/store/apps/details?id=in.aceventura.evolvuschool',
+            'Download Evolvu: Smart Schooling App https://play.google.com/store/apps/details?id=in.aceventura.evolvuschool', // Replace with your app link
             subject: 'Parent App!',
           );
         },
       ),
+
       CardItem(
         imagePath: 'assets/ace.png',
         title: 'About Us',
@@ -674,22 +750,23 @@ class CustomPopup extends StatelessWidget {
           );
         },
       ),
+      // Add more CardItems here...
     ];
 
     return Dialog(
       backgroundColor: Colors.transparent,
-      insetPadding:
-          const EdgeInsets.only(top: 65, bottom: 0, left: 0, right: 0),
+      insetPadding: EdgeInsets.only(top: 65, bottom: 0, left: 0, right: 0),
       child: Stack(
         clipBehavior: Clip.none,
+        // This allows the Positioned widget to go outside the Stack's bounds
         children: [
           Align(
             alignment: Alignment.topCenter,
             child: Container(
               width: MediaQuery.of(context).size.width * 0.9,
-              padding: const EdgeInsets.all(12.0),
+              padding: EdgeInsets.all(12.0),
               decoration: BoxDecoration(
-                color: const Color.fromARGB(255, 245, 241, 241),
+                color: Color.fromARGB(255, 245, 241, 241),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: GridView.count(
@@ -704,11 +781,11 @@ class CustomPopup extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Image.asset(cardItem.imagePath, width: 40, height: 40),
-                        const SizedBox(height: 8),
+                        SizedBox(height: 8),
                         Text(
                           cardItem.title,
                           textAlign: TextAlign.center,
-                          style: const TextStyle(fontSize: 13),
+                          style: TextStyle(fontSize: 13),
                         ),
                       ],
                     ),
@@ -718,7 +795,7 @@ class CustomPopup extends StatelessWidget {
             ),
           ),
           Positioned(
-            top: -50,
+            top: -50, // Adjust this value to place the button above the dialog
             right: 30,
             child: GestureDetector(
               onTap: () {

@@ -1,3 +1,4 @@
+import 'package:evolvu/splash_screen.dart';
 import 'package:evolvu/username_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +14,8 @@ import 'package:http/http.dart' as http;
 import 'Utils&Config/api.dart';
 
 class ApiService {
-  static const String apiUrl = 'https://api.aceventura.in/demo/evolvuURL/get_url';
+  static const String apiUrl =
+      'https://api.aceventura.in/demo/evolvuURL/get_url';
 
   // Function to call the API and process the response
   Future<String> fetchUrl() async {
@@ -44,7 +46,8 @@ class ApiService {
   }
 }
 
-final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
@@ -62,14 +65,11 @@ void main() async {
 
   // Initialize notifications
   const AndroidInitializationSettings initializationSettingsAndroid =
-  AndroidInitializationSettings('@mipmap/ic_launcher');
+      AndroidInitializationSettings('@mipmap/ic_launcher');
 
-  final InitializationSettings initializationSettings =
-  InitializationSettings(
-    android: initializationSettingsAndroid,
-    iOS: DarwinInitializationSettings()
-  );
-
+  final InitializationSettings initializationSettings = InitializationSettings(
+      android: initializationSettingsAndroid,
+      iOS: DarwinInitializationSettings());
 
   await flutterLocalNotificationsPlugin.initialize(
     initializationSettings,
@@ -103,7 +103,6 @@ void main() async {
   );
 }
 
-
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -126,11 +125,10 @@ class MyApp extends StatelessWidget {
                 end: Alignment.bottomCenter,
               ),
             ),
-            child: UserNamePage(),
+            child: SplashScreen(),
           ),
         );
       },
     );
   }
 }
-

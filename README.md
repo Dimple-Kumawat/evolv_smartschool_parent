@@ -45,6 +45,9 @@ flutter build ipa
 # ios
 fsyJhp7UUkc-v6jJrCS9oJ:APA91bHvg_lqLEfDGeV46Aff3NiYPpLyPNHAaaVz31tYt-852cZc_jSi1vgNN-JChbJxK-UsE8WmQuQZhqD9WKrKE6UAPf828rU3x_r7G8K5b0iCsT_EW6g
 
+test
 Dsouza.francis@gmail.com
-Arnolds
+arnolds
+live
 dsouza.francis@gmail.com
+sacs@4311

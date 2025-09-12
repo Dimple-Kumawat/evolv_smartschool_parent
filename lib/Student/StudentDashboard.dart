@@ -1,26 +1,33 @@
 import 'dart:convert';
-import 'dart:developer';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:crypto/crypto.dart';
 import 'package:evolvu/Homework/homeWork_notePage.dart';
 import 'package:evolvu/Parent/parentDashBoard_Page.dart';
 import 'package:evolvu/Remark/remark_notePage.dart';
+import 'package:evolvu/login.dart';
 import 'package:evolvu/Student/student_profile_page.dart';
 import 'package:evolvu/Teacher/teacher_notePage.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:evolvu/Student/student_card.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:math' as math;
 
 import '../AcademicYearProvider.dart';
+import '../Attendance/attendance.dart';
 import '../Attendance/circleAttendance.dart';
 import '../ExamTimeTable/examTimeTable.dart';
 import '../ExamTimeTable/timeTable.dart';
 import '../Notice_SMS/notice_notePage.dart';
 import '../QR/QR_Code.dart';
 import '../ResultChart.dart';
+import '../Utils&Config/api.dart';
+import '../WebViewScreens/OnlineFeesPayment.dart';
 import '../WebViewScreens/SmartChat_WebView.dart';
+import '../common/rotatedDivider_Card.dart';
 import '../result.dart';
 
 class CardItem {
@@ -62,8 +69,7 @@ class StudentActivityPage extends StatefulWidget {
   final String secId;
   final String attendance_perc;
 
-  const StudentActivityPage({
-    super.key,
+  StudentActivityPage({
     required this.reg_id,
     required this.shortName,
     required this.studentId,
@@ -137,8 +143,8 @@ class _StudentActivityPageState extends State<StudentActivityPage> {
         body: params,
       );
 
-      log('Response get_all_absent_dates studentId: $studentId');
-      log('Response get_all_absent_dates: ${response.body}');
+      print('Response get_all_absent_dates studentId: $studentId');
+      print('Response get_all_absent_dates: ${response.body}');
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -166,22 +172,22 @@ class _StudentActivityPageState extends State<StudentActivityPage> {
     final prefs = await SharedPreferences.getInstance();
     String? schoolInfoJson = prefs.getString('school_info');
     String? logUrls = prefs.getString('logUrls');
-    log('logUrls====\\\\: $logUrls');
+    print('logUrls====\\\\\: $logUrls');
     if (logUrls != null) {
       try {
         Map<String, dynamic> logUrlsparsed = json.decode(logUrls);
-        log('logUrls====\\\\11111: $logUrls');
+        print('logUrls====\\\\\11111: $logUrls');
 
         // academic_yr = logUrlsparsed['academic_yr'];
         reg_id = logUrlsparsed['reg_id'];
 
-        log('academic_yr ID: $academic_yr');
-        log('reg_id: $reg_id');
+        print('academic_yr ID: $academic_yr');
+        print('reg_id: $reg_id');
       } catch (e) {
-        log('Error parsing school info: $e');
+        print('Error parsing school info: $e');
       }
     } else {
-      log('School info not found in SharedPreferences.');
+      print('School info not found in SharedPreferences.');
     }
 
     if (schoolInfoJson != null) {
@@ -191,17 +197,17 @@ class _StudentActivityPageState extends State<StudentActivityPage> {
         shortName = parsedData['short_name'];
         url = parsedData['url'];
 
-        log('Short Name: $shortName');
-        log('URL: $url');
+        print('Short Name: $shortName');
+        print('URL: $url');
       } catch (e) {
-        log('Error parsing school info: $e');
+        print('Error parsing school info: $e');
       }
     } else {
-      log('School info not found in SharedPreferences.');
+      print('School info not found in SharedPreferences.');
     }
 
     http.Response response = await http.post(
-      Uri.parse("${url}get_student"),
+      Uri.parse(url + "get_student"),
       body: {
         'student_id': widget.studentId,
         'academic_yr': academic_yr,
@@ -209,47 +215,48 @@ class _StudentActivityPageState extends State<StudentActivityPage> {
       },
     );
 
-    log('child status code: ${response.statusCode}');
-    log('child Response body====:>  ${response.body}');
+    print('child status code: ${response.statusCode}');
+    print('child Response body====:>  ${response.body}');
 
     if (response.statusCode == 200) {
       List<dynamic> apiResponse = json.decode(response.body);
       if (apiResponse.isNotEmpty) {
         Map<String, dynamic> firstStudent = apiResponse[0];
         Fname = firstStudent['first_name'];
-        log('Fname: $Fname');
+        print('Fname: $Fname');
       } else {
-        log('No data found in API response.');
+        print('No data found in API response.');
       }
     } else {
-      log('Failed to fetch data: Status code ${response.statusCode}');
+      print('Failed to fetch data: Status code ${response.statusCode}');
     }
 
-    http.Response getStudentProfileImagesDetails = await http.post(
-      Uri.parse("${url}get_student_profile_images_details"),
+    http.Response get_student_profile_images_details = await http.post(
+      Uri.parse(url + "get_student_profile_images_details"),
       body: {'student_id': widget.studentId, 'short_name': shortName},
     );
 
-    // log('get_student_profile_images_details status code: ${get_student_profile_images_details.statusCode}');
-    // log('get_student_profile_images_details Response body====:>  ${get_student_profile_images_details.body}');
+    // print('get_student_profile_images_details status code: ${get_student_profile_images_details.statusCode}');
+    // print('get_student_profile_images_details Response body====:>  ${get_student_profile_images_details.body}');
 
-    if (getStudentProfileImagesDetails.statusCode == 200) {
+    if (get_student_profile_images_details.statusCode == 200) {
       Map<String, dynamic> responseData =
-          json.decode(getStudentProfileImagesDetails.body);
+          json.decode(get_student_profile_images_details.body);
       imageUrl = responseData['image_url'];
-      log('Image URL: $imageUrl');
+      print('Image URL: $imageUrl');
       if (imageUrl.hashCode == 404) {
-        log('Image not found, using default image.');
+        print('Image not found, using default image.');
         imageUrl = ""; // or set a default image URL if available
       } else {
-        log('Error fetching image details: ${getStudentProfileImagesDetails.statusCode}');
+        print(
+            'Error fetching image details: ${get_student_profile_images_details.statusCode}');
       }
     }
   }
 
   Future<void> fetchDashboardData() async {
-    final url = Uri.parse('${widget.url}show_icons_parentdashboard_apk');
-    // log('Receipt URL: $shortName');
+    final url = Uri.parse(widget.url + 'show_icons_parentdashboard_apk');
+    // print('Receipt URL: $shortName');
 
     try {
       final response = await http.post(
@@ -258,7 +265,7 @@ class _StudentActivityPageState extends State<StudentActivityPage> {
       );
 
       if (response.statusCode == 200) {
-        log('response.body URL: ${response.body}');
+        print('response.body URL: ${response.body}');
 
         final Map<String, dynamic> data = jsonDecode(response.body);
 
@@ -270,33 +277,42 @@ class _StudentActivityPageState extends State<StudentActivityPage> {
         online_fees_payment = data['online_fees_payment'];
         paymentUrl = data['payment_url'];
         smartchat_url = data['smartchat_url'];
-        String allowedUriChars = "@#&=*+-_.,:!?()/~'%";
+        String ALLOWED_URI_CHARS = "@#&=*+-_.,:!?()/~'%";
 
-        String uriUsername = customUriEncode(username, allowedUriChars);
+        String URi_username = customUriEncode(username, ALLOWED_URI_CHARS);
         username = username;
 
         String secretKey = 'aceventura@services';
 
         String encryptedUsername = encryptUsername(username, secretKey);
 
-        paymentUrlShare =
-            "$paymentUrl?reg_id=${widget.reg_id}&academic_yr=$academic_yr&user_id=$uriUsername&encryptedUsername=$encryptedUsername&short_name=$shortName";
+        paymentUrlShare = paymentUrl +
+            "?reg_id=" +
+            widget.reg_id +
+            "&academic_yr=" +
+            academic_yr +
+            "&user_id=" +
+            URi_username +
+            "&encryptedUsername=" +
+            encryptedUsername +
+            "&short_name=" +
+            shortName;
 
-        log('Encrypted Username: $paymentUrlShare');
-        log('Encrypted Username: $encryptedUsername');
+        print('Encrypted Username: $paymentUrlShare');
+        print('Encrypted Username: $encryptedUsername');
         // Use these values as needed
-        log('username URL: $username');
-        log('Receipt URL: $receiptUrl');
-        log('Receipt Button: $receiptButton');
-        log('Payment URL: $paymentUrl');
-        log('smartchat_url : $smartchat_url');
+        print('username URL: $username');
+        print('Receipt URL: $receiptUrl');
+        print('Receipt Button: $receiptButton');
+        print('Payment URL: $paymentUrl');
+        print('smartchat_url : $smartchat_url');
 
         // You can store these values in variables or use them directly
       } else {
-        log('Failed to load data: ${response.statusCode}');
+        print('Failed to load data: ${response.statusCode}');
       }
     } catch (e) {
-      log('Error: $e');
+      print('Error: $e');
     }
   }
 
@@ -340,11 +356,11 @@ class _StudentActivityPageState extends State<StudentActivityPage> {
   }
 
   Future<int> fetchUnreadHomeworkCount() async {
-    log('fetching unread remarks count: $reg_id');
+    print('fetching unread remarks count: $reg_id');
 
     try {
       final response = await http.post(
-        Uri.parse("${widget.url}get_count_of_unread_homeworks"),
+        Uri.parse(widget.url + "get_count_of_unread_homeworks"),
         body: {
           'student_id': widget.studentId,
           'parent_id': widget.reg_id,
@@ -356,12 +372,12 @@ class _StudentActivityPageState extends State<StudentActivityPage> {
       if (response.statusCode == 200) {
         List<dynamic> data = json.decode(response.body);
         unreadCount = int.tryParse(data[0]['unread_homeworks']) ?? 0;
-        log('fetchUnreadHomeworkCount: $unreadCount');
+        print('fetchUnreadHomeworkCount: $unreadCount');
       } else {
-        log('Failed to fetch unread remarks count: ${response.statusCode}');
+        print('Failed to fetch unread remarks count: ${response.statusCode}');
       }
     } catch (e) {
-      log('Error fetching unread remarks count: $e');
+      print('Error fetching unread remarks count: $e');
     }
 
     return unreadCount;
@@ -370,7 +386,7 @@ class _StudentActivityPageState extends State<StudentActivityPage> {
   Future<int> fetchUnreadnotices() async {
     try {
       final response = await http.post(
-        Uri.parse("${widget.url}get_count_of_unread_notices"),
+        Uri.parse(widget.url + "get_count_of_unread_notices"),
         body: {
           'student_id': widget.studentId,
           'parent_id': widget.reg_id,
@@ -382,12 +398,13 @@ class _StudentActivityPageState extends State<StudentActivityPage> {
       if (response.statusCode == 200) {
         List<dynamic> data = json.decode(response.body);
         noticeunreadCount = int.tryParse(data[0]['unread_notices']) ?? 0;
-        log('fetching unread noticeunreadCount count: $noticeunreadCount');
+        print('fetching unread noticeunreadCount count: $noticeunreadCount');
       } else {
-        log('Failed to fetch unread noticeunreadCount count: ${response.statusCode}');
+        print(
+            'Failed to fetch unread noticeunreadCount count: ${response.statusCode}');
       }
     } catch (e) {
-      log('Error fetching unread noticeunreadCount count: $e');
+      print('Error fetching unread noticeunreadCount count: $e');
     }
 
     return noticeunreadCount;
@@ -396,7 +413,7 @@ class _StudentActivityPageState extends State<StudentActivityPage> {
   Future<int> fetchUnreadTechetNotes() async {
     try {
       final response = await http.post(
-        Uri.parse("${widget.url}get_count_of_unread_notes"),
+        Uri.parse(widget.url + "get_count_of_unread_notes"),
         body: {
           'student_id': widget.studentId,
           'parent_id': widget.reg_id,
@@ -410,12 +427,13 @@ class _StudentActivityPageState extends State<StudentActivityPage> {
         setState(() {
           TnoteunreadCount = int.tryParse(data[0]['unread_notes']) ?? 0;
         });
-        log('fetching unread TnoteunreadCount count: $TnoteunreadCount');
+        print('fetching unread TnoteunreadCount count: $TnoteunreadCount');
       } else {
-        log('Failed to fetch unread TnoteunreadCount count: ${response.statusCode}');
+        print(
+            'Failed to fetch unread TnoteunreadCount count: ${response.statusCode}');
       }
     } catch (e) {
-      log('Error fetching unread TnoteunreadCount count: $e');
+      print('Error fetching unread TnoteunreadCount count: $e');
     }
 
     return TnoteunreadCount;
@@ -424,7 +442,7 @@ class _StudentActivityPageState extends State<StudentActivityPage> {
   Future<int> fetchUnreadRemark() async {
     try {
       final response = await http.post(
-        Uri.parse("${widget.url}get_count_of_unread_remarks"),
+        Uri.parse(widget.url + "get_count_of_unread_remarks"),
         body: {
           'student_id': widget.studentId,
           'parent_id': widget.reg_id,
@@ -436,12 +454,13 @@ class _StudentActivityPageState extends State<StudentActivityPage> {
       if (response.statusCode == 200) {
         List<dynamic> data = json.decode(response.body);
         ReamrkunreadCount = int.tryParse(data[0]['unread_remarks']) ?? 0;
-        log('fetching unread ReamrkunreadCount count: $ReamrkunreadCount');
+        print('fetching unread ReamrkunreadCount count: $ReamrkunreadCount');
       } else {
-        log('Failed to fetch unread ReamrkunreadCount count: ${response.statusCode}');
+        print(
+            'Failed to fetch unread ReamrkunreadCount count: ${response.statusCode}');
       }
     } catch (e) {
-      log('Error fetching unread ReamrkunreadCount count: $e');
+      print('Error fetching unread ReamrkunreadCount count: $e');
     }
 
     return ReamrkunreadCount;
@@ -925,20 +944,26 @@ class _StudentActivityPageState extends State<StudentActivityPage> {
         },
       ),
 
-      // if(online_fees_payment == 1)
-      // CardItem(
-      //   imagePath: 'assets/cashpayment.png',
-      //   title: 'Fees Payment',
-      //   onTap: (context) {
-      //     Navigator.push(
-      //       context,
-      //       MaterialPageRoute(
-      //         builder: (context) => PaymentWebview(
-      //             regId: widget.reg_id,paymentUrlShare:paymentUrlShare,receiptUrl:receiptUrl,shortName: shortName,academicYr: academic_yr,receipt_button:receipt_button),
-      //       ),
-      //     );
-      //   },
-      // ),
+      if (academicYearProvider.academic_yr == widget.academicYr &&
+          online_fees_payment == 1)
+        CardItem(
+          imagePath: 'assets/cashpayment.png',
+          title: 'Fees Payment',
+          onTap: (context) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => PaymentWebview(
+                    regId: widget.reg_id,
+                    paymentUrlShare: paymentUrlShare,
+                    receiptUrl: receiptUrl,
+                    shortName: shortName,
+                    academicYr: academic_yr,
+                    receipt_button: receipt_button),
+              ),
+            );
+          },
+        ),
       // CardItem(
       //   imagePath: 'assets/new_module.png', // Path to the new module image
       //   title: 'New Module',
@@ -1005,8 +1030,8 @@ class _StudentActivityPageState extends State<StudentActivityPage> {
                                   SizedBox.square(
                                     dimension: 70.w,
                                     child: CachedNetworkImage(
-                                      imageUrl:
-                                          '$imageUrl?timestamp=${DateTime.now().millisecondsSinceEpoch}',
+                                      imageUrl: imageUrl +
+                                          '?timestamp=${DateTime.now().millisecondsSinceEpoch}',
                                       placeholder: (context, url) => Center(
                                           child: CircularProgressIndicator()),
                                       errorWidget: (context, url, error) =>

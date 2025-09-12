@@ -59,6 +59,26 @@ class _PaymentWebviewState extends State<DrawerOnlineFeesPayment> {
       if (mounted) {
         setState(() {});
       }
+
+      // Auto-open Receipt screen if academic year matches
+      final academicYrProvider =
+          Provider.of<AcademicYearProvider>(context, listen: false);
+      final isAcademicYearMatch =
+          academicYrProvider.academic_yr == widget.academicYr;
+
+      if (widget.receiptUrl.isNotEmpty && isAcademicYearMatch) {
+        Future.delayed(Duration(milliseconds: 500), () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => ReceiptWebViewScreen(
+                receiptUrl:
+                    '${widget.receiptUrl}?reg_id=${widget.regId}&academic_yr=${widget.academicYr}&short_name=${widget.shortName}',
+              ),
+            ),
+          );
+        });
+      }
     } catch (e) {
       debugPrint('Error initializing data: $e');
     }
@@ -144,7 +164,7 @@ class _PaymentWebviewState extends State<DrawerOnlineFeesPayment> {
                   },
                   icon: const Icon(Icons.receipt, color: Colors.black),
                   label: Text(
-                    'Receipt${widget.academicYr}',
+                    'Receipt ${widget.academicYr}',
                   ),
                   backgroundColor: Colors.blue.shade400,
                 )

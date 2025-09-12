@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:developer';
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:evolvu/Parent/parentDashBoard_Page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -10,16 +10,21 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:url_launcher/url_launcher.dart';
+import 'dart:math' as math;
 
 import '../AcademicYearProvider.dart';
 import '../Attendance/circleAttendance.dart';
+import '../Transport/BusTraking.dart';
 import '../ExamTimeTable/examTimeTable.dart';
+import '../Transport/TransportHomeScreen.dart';
+import '../Utils&Config/api.dart';
+import '../common/rotatedDivider_Card.dart';
 import 'StudentDashboard.dart';
 
 class StudentCard extends StatefulWidget {
   final Function(int index) onTap;
   final String acd;
-  const StudentCard({super.key, required this.onTap, required this.acd});
+  StudentCard({super.key, required this.onTap, required this.acd});
 
   @override
   _StudentCardState createState() => _StudentCardState();
@@ -62,16 +67,16 @@ class _StudentCardState extends State<StudentCard> {
         academicYrCard = logUrlsParsed['academic_yr'];
         academicYearProvider.setAcademicYear(logUrlsParsed['academic_yr']);
 
-        log('academic_yr ID: ${academicYearProvider.academic_yr}');
+        print('academic_yr ID: ${academicYearProvider.academic_yr}');
         academicYr = academicYearProvider.academic_yr;
-        log('academic_yr ID: $academic_yr');
+        print('academic_yr ID: $academic_yr');
 
         regId = logUrlsParsed['reg_id'];
       } catch (e) {
-        log('Error parsing log URLs: $e');
+        print('Error parsing log URLs: $e');
       }
     } else {
-      log('Log URLs not found in SharedPreferences.');
+      print('Log URLs not found in SharedPreferences.');
     }
     fetchDashboardData(url);
     getSchoolNews(url); //get_news
@@ -88,7 +93,7 @@ class _StudentCardState extends State<StudentCard> {
         },
       );
 
-      log('get_todays_exam: ${response.body}');
+      print('get_todays_exam: ${response.body}');
 
       if (response.statusCode == 200) {
         List<dynamic> apiResponse = json.decode(response.body);
@@ -97,10 +102,11 @@ class _StudentCardState extends State<StudentCard> {
           examData = List<Map<String, dynamic>>.from(apiResponse);
         });
       } else {
-        log('Failed to load exam data with status code: ${response.statusCode}');
+        print(
+            'Failed to load exam data with status code: ${response.statusCode}');
       }
     } catch (e) {
-      log('Error fetching exam data: $e');
+      print('Error fetching exam data: $e');
     }
   }
 
@@ -118,18 +124,18 @@ class _StudentCardState extends State<StudentCard> {
         academicYrCard = logUrlsParsed['academic_yr'];
         academicYearProvider.setAcademicYear(logUrlsParsed['academic_yr']);
 
-        log('academic_yr ID: ${academicYearProvider.academic_yr}');
+        print('academic_yr ID: ${academicYearProvider.academic_yr}');
         academicYr = widget.acd;
-        log('academic_yr ID: $academic_yr');
+        print('academic_yr ID: $academic_yr');
 
         regId = logUrlsParsed['reg_id'];
 
         _fetchTodaysExams();
       } catch (e) {
-        log('Error parsing log URLs: $e');
+        print('Error parsing log URLs: $e');
       }
     } else {
-      log('Log URLs not found in SharedPreferences.');
+      print('Log URLs not found in SharedPreferences.');
     }
 
     if (schoolInfoJson != null) {
@@ -138,23 +144,23 @@ class _StudentCardState extends State<StudentCard> {
         shortName = parsedData['short_name'];
         url = parsedData['url'];
       } catch (e) {
-        log('Error parsing school info: $e');
+        print('Error parsing school info: $e');
       }
     } else {
-      log('School info not found in SharedPreferences.');
+      print('School info not found in SharedPreferences.');
     }
 
     if (url.isNotEmpty) {
       try {
         http.Response response = await http.post(
-          Uri.parse("${url}get_childs"),
+          Uri.parse(url + "get_childs"),
           body: {
             'reg_id': regId,
             'academic_yr': academicYr,
             'short_name': shortName,
           },
         );
-        log('Response get_childs: ${response.body}');
+        print('Response get_childs: ${response.body}');
 
         AcademicResponse = response.body;
 
@@ -187,11 +193,11 @@ class _StudentCardState extends State<StudentCard> {
               String studentName = student['student_name'];
               DateTime dob = DateTime.parse(dobString);
 
-              log('Checking DOB for: $studentName, DOB: $dobString');
+              print('Checking DOB for: $studentName, DOB: $dobString');
               if (dob.month == today.month && dob.day == today.day) {
                 isBirthdayToday = true;
                 birthdayStudentNames.add(studentName);
-                log('Today is the birthday of: $studentName');
+                print('Today is the birthday of: $studentName');
               }
             }
 
@@ -201,25 +207,26 @@ class _StudentCardState extends State<StudentCard> {
             }
           });
         } else {
-          log('Failed to load students with status code: ${response.statusCode}');
+          print(
+              'Failed to load students with status code: ${response.statusCode}');
         }
       } catch (e) {
-        log('Error during HTTP request: $e');
+        print('Error during HTTP request: $e');
       }
     } else {
-      log('URL is empty, cannot make HTTP request.');
+      print('URL is empty, cannot make HTTP request.');
     }
   }
 
   Future<void> getSchoolNews(String url) async {
     final getSchoolNewsurl = Uri.parse(
-        '${url}get_news'); // Assuming Config.newLogin is your base URL
+        url + 'get_news'); // Assuming Config.newLogin is your base URL
     final body = {'short_name': shortName}; // Add required parameters
-    log('getSchoolNews => $getSchoolNewsurl');
+    print('getSchoolNews => $getSchoolNewsurl');
 
     try {
       final response = await http.post(getSchoolNewsurl, body: body);
-      log('getSchoolNews response => ${response.body}');
+      print('getSchoolNews response => ${response.body}');
 
       if (response.statusCode == 200) {
         final List<dynamic> jsonData = jsonDecode(response.body);
@@ -227,44 +234,44 @@ class _StudentCardState extends State<StudentCard> {
           newsData = jsonData;
         });
       } else {
-        log('getSchoolNews Error Response: ${response.statusCode}');
+        print('getSchoolNews Error Response: ${response.statusCode}');
       }
     } catch (e) {
-      log('getSchoolNews Error: $e');
+      print('getSchoolNews Error: $e');
     }
   }
 
   Future<void> getEvolvuUpdate(String url) async {
-    final getEvolvuUpdatesurl = Uri.parse(
-        '${url}get_evolvu_updates'); // Assuming Config.newLogin is your base URL
+    final get_evolvu_updatesurl = Uri.parse(url +
+        'get_evolvu_updates'); // Assuming Config.newLogin is your base URL
     final body = {'short_name': shortName};
     try {
-      final response = await http.post(getEvolvuUpdatesurl, body: body);
-      log('get_evolvu_updates => ${response.statusCode}');
+      final response = await http.post(get_evolvu_updatesurl, body: body);
+      print('get_evolvu_updates => ${response.statusCode}');
 
       if (response.statusCode == 200) {
         final jsonData = jsonDecode(response.body);
-        log('get_evolvu_updates => ${response.body}');
+        print('get_evolvu_updates => ${response.body}');
 
         setState(() {
           EvolvUData = jsonData;
         });
       } else {
-        log('Error Response: ${response.statusCode}');
+        print('Error Response: ${response.statusCode}');
       }
     } catch (e) {
-      log('Error: $e');
+      print('Error: $e');
     }
   }
 
   Future<void> get_important_links(String url) async {
-    final importantLinksUrl = Uri.parse(
-        '${url}get_important_links'); // Assuming Config.newLogin is your base URL
+    final importantLinksUrl = Uri.parse(url +
+        'get_important_links'); // Assuming Config.newLogin is your base URL
     final body = {
       'short_name': shortName,
       'type_link': 'private'
     }; // Add required parameters
-    // log('getSchoolNews => $getSchoolNewsurl');
+    // print('getSchoolNews => $getSchoolNewsurl');
 
     try {
       final response = await http.post(importantLinksUrl, body: body);
@@ -276,13 +283,13 @@ class _StudentCardState extends State<StudentCard> {
           isLoading = false;
         });
       } else {
-        log('Error: ${response.statusCode}');
+        print('Error: ${response.statusCode}');
         setState(() {
           isLoading = false;
         });
       }
     } catch (e) {
-      log('Error: $e');
+      print('Error: $e');
       setState(() {
         isLoading = false;
       });
@@ -296,8 +303,8 @@ class _StudentCardState extends State<StudentCard> {
   }
 
   Future<void> fetchDashboardData(String url) async {
-    final url1 = Uri.parse('${url}show_icons_parentdashboard_apk');
-    // log('Receipt URL: $shortName');
+    final url1 = Uri.parse(url + 'show_icons_parentdashboard_apk');
+    // print('Receipt URL: $shortName');
 
     try {
       final response = await http.post(
@@ -306,7 +313,7 @@ class _StudentCardState extends State<StudentCard> {
       );
 
       if (response.statusCode == 200) {
-        log('Stu Card-show_icons_parentdashboard_apk  ${response.body}');
+        print('Stu Card-show_icons_parentdashboard_apk  ${response.body}');
 
         final Map<String, dynamic> data = jsonDecode(response.body);
 
@@ -318,13 +325,13 @@ class _StudentCardState extends State<StudentCard> {
         paymentUrl = data['payment_url'] ?? '';
         smartchat_url = data['smartchat_url'] ?? '';
 
-        String allowedUriChars = "@#&=*+-_.,:!?()/~'%";
+        String ALLOWED_URI_CHARS = "@#&=*+-_.,:!?()/~'%";
 
         int msghide1 = data['message1'];
         int msghide2 = data['message2'];
 
-        log('msghide1: $msghide1');
-        log('msghide2: $msghide2');
+        print('msghide1: $msghide1');
+        print('msghide2: $msghide2');
 
         if (msghide1 == 1) {
           PostMsg1();
@@ -334,33 +341,42 @@ class _StudentCardState extends State<StudentCard> {
           PostMsg2();
         }
 
-        String uriUsername = customUriEncode(username, allowedUriChars);
+        String URi_username = customUriEncode(username, ALLOWED_URI_CHARS);
         username = username;
 
         String secretKey = 'aceventura@services';
 
         String encryptedUsername = encryptUsername(username, secretKey);
 
-        paymentUrlShare =
-            "$paymentUrl?reg_id=$reg_id&academic_yr=$academic_yr&user_id=$uriUsername&encryptedUsername=$encryptedUsername&short_name=$shortName";
+        paymentUrlShare = paymentUrl +
+            "?reg_id=" +
+            reg_id +
+            "&academic_yr=" +
+            academic_yr +
+            "&user_id=" +
+            URi_username +
+            "&encryptedUsername=" +
+            encryptedUsername +
+            "&short_name=" +
+            shortName;
 
-        log('message1_url : ${data['message1_url']}');
-        log('message2_url : ${data['message2_url']}');
+        print('message1_url : ${data['message1_url']}');
+        print('message2_url : ${data['message2_url']}');
 
-        log('Encrypted Username: $paymentUrlShare');
-        log('Encrypted Username: $encryptedUsername');
+        print('Encrypted Username: $paymentUrlShare');
+        print('Encrypted Username: $encryptedUsername');
         // Use these values as needed
 
-        log('Receipt URL: $receiptUrl');
-        log('Payment URL: $paymentUrl');
-        log('smartchat_url : $smartchat_url');
+        print('Receipt URL: $receiptUrl');
+        print('Payment URL: $paymentUrl');
+        print('smartchat_url : $smartchat_url');
 
         // You can store these values in variables or use them directly
       } else {
-        log('Failed to load data: ${response.statusCode}');
+        print('Failed to load data: ${response.statusCode}');
       }
     } catch (e) {
-      log('Error: $e');
+      print('Error: $e');
     }
   }
 
@@ -375,7 +391,7 @@ class _StudentCardState extends State<StudentCard> {
     try {
       final response = await http.post(url, body: body);
       if (response.statusCode == 200) {
-        log('PostMsg1 response: ${response.body}');
+        print('PostMsg1 response: ${response.body}');
         final responseData = jsonDecode(response.body);
         // Handle successful response (if needed)
         final message =
@@ -386,10 +402,10 @@ class _StudentCardState extends State<StudentCard> {
           _message = message;
         });
       } else {
-        log('Failed to call PostMsg1: ${response.statusCode}');
+        print('Failed to call PostMsg1: ${response.statusCode}');
       }
     } catch (e) {
-      log('Error calling PostMsg1: $e');
+      print('Error calling PostMsg1: $e');
     }
   }
 
@@ -404,7 +420,7 @@ class _StudentCardState extends State<StudentCard> {
     try {
       final response = await http.post(url, body: body);
       if (response.statusCode == 200) {
-        log('PostMsg1 response: ${response.body}');
+        print('PostMsg1 response: ${response.body}');
         final responseData = jsonDecode(response.body);
         // Handle successful response (if needed)
         final message =
@@ -415,10 +431,10 @@ class _StudentCardState extends State<StudentCard> {
           _message2 = message;
         });
       } else {
-        log('Failed to call PostMsg1: ${response.statusCode}');
+        print('Failed to call PostMsg1: ${response.statusCode}');
       }
     } catch (e) {
-      log('Error calling PostMsg1: $e');
+      print('Error calling PostMsg1: $e');
     }
   }
 
@@ -566,7 +582,7 @@ class _StudentCardState extends State<StudentCard> {
   }
 
   Widget _buildMessageCard(String message) {
-    log('msgggggg $_message');
+    print('msgggggg $_message');
     if (message.isEmpty) return Container();
 
     return Container(
@@ -612,7 +628,7 @@ class _StudentCardState extends State<StudentCard> {
   }
 
   Widget _buildMessageCard2(String message) {
-    log('msgggggg2222 $_message2');
+    print('msgggggg2222 $_message2');
     if (message.isEmpty) return Container();
 
     return Container(
@@ -1403,7 +1419,8 @@ class _StudentCardState extends State<StudentCard> {
                   padding: const EdgeInsets.only(top: 10.0),
                   child: Center(
                     child: Image.network(
-                      "${durl}uploads/news/" +
+                      durl +
+                          "uploads/news/" +
                           newsItem['news_id'] +
                           "/" +
                           newsItem['image_name'],
@@ -1819,8 +1836,7 @@ class StudentCardItem extends StatefulWidget {
   final String secId;
   final Function(int index) onTap;
 
-  const StudentCardItem({
-    super.key,
+  StudentCardItem({
     required this.firstName,
     required this.midName,
     required this.lastName,
@@ -1861,7 +1877,7 @@ class _StudentCardItemState extends State<StudentCardItem> {
 
   Future<void> _fetchAttendance() async {
     http.Response response = await http.post(
-      Uri.parse("${widget.url}get_student_attendance_percentage"),
+      Uri.parse(widget.url + "get_student_attendance_percentage"),
       body: {
         'student_id': widget.studentId,
         'acd_yr': academic_yr,
@@ -1869,7 +1885,7 @@ class _StudentCardItemState extends State<StudentCardItem> {
       },
     );
 
-    log('Response percentage: ${response.body}');
+    print('Response percentage: ${response.body}');
 
     if (response.statusCode == 200) {
       String apiValue = response.body;
@@ -1880,7 +1896,7 @@ class _StudentCardItemState extends State<StudentCardItem> {
       setState(() {
         attendance = "N/A";
       });
-      log('Failed to load attendance');
+      print('Failed to load attendance');
     }
   }
 
@@ -1946,13 +1962,13 @@ class _StudentCardItemState extends State<StudentCardItem> {
                     //   BlinkingBadge(text: 'LIVE', textColor: Colors.red)
                     // else
                     //   BlinkingBadge(text: 'TEST', textColor: Colors.green),
-                    SizedBox(height: 3.h),
+                    // SizedBox(height: 3.h),
                     SizedBox.square(
                       dimension: 60.w,
                       child: Image.asset(
-                        widget.gender == 'F'
-                            ? 'assets/girl.png'
-                            : 'assets/boy.png',
+                        widget.gender == 'M'
+                            ? 'assets/boy.png'
+                            : 'assets/girl.png',
                       ),
                     ),
                   ],
@@ -1980,7 +1996,11 @@ class _StudentCardItemState extends State<StudentCardItem> {
                       // ),
 
                       Text(
-                        "${widget.firstName} ${widget.midName} ${widget.lastName}",
+                        widget.firstName +
+                            " " +
+                            widget.midName +
+                            " " +
+                            widget.lastName,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 14.sp,
@@ -2098,7 +2118,7 @@ class _StudentCardItemState extends State<StudentCardItem> {
       return '${parts[0]} ${parts[1]}'; // Return the first two parts
     }
     if (len.length > 15) {
-      return parts[0]; // Return the first two parts
+      return '${parts[0]}'; // Return the first two parts
     }
     return name; // If there's no second space, return the original name
   }

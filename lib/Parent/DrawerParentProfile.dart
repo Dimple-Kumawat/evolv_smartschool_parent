@@ -192,7 +192,7 @@ class _DrawerParentProfilePage extends State<DrawerParentProfilePage> {
     log('ParentResponse status code: ${response.statusCode}');
     log('ParentResponse body: ${response.body}');
     if (response.statusCode == 200) {
-      log('Response ````````11111111111````````');
+      log('Response ```````11111111111```````');
 
       // Assuming 'response' contains the API response
       List<dynamic> ParentResponse = json.decode(response.body);
@@ -551,6 +551,7 @@ class _DrawerParentProfilePage extends State<DrawerParentProfilePage> {
                                 },
                               ),
                               StuEditTextField(
+                                readOnly: true,
                                 labelText: 'Mother Adhar Card no.',
                                 initialValue: ParentDetmod?.mAdharNo ?? '',
                                 keyboardType: TextInputType.number,
@@ -587,7 +588,6 @@ class _DrawerParentProfilePage extends State<DrawerParentProfilePage> {
                               ),
 
                               StuEditTextField(
-                                readOnly: true,
                                 labelText: 'Telephone',
                                 initialValue: ParentDetmod?.mOfficeTel ?? '',
                                 keyboardType: TextInputType.number,
@@ -599,6 +599,7 @@ class _DrawerParentProfilePage extends State<DrawerParentProfilePage> {
                               ),
 
                               StuEditTextField(
+                                readOnly: true,
                                 labelText: 'Email id',
                                 initialValue: ParentDetmod?.mEmailid ?? '',
                                 keyboardType: TextInputType.name,
@@ -677,6 +678,7 @@ class _DrawerParentProfilePage extends State<DrawerParentProfilePage> {
                                               CrossAxisAlignment.start,
                                           children: [
                                             StuEditTextField(
+                                              readOnly: true,
                                               labelText: 'Father\'s No.',
                                               initialValue:
                                                   ParentDetmod?.fMobile ?? '',
@@ -735,6 +737,7 @@ class _DrawerParentProfilePage extends State<DrawerParentProfilePage> {
                                               CrossAxisAlignment.start,
                                           children: [
                                             StuEditTextField(
+                                              readOnly: true,
                                               labelText: 'Mother\'s No.',
                                               initialValue:
                                                   ParentDetmod?.mMobile ?? '',

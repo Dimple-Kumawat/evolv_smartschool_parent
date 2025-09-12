@@ -194,7 +194,7 @@ class _ParentProfilePage extends State<ParentProfilePage> {
     log('ParentResponse status code: ${response.statusCode}');
     log('ParentResponse body: ${response.body}');
     if (response.statusCode == 200) {
-      log('Response ````````11111111111````````');
+      log('Response ```````11111111111```````');
 
       // Assuming 'response' contains the API response
       List<dynamic> ParentResponse = json.decode(response.body);
@@ -247,6 +247,9 @@ class _ParentProfilePage extends State<ParentProfilePage> {
       String mobileNumber, String shortname, String val) async {
     final urll =
         Uri.parse('${url}update_ContactDetails'); // Replace with your API URL
+    print('URL: $urll');
+    print('params: $reg_id $mobileNumber $shortname');
+
     final response = await http.post(
       urll,
       body: {
@@ -561,7 +564,6 @@ class _ParentProfilePage extends State<ParentProfilePage> {
 
                             StuEditTextField(
                               labelText: 'Telephone',
-                              readOnly: true,
                               initialValue: ParentDetmod?.mOfficeTel ?? '',
                               keyboardType: TextInputType.number,
                               onChanged: (value) {
@@ -572,6 +574,7 @@ class _ParentProfilePage extends State<ParentProfilePage> {
                             ),
 
                             StuEditTextField(
+                              readOnly: true,
                               labelText: 'Mother Adhar Card no.',
                               initialValue: ParentDetmod?.mAdharNo ?? '',
                               keyboardType: TextInputType.number,
@@ -608,6 +611,7 @@ class _ParentProfilePage extends State<ParentProfilePage> {
                             ),
 
                             StuEditTextField(
+                              readOnly: true,
                               labelText: 'Email id',
                               initialValue: ParentDetmod?.mEmailid ?? '',
                               keyboardType: TextInputType.name,
@@ -686,6 +690,7 @@ class _ParentProfilePage extends State<ParentProfilePage> {
                                             CrossAxisAlignment.start,
                                         children: [
                                           StuEditTextField(
+                                            readOnly: true,
                                             labelText: 'Father\'s No.',
                                             initialValue:
                                                 ParentDetmod?.fMobile ?? '',
@@ -742,6 +747,7 @@ class _ParentProfilePage extends State<ParentProfilePage> {
                                             CrossAxisAlignment.start,
                                         children: [
                                           StuEditTextField(
+                                            readOnly: true,
                                             labelText: 'Mother\'s No.',
                                             initialValue:
                                                 ParentDetmod?.mMobile ?? '',

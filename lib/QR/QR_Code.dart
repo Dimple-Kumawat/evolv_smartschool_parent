@@ -9,7 +9,7 @@ import 'package:intl/intl.dart';
 class QRCodeScreen extends StatefulWidget {
   final String regId;
 
-  const QRCodeScreen({super.key, required this.regId});
+  QRCodeScreen({required this.regId});
 
   @override
   _QRCodeScreenState createState() => _QRCodeScreenState();
@@ -31,7 +31,7 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
 
   /// Fetch confirmation status from API
   Future<void> fetchConfirmationStatus() async {
-    final String apiUrl = "${durl}index.php/IdcardApi/get_confirmation_status";
+    final String apiUrl = durl + "index.php/IdcardApi/get_confirmation_status";
 
     try {
       // Prepare the parameters
@@ -42,13 +42,16 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
       };
 
       final response = await http.post(Uri.parse(apiUrl), body: params);
+      print('Response body: ${response.body}');
 
       if (response.statusCode == 200) {
         final jsonResponse = json.decode(response.body);
         final status = jsonResponse["status"];
         final confirmation = jsonResponse["confirmation"] ?? "";
 
-        if ((status is bool && !status) || (status is String && status == "false") || confirmation == "N") {
+        if ((status is bool && !status) ||
+            (status is String && status == "false") ||
+            confirmation == "N") {
           handleQRNotAvailable();
         } else if (confirmation == "Y") {
           generateQR();
@@ -116,7 +119,8 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
     setState(() {
       showQRCode = false;
       isLoading = false;
-      errorMessage = "QR Code not available. Please fill the details of Parent ID Card";
+      errorMessage =
+          "QR Code not available. Please fill the details of Parent ID Card";
     });
   }
 
@@ -138,11 +142,11 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
           title: Text('Verify Parents by QR Code'),
           backgroundColor: Colors.pink,
           actions: [
-            if(errorMessage.isEmpty)
-            IconButton(
-              icon: Icon(Icons.refresh),
-              onPressed: refreshQR, // Refresh button in app bar
-            ),
+            if (errorMessage.isEmpty)
+              IconButton(
+                icon: Icon(Icons.refresh),
+                onPressed: refreshQR, // Refresh button in app bar
+              ),
           ],
         ),
         body: Stack(
@@ -161,8 +165,8 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
               child: isLoading
                   ? CircularProgressIndicator() // Loader
                   : showQRCode
-                  ? buildQRCodeWidget() // Show QR Code
-                  : buildErrorWidget(), // Show error with refresh button
+                      ? buildQRCodeWidget() // Show QR Code
+                      : buildErrorWidget(), // Show error with refresh button
             ),
           ],
         ),
@@ -248,16 +252,16 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
             textAlign: TextAlign.center,
           ),
           SizedBox(height: 20),
-          if(errorMessage.isEmpty)
-          ElevatedButton.icon(
-            onPressed: refreshQR,
-            icon: Icon(Icons.refresh),
-            label: Text('Refresh QR Code'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.pink,
-              foregroundColor: Colors.white,
+          if (errorMessage.isEmpty)
+            ElevatedButton.icon(
+              onPressed: refreshQR,
+              icon: Icon(Icons.refresh),
+              label: Text('Refresh QR Code'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.pink,
+                foregroundColor: Colors.white,
+              ),
             ),
-          ),
         ],
       ),
     );

@@ -787,12 +787,12 @@ class _StudentFormState extends State<StudentForm> {
                                     //     uploadImage(ImageSource.gallery);
                                     //   },
                                     // ),
-                                    child: IconButton(
-                                      icon: const Icon(Icons.add),
-                                      iconSize: 24,
-                                      color: Colors.white,
-                                      onPressed: null, // Disables the button
-                                    ),
+                                    // child: IconButton(
+                                    //   icon: const Icon(Icons.add),
+                                    //   iconSize: 24,
+                                    //   color: Colors.white,
+                                    //   onPressed: null, // Disables the button
+                                    // ),
                                   ),
                                 ),
                               ],
@@ -1047,6 +1047,7 @@ class _StudentFormState extends State<StudentForm> {
                           ),
 
                           StuEditTextField(
+                            readOnly: true,
                             labelText: 'City',
                             initialValue: childInfo?.city ?? '',
                             keyboardType: TextInputType.name,
@@ -1059,6 +1060,7 @@ class _StudentFormState extends State<StudentForm> {
                           ),
 
                           StuEditTextField(
+                            readOnly: true,
                             labelText: 'State',
                             initialValue: childInfo?.state ?? '',
                             keyboardType: TextInputType.name,
@@ -1071,6 +1073,7 @@ class _StudentFormState extends State<StudentForm> {
                           ),
 
                           StuEditTextField(
+                            readOnly: true,
                             labelText: 'Pincode',
                             initialValue: childInfo?.pincode ?? '',
                             keyboardType: TextInputType.number,
@@ -1082,6 +1085,7 @@ class _StudentFormState extends State<StudentForm> {
                           ),
 
                           StuEditTextField(
+                            readOnly: true,
                             labelText: 'Birth Place',
                             initialValue: childInfo?.birthPlace ?? '',
                             keyboardType: TextInputType.name,
@@ -1093,6 +1097,7 @@ class _StudentFormState extends State<StudentForm> {
                           ),
 
                           StuEditTextField(
+                            readOnly: true,
                             labelText: 'Mother Tongue',
                             initialValue: childInfo?.motherTongue ?? '',
                             keyboardType: TextInputType.name,
